@@ -1,0 +1,102 @@
+%YAML 1.1
+---
+version: '1.0'
+servers:
+  - type: Server
+    name: s1
+    address: a1
+    description: 2018年1月1日 星期一 下午03时20分34秒
+    services: [
+    ]
+  - type: GenericNode
+    name: s2
+    description: d2
+    services:
+      - vlan:1001
+    _p1: vvv1
+  - type: Server
+    name: s3
+    address: a3
+    description: d3
+    services:
+      - ssh
+      - telnet
+      - ftp
+      - http
+      - https
+      - actuator
+  - type: Group
+    name: g4
+    description: zażółć gęślą jaźń
+    children:
+      - type: Server
+        name: s5
+        address: a5
+        description: d5
+        services:
+          - ssh
+      - type: Group
+        name: g8
+        description: d8
+        children:
+          - type: Server
+            name: s9
+            address: a9
+            description: d9
+            services:
+              - https
+          - type: GenericNode
+            name: s10
+            description: d10
+            services:
+              - cmd:cluster-restart
+            _p2: vvv2
+            _p3: vvv4
+          - type: Server
+            name: s11
+            address: a11
+            description: d11
+            services:
+              - rest:8080:GET:/api/v1/abc
+        services: [
+            ]
+      - type: GenericNode
+        name: s6
+        description: d6
+        services: [
+        ]
+      - type: Server
+        name: s7
+        address: a7
+        description: d7
+        services:
+          - ftp
+    services:
+      - docker-compose:/path/to/dir
+  - type: Server
+    name: s12
+    address: a12
+    description: d12
+    services:
+      - https:9000
+  - type: GenericNode
+    name: s13
+    description: d13
+    services:
+      - http:8080
+  - type: Server
+    name: s14
+    address: a14
+    description: d14
+    services:
+      - ftp
+      - telnet
+services:
+  service2: service2 configuration
+  service1: service1 configuration
+modules:
+  ssh:
+    terminal: 'true'
+    command: ssh
+  ping:
+    command: ping

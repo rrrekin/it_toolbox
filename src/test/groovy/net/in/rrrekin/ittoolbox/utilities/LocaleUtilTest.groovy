@@ -1,0 +1,68 @@
+package net.in.rrrekin.ittoolbox.utilities
+
+import spock.lang.Specification
+
+/**
+ * @author michal.rudewicz@gmail.com
+ */
+class LocaleUtilTest extends Specification {
+
+    void cleanup() {
+        // Reset locale to default
+        LocaleUtil.setLocale(null)
+    }
+
+    def "should set and reset locale"() {
+        given:
+        LocaleUtil.setLocale(null)
+
+        expect:
+        LocaleUtil.localeCode == null
+        Locale.getDefault() == LocaleUtil.@systemLocale
+
+        when:
+        LocaleUtil.setLocale(Locale.GERMAN)
+        then:
+        LocaleUtil.localeCode == 'de'
+        Locale.getDefault() == Locale.GERMAN
+
+        when:
+        LocaleUtil.setLocale(null)
+        then:
+        LocaleUtil.localeCode == null
+        Locale.getDefault() == LocaleUtil.@systemLocale
+    }
+
+    def "should return resource bundles for local and english messages"() {
+        given:
+        LocaleUtil.setLocale(Locale.forLanguageTag('pl'))
+        expect:
+        LocaleUtil.messages.locale == Locale.forLanguageTag('pl')
+        LocaleUtil.enMessages.locale == Locale.forLanguageTag('en')
+    }
+
+    def "should return defined language list"() {
+        expect:
+        LocaleUtil.getSupportedLanguages() == ['en', 'pl'] as String[]
+    }
+
+    def "should return localized messages"() {
+        given:
+        def arg = 'abc'
+        def code = 'MISSING_CFG_FILE'
+
+        expect:
+        LocaleUtil.localMessage(code) == 'Brak pliku konfiguracyjnego ({0})'
+        LocaleUtil.localMessage(code, arg) == 'Brak pliku konfiguracyjnego (abc)'
+    }
+
+    def "should return english messages"() {
+        given:
+        def arg = 'abc'
+        def code = 'MISSING_CFG_FILE'
+
+        expect:
+        LocaleUtil.enMessage(code) == 'Missing configuration file ({0})'
+        LocaleUtil.enMessage(code, arg) == 'Missing configuration file (abc)'
+    }
+}
