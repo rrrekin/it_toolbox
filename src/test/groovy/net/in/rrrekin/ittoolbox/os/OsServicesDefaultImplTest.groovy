@@ -21,10 +21,10 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "should provide terminal command list proper for given machine"() {
         given:
-        locationService.isProgramAvailable("terminator") >> { terminatorCommand as File }
-        locationService.isProgramAvailable("konsole") >> { konsoleCommand as File }
-        locationService.isProgramAvailable("xterm") >> { xtermCommand as File }
-        locationService.isProgramAvailable("gnome-terminal") >> { gnomeTermCommand as File }
+        locationService.getProgramBinary("terminator") >> { terminatorCommand as File }
+        locationService.getProgramBinary("konsole") >> { konsoleCommand as File }
+        locationService.getProgramBinary("xterm") >> { xtermCommand as File }
+        locationService.getProgramBinary("gnome-terminal") >> { gnomeTermCommand as File }
 
         when:
         def list = instance.getPossibleTerminalCommands()
@@ -53,7 +53,7 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "default terminal command should properly evaluate for #command"() {
         given:
-        locationService.isProgramAvailable(command) >> { commandPath as File }
+        locationService.getProgramBinary(command) >> { commandPath as File }
 
         expect:
         applyTemplate(instance.getDefaultTerminalCommand(), [command: 'mtr -n google.com']) == response
@@ -79,8 +79,8 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "should provide traceroute command list proper for given machine"() {
         given:
-        locationService.isProgramAvailable("traceroute") >> { tracerouteCommand as File }
-        locationService.isProgramAvailable("mtr") >> { mtrCommand as File }
+        locationService.getProgramBinary("traceroute") >> { tracerouteCommand as File }
+        locationService.getProgramBinary("mtr") >> { mtrCommand as File }
 
         when:
         def list = instance.getPossibleTracerouteCommands()
@@ -105,7 +105,7 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "default traceroute command should properly evaluate"() {
         given:
-        locationService.isProgramAvailable(command) >> { commandPath as File }
+        locationService.getProgramBinary(command) >> { commandPath as File }
 
         expect:
         applyTemplate(instance.getDefaultTracerouteCommand(), [server: server, options: '']) == response
@@ -121,8 +121,8 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "should provide nslookup command list proper for given machine"() {
         given:
-        locationService.isProgramAvailable("nslookup") >> { nslookupCommand as File }
-        locationService.isProgramAvailable("dig") >> { digCommand as File }
+        locationService.getProgramBinary("nslookup") >> { nslookupCommand as File }
+        locationService.getProgramBinary("dig") >> { digCommand as File }
 
         when:
         def list = instance.getPossibleNslookupCommands()
@@ -147,7 +147,7 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "default nslookup command should properly evaluate"() {
         given:
-        locationService.isProgramAvailable(command) >> { commandPath as File }
+        locationService.getProgramBinary(command) >> { commandPath as File }
 
         expect:
         applyTemplate(instance.getDefaultNslookupCommand(), [server: server, options: '']) == response
@@ -191,8 +191,8 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "should provide rdp command list proper for given machine"() {
         given:
-        locationService.isProgramAvailable("rdesktop") >> { rdesktopCommand as File }
-        locationService.isProgramAvailable("xfreerdp") >> { xfreerdpCommand as File }
+        locationService.getProgramBinary("rdesktop") >> { rdesktopCommand as File }
+        locationService.getProgramBinary("xfreerdp") >> { xfreerdpCommand as File }
 
         when:
         def list = instance.getPossibleRdpCommands()
@@ -217,7 +217,7 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "default rdp command should properly evaluate for #command / '#user' / #password / #port / '#options'"() {
         given:
-        locationService.isProgramAvailable(command) >> {
+        locationService.getProgramBinary(command) >> {
             command == 'none' ? null : "/usr/bin/$command" as File
         }
 
