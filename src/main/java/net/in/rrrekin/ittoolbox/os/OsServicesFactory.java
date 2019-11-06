@@ -32,11 +32,11 @@ public final class OsServicesFactory {
    * @return the os services
    */
   public OsServices create(final @NonNull String osName) {
-    if (OsServices.OS_NAME.toLowerCase(Locale.ENGLISH).startsWith(LINUX)) {
+    if (osName.toLowerCase(Locale.ENGLISH).startsWith(LINUX)) {
       return new OsServicesLinuxImpl(locationService);
-    } else if (OsServices.OS_NAME.toLowerCase(Locale.ENGLISH).startsWith(WINDOWS)) {
+    } else if (osName.toLowerCase(Locale.ENGLISH).startsWith(WINDOWS)) {
       return new OsServicesWindowsImpl(locationService);
-    } else if (OsServices.OS_NAME.toLowerCase(Locale.ENGLISH).startsWith(MAC)) {
+    } else if (osName.toLowerCase(Locale.ENGLISH).startsWith(MAC)) {
       return new OsServicesMacOsImpl(locationService);
     } else {
       return new OsServicesDefaultImpl(locationService);

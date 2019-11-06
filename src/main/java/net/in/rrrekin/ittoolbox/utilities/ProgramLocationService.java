@@ -2,6 +2,7 @@ package net.in.rrrekin.ittoolbox.utilities;
 
 import java.io.File;
 import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The Program location service - enables checking if given program is present on this computer.
@@ -16,7 +17,7 @@ public class ProgramLocationService {
    * @param name the name
    * @return the file
    */
-  public File isProgramAvailable(final @NonNull String name) {
+  public @Nullable File isProgramAvailable(final @NonNull String name) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 }

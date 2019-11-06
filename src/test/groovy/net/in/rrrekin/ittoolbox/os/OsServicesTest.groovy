@@ -1,9 +1,7 @@
 package net.in.rrrekin.ittoolbox.os
 
 
-import org.spockframework.util.TextUtil
 import spock.lang.Specification
-
 /**
  * @author michal.rudewicz@gmail.com
  */
@@ -16,20 +14,17 @@ class OsServicesTest extends Specification {
         println "OS_ARCH: $OsServices.OS_ARCH"
         println "USER_NAME: $OsServices.USER_NAME"
         println "USER_HOME: $OsServices.USER_HOME"
-        println "LINE_SEPARATOR: ${TextUtil.escape(OsServices.LINE_SEPARATOR)}"
 
         OsServices.OS_NAME != null
         OsServices.OS_VERSION != null
         OsServices.OS_ARCH != null
         OsServices.USER_NAME != null
         OsServices.USER_HOME != null
-        OsServices.LINE_SEPARATOR != null
 
         OsServices.OS_NAME == System.getProperty("os.name")
         OsServices.OS_VERSION == System.getProperty("os.version")
         OsServices.OS_ARCH == System.getProperty("os.arch")
         OsServices.USER_HOME == System.getProperty("user.home")
         OsServices.USER_NAME == System.getProperty("user.name")
-        OsServices.LINE_SEPARATOR == System.getProperty("line.separator")
     }
 }

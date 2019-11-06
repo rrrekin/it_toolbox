@@ -33,7 +33,7 @@ public class OsServicesDefaultImpl implements OsServices {
   private static final String OPTIONS_PLACEHOLDER = "${options.trim()?' '+options:''}";
   private static final String ADDRESS_PLACEHOLDER = " ${server.address}";
   private static final String PORT_SEMICOLON_PLACEHOLDER = "${port>0?':'+port:''}";
-  private final ProgramLocationService locationService;
+  @NonNls private final ProgramLocationService locationService;
 
   public OsServicesDefaultImpl(final @NonNull ProgramLocationService locationService) {
     this.locationService = locationService;
@@ -54,12 +54,30 @@ public class OsServicesDefaultImpl implements OsServices {
   @NonNls
   @Override
   public @NotNull String getDefaultTerminalCommand() {
-    return "xterm -hold -e ${command}";
+    return getPossibleTerminalCommands().get(0);
   }
 
   @Override
   public @NotNull List<String> getPossibleTerminalCommands() {
-    return ImmutableList.of(getDefaultTerminalCommand());
+    @NonNls final List<String> response = newArrayList();
+    appendCommandIfPresent("terminator", " -x $command ';' sleep 10d", response);
+    appendCommandIfPresent("konsole", " --hold -e $command", response);
+    appendCommandIfPresent("xterm", " -hold -e $command", response);
+    appendCommandIfPresent("gnome-terminal", " -- $command", response);
+    if (response.isEmpty()) {
+      response.add("xterm -hold -e $command");
+    }
+    return response;
+  }
+
+  private void appendCommandIfPresent(
+      @NonNls final @NotNull String command,
+      @NonNls final @NotNull String arguments,
+      final @NotNull List<String> list) {
+    final File commandPath = locationService.isProgramAvailable(command);
+    if (commandPath != null) {
+      list.add(commandPath.getAbsolutePath() + arguments);
+    }
   }
 
   @NonNls
@@ -76,23 +94,35 @@ public class OsServicesDefaultImpl implements OsServices {
   @NonNls
   @Override
   public @NotNull String getDefaultTracerouteCommand() {
-    return "traceroute" + OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER;
+    return getPossibleTracerouteCommands().get(0);
   }
 
   @Override
   public @NotNull List<String> getPossibleTracerouteCommands() {
-    return ImmutableList.of(getDefaultTracerouteCommand());
+    @NonNls final List<String> response = newArrayList();
+    appendCommandIfPresent("mtr", OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER, response);
+    appendCommandIfPresent("traceroute", OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER, response);
+    if (response.isEmpty()) {
+      response.add("traceroute" + OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER);
+    }
+    return response;
   }
 
   @NonNls
   @Override
   public @NotNull String getDefaultNslookupCommand() {
-    return "nslookup" + OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER;
+    return getPossibleNslookupCommands().get(0);
   }
 
   @Override
   public @NotNull List<String> getPossibleNslookupCommands() {
-    return ImmutableList.of(getDefaultNslookupCommand());
+    @NonNls final List<String> response = newArrayList();
+    appendCommandIfPresent("nslookup", OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER, response);
+    appendCommandIfPresent("dig", OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER, response);
+    if (response.isEmpty()) {
+      response.add("nslookup" + OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER);
+    }
+    return response;
   }
 
   @NonNls
@@ -112,15 +142,34 @@ public class OsServicesDefaultImpl implements OsServices {
   @NonNls
   @Override
   public @NotNull String getDefaultRdpCommand() {
-    return "rdesktop${user.trim()?' -u \"'+user+'\"':''}${password.trim()?' -p \"'+password+'\"':''}"
-        + OPTIONS_PLACEHOLDER
-        + ADDRESS_PLACEHOLDER
-        + PORT_SEMICOLON_PLACEHOLDER;
+    return getPossibleRdpCommands().get(0);
   }
 
   @Override
   public @NotNull List<String> getPossibleRdpCommands() {
-    return ImmutableList.of(getDefaultRdpCommand());
+    @NonNls final List<String> response = newArrayList();
+    appendCommandIfPresent(
+        "rdesktop",
+        "${user.trim()?' -u \"'+user+'\"':''}${password.trim()?' -p \"'+password+'\"':''}"
+            + OPTIONS_PLACEHOLDER
+            + ADDRESS_PLACEHOLDER
+            + PORT_SEMICOLON_PLACEHOLDER,
+        response);
+    appendCommandIfPresent(
+        "xfreerdp",
+        "${user.trim()?' /u:\"'+user+'\"':''}${password.trim()?' /p:\"'+password+'\"':''}"
+            + OPTIONS_PLACEHOLDER
+                + " /v:${server.address}"
+            + PORT_SEMICOLON_PLACEHOLDER,
+        response);
+    if (response.isEmpty()) {
+      response.add(
+          "rdesktop${user.trim()?' -u \"'+user+'\"':''}${password.trim()?' -p \"'+password+'\"':''}"
+              + OPTIONS_PLACEHOLDER
+              + ADDRESS_PLACEHOLDER
+              + PORT_SEMICOLON_PLACEHOLDER);
+    }
+    return response;
   }
 
   @NonNls

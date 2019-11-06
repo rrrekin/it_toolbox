@@ -1,17 +1,21 @@
 package net.in.rrrekin.ittoolbox.os
 
+import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * @author michal.rudewicz@gmail.com
  */
 class OsServicesFactoryTest extends Specification {
 
+    ProgramLocationService locationService = Stub()
+
+    def instance = new OsServicesFactory(locationService)
+
     @Unroll
     def "should create proper implementation for #os operating system"() {
         expect:
-        OsServicesFactory.create(os).class == clazz
+        instance.create(os).class == clazz
 
         where:
         os              | clazz
