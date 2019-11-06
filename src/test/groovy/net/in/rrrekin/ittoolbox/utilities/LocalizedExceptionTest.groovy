@@ -1,5 +1,6 @@
 package net.in.rrrekin.ittoolbox.utilities
 
+import net.in.rrrekin.ittoolbox.utilities.exceptions.LocalizedException
 import spock.lang.Specification
 
 import java.text.MessageFormat

@@ -1,8 +1,9 @@
-package net.in.rrrekin.ittoolbox.utilities;
+package net.in.rrrekin.ittoolbox.utilities.exceptions;
 
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.enMessage;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
+import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
 import org.jetbrains.annotations.PropertyKey;
 
 /**

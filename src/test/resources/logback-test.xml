@@ -7,7 +7,7 @@
             <level>TRACE</level>
         </filter>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{10} [%file:%line] - %msg%n</pattern>
         </encoder>
     </appender>
 

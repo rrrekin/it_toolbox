@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.enMessage;
 import static net.in.rrrekin.ittoolbox.utilities.StringUtils.toStringOrEmpty;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
@@ -15,6 +16,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -92,5 +94,23 @@ public class Server implements NetworkNode {
     response.put(SERVICES_PROPERTY, serviceDescriptors);
     properties.forEach((property, value) -> response.put(PROPERTIES_PREFIX + property, value));
     return response;
+  }
+
+  /**
+   * Data copy object.
+   *
+   * @return the object
+   */
+  public Server.Data immutableDataCopy() {
+    return new Server.Data(name, address, description, ImmutableMap.copyOf(properties));
+  }
+
+  /** The type Data - DTO for access in templating. */
+  @Value
+  public static class Data {
+    private @NonNull String name;
+    private @NonNull String address;
+    private @NonNull String description;
+    private final @NonNull Map<String, String> properties;
   }
 }

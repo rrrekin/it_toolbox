@@ -3,6 +3,7 @@ package net.in.rrrekin.ittoolbox.configuration;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -57,8 +58,10 @@ public class ConfigurationPersistenceService {
    * @param serviceRegistry the service registry
    * @param nodeFactory the node factory
    */
+  @Inject
   public ConfigurationPersistenceService(
       final @NonNull ServiceRegistry serviceRegistry, final @NonNull NodeFactory nodeFactory) {
+    log.debug("Initializing ConfigurationPersistenceService");
     yamlOptions = new DumperOptions();
     yamlOptions.setIndent(4);
     yamlOptions.setAllowUnicode(true);
@@ -109,6 +112,7 @@ public class ConfigurationPersistenceService {
           Locale.forLanguageTag(String.valueOf(configurationDto.get(LOCALE_PROPERTY))));
     }
 
+    // TODO: simplify
     final Object version = configurationDto.get(VERSION_PROPERTY);
     if (VERSION.equals(version)) {
       // Read Network nodes configuration

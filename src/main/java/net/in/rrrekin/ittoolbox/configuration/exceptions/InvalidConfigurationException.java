@@ -1,7 +1,7 @@
 package net.in.rrrekin.ittoolbox.configuration.exceptions;
 
 import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
-import net.in.rrrekin.ittoolbox.utilities.LocalizedException;
+import net.in.rrrekin.ittoolbox.utilities.exceptions.LocalizedException;
 import org.jetbrains.annotations.PropertyKey;
 
 /**

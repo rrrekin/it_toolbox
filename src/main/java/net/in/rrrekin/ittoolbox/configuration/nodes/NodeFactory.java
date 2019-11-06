@@ -18,6 +18,11 @@ import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationExc
  */
 @Slf4j
 public class NodeFactory {
+
+  public NodeFactory() {
+    log.debug("Initializing NodeFactory");
+  }
+
   /**
    * Create network node from Map DTO.
    *

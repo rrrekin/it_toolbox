@@ -31,6 +31,9 @@ dependencies {
     implementation "com.google.guava:guava:${versions.guava}"
     implementation "org.yaml:snakeyaml:${versions.snakeyaml}"
     implementation "ch.qos.logback:logback-classic:${versions.logback}"
+    implementation "com.google.inject:guice:${versions.guice}"
+    implementation "org.apache.commons:commons-text:${versions.commonText}"
+
     implementation "com.ibm.icu:icu4j:${versions.icu}"
     compileOnly "org.jetbrains:annotations:${versions.jetbrainsAnnotations}"
 
