@@ -76,7 +76,7 @@ public class OsServicesDefaultImpl implements OsServices {
       final @NotNull List<String> list) {
     final File commandPath = locationService.getProgramBinary(command);
     if (commandPath != null) {
-      list.add(commandPath.getAbsolutePath() + arguments);
+      list.add(escapeJava(commandPath.getAbsolutePath()) + arguments);
     }
   }
 

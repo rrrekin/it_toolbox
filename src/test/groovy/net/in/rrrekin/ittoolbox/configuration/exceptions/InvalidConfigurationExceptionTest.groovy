@@ -2,8 +2,6 @@ package net.in.rrrekin.ittoolbox.configuration.exceptions
 
 import net.in.rrrekin.ittoolbox.utilities.LocaleUtil
 import spock.lang.Specification
-
-import java.text.MessageFormat
 /**
  * @author michal.rudewicz@gmail.com
  */
@@ -13,15 +11,18 @@ class InvalidConfigurationExceptionTest extends Specification {
     static final CODE = 'UNKNOWN_VERSION'
     static final FILENAME = 'sample_file.pdf'
     static final VERSION = 3.14
-    static final MSG = ResourceBundle.getBundle(LocaleUtil.MESSAGES_PROPERTY_BUNDLE, Locale.forLanguageTag('')).getString(CODE)
-    static final LOC_MSG = ResourceBundle.getBundle(LocaleUtil.MESSAGES_PROPERTY_BUNDLE, Locale.forLanguageTag('pl')).getString(CODE)
-    static final MSG_ARGS = MessageFormat.format(MSG, FILENAME, VERSION)
-    static final LOC_MSG_ARGS = MessageFormat.format(LOC_MSG, FILENAME, VERSION)
+    static final MSG = 'Unable to read configuration file ({0}). Unsupported version: {1}.'
+    static final LOC_MSG = 'Nie można odczytać pliku konfiguracyjnego ({0}). Nieobsługiwana wersja: {1}.'
+    static final MSG_ARGS ='Unable to read configuration file (sample_file.pdf). Unsupported version: 3.14.'
+    static final LOC_MSG_ARGS = 'Nie można odczytać pliku konfiguracyjnego (sample_file.pdf). Nieobsługiwana wersja: 3,14.'
 
     void setup() {
-        Locale.setDefault(Locale.forLanguageTag('pl'))
+        LocaleUtil.setLocale(Locale.forLanguageTag('pl'))
     }
 
+    void cleanup() {
+        LocaleUtil.setLocale(null)
+    }
 
     def "should create exception with message only"() {
         when:

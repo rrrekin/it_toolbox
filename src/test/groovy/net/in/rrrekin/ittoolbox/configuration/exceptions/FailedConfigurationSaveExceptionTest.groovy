@@ -19,7 +19,11 @@ class FailedConfigurationSaveExceptionTest extends Specification {
     static final LOC_MSG_ARGS = MessageFormat.format(LOC_MSG, FILENAME, ERROR)
 
     void setup() {
-        Locale.setDefault(Locale.forLanguageTag('pl'))
+        LocaleUtil.setLocale(Locale.forLanguageTag('pl'))
+    }
+
+    void cleanup() {
+        LocaleUtil.setLocale(null)
     }
 
     def "should create exception with message, args and cause"() {
@@ -28,7 +32,7 @@ class FailedConfigurationSaveExceptionTest extends Specification {
 
         then:
         exception.message == MSG_ARGS
-        exception.localizedMessage== LOC_MSG_ARGS
+        exception.localizedMessage == LOC_MSG_ARGS
         exception.cause == CAUSE
     }
 }

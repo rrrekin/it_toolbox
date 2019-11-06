@@ -7,6 +7,10 @@ import spock.lang.Specification
  */
 class LocaleUtilTest extends Specification {
 
+    void setup() {
+        LocaleUtil.setLocale(Locale.forLanguageTag('pl'))
+    }
+
     void cleanup() {
         // Reset locale to default
         LocaleUtil.setLocale(null)

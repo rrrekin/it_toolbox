@@ -2,15 +2,38 @@ package net.in.rrrekin.ittoolbox.os
 
 import net.in.rrrekin.ittoolbox.configuration.nodes.Server
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static net.in.rrrekin.ittoolbox.utilities.StringUtils.applyTemplate
+import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
 /**
  * @author michal.rudewicz@gmail.com
  */
 class OsServicesDefaultImplTest extends Specification {
+
+    @Shared
+    def terminator = '/usr/bin/terminator' as File
+    @Shared
+    def konsole = '/usr/bin/konsole' as File
+    @Shared
+    def xterm = '/usr/bin/xterm' as File
+    @Shared
+    def gnomeTerm = '/usr/bin/gnome-terminal' as File
+    @Shared
+    def traceroute = '/usr/bin/traceroute' as File
+    @Shared
+    def mtr = '/usr/bin/mtr' as File
+    @Shared
+    def nslookup = '/usr/bin/nslookup' as File
+    @Shared
+    def dig = '/usr/bin/dig' as File
+    @Shared
+    def rdesktop = '/usr/bin/rdesktop' as File
+    @Shared
+    def xfreerdp = '/usr/bin/xfreerdp' as File
 
     ProgramLocationService locationService = Mock()
 
@@ -21,10 +44,10 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "should provide terminal command list proper for given machine"() {
         given:
-        locationService.getProgramBinary("terminator") >> { terminatorCommand as File }
-        locationService.getProgramBinary("konsole") >> { konsoleCommand as File }
-        locationService.getProgramBinary("xterm") >> { xtermCommand as File }
-        locationService.getProgramBinary("gnome-terminal") >> { gnomeTermCommand as File }
+        locationService.getProgramBinary("terminator") >> { hasTerminator ? terminator : null }
+        locationService.getProgramBinary("konsole") >> { hasKonsole ? konsole : null }
+        locationService.getProgramBinary("xterm") >> { hasXterm ? xterm : null }
+        locationService.getProgramBinary("gnome-terminal") >> { hasGnomeTerm ? gnomeTerm : null }
 
         when:
         def list = instance.getPossibleTerminalCommands()
@@ -39,32 +62,32 @@ class OsServicesDefaultImplTest extends Specification {
         defaultCommand == list[0]
 
         where:
-        terminatorCommand     | konsoleCommand     | xtermCommand     | gnomeTermCommand          || expectedList
-        null                  | null               | null             | null                      || ['xterm -hold -e $command']
-        '/usr/bin/terminator' | '/usr/bin/konsole' | '/usr/bin/xterm' | '/usr/bin/gnome-terminal' || ['/usr/bin/terminator -x $command \';\' sleep 10d', '/usr/bin/konsole --hold -e $command', '/usr/bin/xterm -hold -e $command', '/usr/bin/gnome-terminal -- $command']
-        '/usr/bin/terminator' | null               | null             | null                      || ['/usr/bin/terminator -x $command \';\' sleep 10d']
-        null                  | '/usr/bin/konsole' | null             | null                      || ['/usr/bin/konsole --hold -e $command']
-        null                  | null               | '/usr/bin/xterm' | null                      || ['/usr/bin/xterm -hold -e $command']
-        null                  | null               | null             | '/usr/bin/gnome-terminal' || ['/usr/bin/gnome-terminal -- $command']
-        '/usr/bin/terminator' | null               | '/usr/bin/xterm' | '/usr/bin/gnome-terminal' || ['/usr/bin/terminator -x $command \';\' sleep 10d', '/usr/bin/xterm -hold -e $command', '/usr/bin/gnome-terminal -- $command']
-        null                  | '/usr/bin/konsole' | '/usr/bin/xterm' | null                      || ['/usr/bin/konsole --hold -e $command', '/usr/bin/xterm -hold -e $command']
+        hasTerminator | hasKonsole | hasXterm | hasGnomeTerm || expectedList
+        false         | false      | false    | false        || ['xterm -hold -e $command']
+        true          | true       | true     | true         || ["${escapeJava(terminator.absolutePath)} -x \$command ';' sleep 10d", "${escapeJava(konsole.absolutePath)} --hold -e \$command", "${escapeJava(xterm.absolutePath)} -hold -e \$command", "${escapeJava(gnomeTerm.absolutePath)} -- \$command"]
+        true          | false      | false    | false        || ["${escapeJava(terminator.absolutePath)} -x \$command ';' sleep 10d"]
+        false         | true       | false    | false        || ["${escapeJava(konsole.absolutePath)} --hold -e \$command"]
+        false         | false      | true     | false        || ["${escapeJava(xterm.absolutePath)} -hold -e \$command"]
+        false         | false      | false    | true         || ["${escapeJava(gnomeTerm.absolutePath)} -- \$command"]
+        true          | false      | true     | true         || ["${escapeJava(terminator.absolutePath)} -x \$command ';' sleep 10d", "${escapeJava(xterm.absolutePath)} -hold -e \$command", "${escapeJava(gnomeTerm.absolutePath)} -- \$command"]
+        false         | true       | true     | false        || ["${escapeJava(konsole.absolutePath)} --hold -e \$command", "${escapeJava(xterm.absolutePath)} -hold -e \$command"]
     }
 
     @Unroll
     def "default terminal command should properly evaluate for #command"() {
         given:
-        locationService.getProgramBinary(command) >> { commandPath as File }
+        locationService.getProgramBinary(command) >> commandPath
 
         expect:
         applyTemplate(instance.getDefaultTerminalCommand(), [command: 'mtr -n google.com']) == response
 
         where:
-        command          | commandPath               | response
-        'none'           | ''                        | 'xterm -hold -e mtr -n google.com'
-        'konsole'        | '/usr/bin/konsole'        | '/usr/bin/konsole --hold -e mtr -n google.com'
-        'terminator'     | '/usr/bin/terminator'     | '/usr/bin/terminator -x mtr -n google.com \';\' sleep 10d'
-        'xterm'          | '/usr/bin/xterm'          | '/usr/bin/xterm -hold -e mtr -n google.com'
-        'gnome-terminal' | '/usr/bin/gnome-terminal' | '/usr/bin/gnome-terminal -- mtr -n google.com'
+        command          | commandPath | response
+        'none'           | null        | 'xterm -hold -e mtr -n google.com'
+        'konsole'        | konsole     | "$konsole.absolutePath --hold -e mtr -n google.com"
+        'terminator'     | terminator  | "$terminator.absolutePath -x mtr -n google.com ';' sleep 10d"
+        'xterm'          | xterm       | "$xterm.absolutePath -hold -e mtr -n google.com"
+        'gnome-terminal' | gnomeTerm   | "$gnomeTerm.absolutePath -- mtr -n google.com"
     }
 
 
@@ -79,8 +102,8 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "should provide traceroute command list proper for given machine"() {
         given:
-        locationService.getProgramBinary("traceroute") >> { tracerouteCommand as File }
-        locationService.getProgramBinary("mtr") >> { mtrCommand as File }
+        locationService.getProgramBinary("traceroute") >> { hasTraceroute ? traceroute : null }
+        locationService.getProgramBinary("mtr") >> { hasMtr ? mtr : null }
 
         when:
         def list = instance.getPossibleTracerouteCommands()
@@ -95,34 +118,34 @@ class OsServicesDefaultImplTest extends Specification {
         defaultCommand == list[0]
 
         where:
-        tracerouteCommand     | mtrCommand     || expectedList
-        null                  | null           || ['traceroute${options.trim()?\' \'+options:\'\'} ${server.address}']
-        '/usr/bin/traceroute' | '/usr/bin/mtr' || ['/usr/bin/mtr${options.trim()?\' \'+options:\'\'} ${server.address}', '/usr/bin/traceroute${options.trim()?\' \'+options:\'\'} ${server.address}']
-        null                  | '/usr/bin/mtr' || ['/usr/bin/mtr${options.trim()?\' \'+options:\'\'} ${server.address}']
-        '/usr/bin/traceroute' | null           || ['/usr/bin/traceroute${options.trim()?\' \'+options:\'\'} ${server.address}']
+        hasTraceroute | hasMtr || expectedList
+        false         | false  || ["traceroute\${options.trim()?' '+options:''} \${server.address}"]
+        true          | true   || ["${escapeJava(mtr.absolutePath)}\${options.trim()?' '+options:''} \${server.address}", "${escapeJava(traceroute.absolutePath)}\${options.trim()?' '+options:''} \${server.address}"]
+        false         | true   || ["${escapeJava(mtr.absolutePath)}\${options.trim()?' '+options:''} \${server.address}"]
+        true          | false  || ["${escapeJava(traceroute.absolutePath)}\${options.trim()?' '+options:''} \${server.address}"]
     }
 
     @Unroll
     def "default traceroute command should properly evaluate"() {
         given:
-        locationService.getProgramBinary(command) >> { commandPath as File }
+        locationService.getProgramBinary(command) >> commandPath
 
         expect:
         applyTemplate(instance.getDefaultTracerouteCommand(), [server: server, options: '']) == response
         applyTemplate(instance.getDefaultTracerouteCommand(), [server: server, options: '-c 3']) == response2
 
         where:
-        command      | commandPath           | response                         | response2
-        'none'       | ''                    | 'traceroute google.com'          | 'traceroute -c 3 google.com'
-        'traceroute' | '/usr/bin/traceroute' | '/usr/bin/traceroute google.com' | '/usr/bin/traceroute -c 3 google.com'
-        'mtr'        | '/usr/bin/mtr'        | '/usr/bin/mtr google.com'        | '/usr/bin/mtr -c 3 google.com'
+        command      | commandPath | response                              | response2
+        'none'       | null        | 'traceroute google.com'               | 'traceroute -c 3 google.com'
+        'traceroute' | traceroute  | "$traceroute.absolutePath google.com" | "$traceroute.absolutePath -c 3 google.com"
+        'mtr'        | mtr         | "$mtr.absolutePath google.com"        | "$mtr.absolutePath -c 3 google.com"
     }
 
     @Unroll
     def "should provide nslookup command list proper for given machine"() {
         given:
-        locationService.getProgramBinary("nslookup") >> { nslookupCommand as File }
-        locationService.getProgramBinary("dig") >> { digCommand as File }
+        locationService.getProgramBinary("nslookup") >> { hasNslookup ? nslookup : null }
+        locationService.getProgramBinary("dig") >> { hasDig ? dig : null }
 
         when:
         def list = instance.getPossibleNslookupCommands()
@@ -137,27 +160,27 @@ class OsServicesDefaultImplTest extends Specification {
         defaultCommand == list[0]
 
         where:
-        nslookupCommand     | digCommand     || expectedList
-        null                | null           || ['nslookup${options.trim()?\' \'+options:\'\'} ${server.address}']
-        '/usr/bin/nslookup' | '/usr/bin/dig' || ['/usr/bin/nslookup${options.trim()?\' \'+options:\'\'} ${server.address}', '/usr/bin/dig${options.trim()?\' \'+options:\'\'} ${server.address}']
-        null                | '/usr/bin/dig' || ['/usr/bin/dig${options.trim()?\' \'+options:\'\'} ${server.address}']
-        '/usr/bin/nslookup' | null           || ['/usr/bin/nslookup${options.trim()?\' \'+options:\'\'} ${server.address}']
+        hasNslookup | hasDig || expectedList
+        false       | false  || ["nslookup\${options.trim()?' '+options:''} \${server.address}"]
+        true        | true   || ["${escapeJava(nslookup.absolutePath)}\${options.trim()?' '+options:''} \${server.address}", "${escapeJava(dig.absolutePath)}\${options.trim()?' '+options:''} \${server.address}"]
+        false       | true   || ["${escapeJava(dig.absolutePath)}\${options.trim()?' '+options:''} \${server.address}"]
+        true        | false  || ["${escapeJava(nslookup.absolutePath)}\${options.trim()?' '+options:''} \${server.address}"]
     }
 
     @Unroll
     def "default nslookup command should properly evaluate"() {
         given:
-        locationService.getProgramBinary(command) >> { commandPath as File }
+        locationService.getProgramBinary(command) >> commandPath
 
         expect:
         applyTemplate(instance.getDefaultNslookupCommand(), [server: server, options: '']) == response
         applyTemplate(instance.getDefaultNslookupCommand(), [server: server, options: '-c 3']) == response2
 
         where:
-        command    | commandPath         | response                       | response2
-        'none'     | ''                  | 'nslookup google.com'          | 'nslookup -c 3 google.com'
-        'nslookup' | '/usr/bin/nslookup' | '/usr/bin/nslookup google.com' | '/usr/bin/nslookup -c 3 google.com'
-        'dig'      | '/usr/bin/dig'      | '/usr/bin/dig google.com'      | '/usr/bin/dig -c 3 google.com'
+        command    | commandPath | response                            | response2
+        'none'     | null        | 'nslookup google.com'               | 'nslookup -c 3 google.com'
+        'nslookup' | nslookup    | "$nslookup.absolutePath google.com" | "$nslookup.absolutePath -c 3 google.com"
+        'dig'      | dig         | "$dig.absolutePath google.com"      | "$dig.absolutePath -c 3 google.com"
     }
 
     def "should provide ssh command list proper for given machine"() {
@@ -191,8 +214,8 @@ class OsServicesDefaultImplTest extends Specification {
     @Unroll
     def "should provide rdp command list proper for given machine"() {
         given:
-        locationService.getProgramBinary("rdesktop") >> { rdesktopCommand as File }
-        locationService.getProgramBinary("xfreerdp") >> { xfreerdpCommand as File }
+        locationService.getProgramBinary("rdesktop") >> { hasRdesktop ? rdesktop : null }
+        locationService.getProgramBinary("xfreerdp") >> { hasXfreerdp ? xfreerdp : null }
 
         when:
         def list = instance.getPossibleRdpCommands()
@@ -207,19 +230,18 @@ class OsServicesDefaultImplTest extends Specification {
         defaultCommand == list[0]
 
         where:
-        rdesktopCommand     | xfreerdpCommand     || expectedList
-        null                | null                || ['rdesktop${user.trim()?\' -u "\'+user+\'"\':\'\'}${password.trim()?\' -p "\'+password+\'"\':\'\'}${options.trim()?\' \'+options:\'\'} ${server.address}${port>0?\':\'+port:\'\'}']
-        '/usr/bin/rdesktop' | '/usr/bin/xfreerdp' || ['/usr/bin/rdesktop${user.trim()?\' -u "\'+user+\'"\':\'\'}${password.trim()?\' -p "\'+password+\'"\':\'\'}${options.trim()?\' \'+options:\'\'} ${server.address}${port>0?\':\'+port:\'\'}', '/usr/bin/xfreerdp${user.trim()?\' /u:"\'+user+\'"\':\'\'}${password.trim()?\' /p:"\'+password+\'"\':\'\'}${options.trim()?\' \'+options:\'\'} /v:${server.address}${port>0?\':\'+port:\'\'}']
-        null                | '/usr/bin/xfreerdp' || ['/usr/bin/xfreerdp${user.trim()?\' /u:"\'+user+\'"\':\'\'}${password.trim()?\' /p:"\'+password+\'"\':\'\'}${options.trim()?\' \'+options:\'\'} /v:${server.address}${port>0?\':\'+port:\'\'}']
-        '/usr/bin/rdesktop' | null                || ['/usr/bin/rdesktop${user.trim()?\' -u "\'+user+\'"\':\'\'}${password.trim()?\' -p "\'+password+\'"\':\'\'}${options.trim()?\' \'+options:\'\'} ${server.address}${port>0?\':\'+port:\'\'}']
+        hasRdesktop | hasXfreerdp || expectedList
+        false       | false       || ["rdesktop\${user.trim()?' -u \"'+user+'\"':''}\${password.trim()?' -p \"'+password+'\"':''}\${options.trim()?' '+options:''} \${server.address}\${port>0?':'+port:''}"]
+        true        | true        || ["${escapeJava(rdesktop.absolutePath)}\${user.trim()?' -u \"'+user+'\"':''}\${password.trim()?' -p \"'+password+'\"':''}\${options.trim()?' '+options:''} \${server.address}\${port>0?':'+port:''}", "${escapeJava(xfreerdp.absolutePath)}\${user.trim()?' /u:\"'+user+'\"':''}\${password.trim()?' /p:\"'+password+'\"':''}\${options.trim()?' '+options:''} /v:\${server.address}\${port>0?':'+port:''}"]
+        false       | true        || ["${escapeJava(xfreerdp.absolutePath)}\${user.trim()?' /u:\"'+user+'\"':''}\${password.trim()?' /p:\"'+password+'\"':''}\${options.trim()?' '+options:''} /v:\${server.address}\${port>0?':'+port:''}"]
+        true        | false       || ["${escapeJava(rdesktop.absolutePath)}\${user.trim()?' -u \"'+user+'\"':''}\${password.trim()?' -p \"'+password+'\"':''}\${options.trim()?' '+options:''} \${server.address}\${port>0?':'+port:''}"]
     }
 
     @Unroll
     def "default rdp command should properly evaluate for #command / '#user' / #password / #port / '#options'"() {
         given:
-        locationService.getProgramBinary(command) >> {
-            command == 'none' ? null : "/usr/bin/$command" as File
-        }
+        locationService.getProgramBinary('rdesktop') >> { command == 'rdesktop' ? rdesktop : null }
+        locationService.getProgramBinary('xfreerdp') >> { command == 'xfreerdp' ? xfreerdp : null }
 
         expect:
         applyTemplate(instance.getDefaultRdpCommand(), [server: server, user: user, password: password, port: port, options: options]) == response
@@ -233,20 +255,20 @@ class OsServicesDefaultImplTest extends Specification {
         'none'     | ''          | ''         | 1022 | ''                          || 'rdesktop google.com:1022'
         'none'     | ''          | ''         | 0    | '-D -L 1234:localhost:4321' || 'rdesktop -D -L 1234:localhost:4321 google.com'
         'none'     | 'user.name' | 'password' | 1222 | '-D -L 1234:localhost:4321' || 'rdesktop -u "user.name" -p "password" -D -L 1234:localhost:4321 google.com:1222'
-        'rdesktop' | ''          | ''         | 0    | ''                          || '/usr/bin/rdesktop google.com'
-        'rdesktop' | '\t '       | ' '        | 0    | ' \t \t '                   || '/usr/bin/rdesktop google.com'
-        'rdesktop' | 'user.name' | ' '        | 0    | ' '                         || '/usr/bin/rdesktop -u "user.name" google.com'
-        'rdesktop' | ''          | 'password' | 0    | ' '                         || '/usr/bin/rdesktop -p "password" google.com'
-        'rdesktop' | ''          | ''         | 1022 | ''                          || '/usr/bin/rdesktop google.com:1022'
-        'rdesktop' | ''          | ''         | 0    | '-D -L 1234:localhost:4321' || '/usr/bin/rdesktop -D -L 1234:localhost:4321 google.com'
-        'rdesktop' | 'user.name' | 'password' | 1222 | '-D -L 1234:localhost:4321' || '/usr/bin/rdesktop -u "user.name" -p "password" -D -L 1234:localhost:4321 google.com:1222'
-        'xfreerdp' | ''          | ''         | 0    | ''                          || '/usr/bin/xfreerdp /v:google.com'
-        'xfreerdp' | '\t '       | ' '        | 0    | ' \t \t '                   || '/usr/bin/xfreerdp /v:google.com'
-        'xfreerdp' | 'user.name' | ' '        | 0    | ' '                         || '/usr/bin/xfreerdp /u:"user.name" /v:google.com'
-        'xfreerdp' | ''          | 'password' | 0    | ' '                         || '/usr/bin/xfreerdp /p:"password" /v:google.com'
-        'xfreerdp' | ''          | ''         | 1022 | ''                          || '/usr/bin/xfreerdp /v:google.com:1022'
-        'xfreerdp' | ''          | ''         | 0    | '-D -L 1234:localhost:4321' || '/usr/bin/xfreerdp -D -L 1234:localhost:4321 /v:google.com'
-        'xfreerdp' | 'user.name' | 'password' | 1222 | '-D -L 1234:localhost:4321' || '/usr/bin/xfreerdp /u:"user.name" /p:"password" -D -L 1234:localhost:4321 /v:google.com:1222'
+        'rdesktop' | ''          | ''         | 0    | ''                          || "$rdesktop.absolutePath google.com"
+        'rdesktop' | '\t '       | ' '        | 0    | ' \t \t '                   || "$rdesktop.absolutePath google.com"
+        'rdesktop' | 'user.name' | ' '        | 0    | ' '                         || "$rdesktop.absolutePath -u \"user.name\" google.com"
+        'rdesktop' | ''          | 'password' | 0    | ' '                         || "$rdesktop.absolutePath -p \"password\" google.com"
+        'rdesktop' | ''          | ''         | 1022 | ''                          || "$rdesktop.absolutePath google.com:1022"
+        'rdesktop' | ''          | ''         | 0    | '-D -L 1234:localhost:4321' || "$rdesktop.absolutePath -D -L 1234:localhost:4321 google.com"
+        'rdesktop' | 'user.name' | 'password' | 1222 | '-D -L 1234:localhost:4321' || "$rdesktop.absolutePath -u \"user.name\" -p \"password\" -D -L 1234:localhost:4321 google.com:1222"
+        'xfreerdp' | ''          | ''         | 0    | ''                          || "$xfreerdp.absolutePath /v:google.com"
+        'xfreerdp' | '\t '       | ' '        | 0    | ' \t \t '                   || "$xfreerdp.absolutePath /v:google.com"
+        'xfreerdp' | 'user.name' | ' '        | 0    | ' '                         || "$xfreerdp.absolutePath /u:\"user.name\" /v:google.com"
+        'xfreerdp' | ''          | 'password' | 0    | ' '                         || "$xfreerdp.absolutePath /p:\"password\" /v:google.com"
+        'xfreerdp' | ''          | ''         | 1022 | ''                          || "$xfreerdp.absolutePath /v:google.com:1022"
+        'xfreerdp' | ''          | ''         | 0    | '-D -L 1234:localhost:4321' || "$xfreerdp.absolutePath -D -L 1234:localhost:4321 /v:google.com"
+        'xfreerdp' | 'user.name' | 'password' | 1222 | '-D -L 1234:localhost:4321' || "$xfreerdp.absolutePath /u:\"user.name\" /p:\"password\" -D -L 1234:localhost:4321 /v:google.com:1222"
     }
 
     @Unroll

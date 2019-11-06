@@ -31,7 +31,7 @@ class ProgramLocationServiceTest extends Specification {
         expect:
         instance.paths == [Paths.get('src/test/resources/fakeBin'), Paths.get('c:/opt/Name With Space'), Paths.get('src/test/resources/local/fakeBin'), Paths.get('src/test/resources/local/fake bin')]
         instance.getProgramBinary('non_existent_program') == null
-        instance.getProgramBinary('non_executable') == null
+        instance.getProgramBinary('non_executable') == 'src\\test\\resources\\local\\fakeBin\\non_executable' as File // Windows has no executable permission
         instance.getProgramBinary('executable1') == 'src/test/resources/fakeBin/executable1' as File
         instance.getProgramBinary('executable2') == 'src/test/resources/local/fakeBin/executable2' as File
         instance.getProgramBinary('executable3') == 'src/test/resources/local/fake bin/executable3' as File

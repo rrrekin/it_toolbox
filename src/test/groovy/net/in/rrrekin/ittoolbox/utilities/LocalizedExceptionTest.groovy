@@ -19,7 +19,11 @@ class LocalizedExceptionTest extends Specification {
     static final LOC_MSG_ARGS = MessageFormat.format(LOC_MSG, FILENAME)
 
     void setup() {
-        Locale.setDefault(Locale.forLanguageTag('pl'))
+        LocaleUtil.setLocale(Locale.forLanguageTag('pl'))
+    }
+
+    void cleanup() {
+        LocaleUtil.setLocale(null)
     }
 
     def "should create exception with message only"() {

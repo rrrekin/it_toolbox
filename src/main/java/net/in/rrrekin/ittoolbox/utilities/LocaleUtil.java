@@ -23,12 +23,12 @@ public final class LocaleUtil {
   /** Resource bundle used to create english messages (e.g. log entries). */
   @Getter
   private static final @NotNull ResourceBundle enMessages =
-      ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE, Locale.ENGLISH);
+          ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE, Locale.ENGLISH);
 
   /** Resource bundle used to create localized messages (e.g. error dialog boxes). */
   @Getter
   private static @NotNull ResourceBundle messages =
-      ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE);
+          ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE);
 
   private static final @NotNull Locale systemLocale = Locale.getDefault();
 
@@ -59,7 +59,7 @@ public final class LocaleUtil {
    * @return the localized message for given code
    */
   public static String localMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code) {
+          @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code) {
     return messages.getString(code);
   }
 
@@ -71,9 +71,9 @@ public final class LocaleUtil {
    * @return the formatted localized message for given code and arguments
    */
   public static String localMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code,
-      final Object... args) {
-    return MessageFormat.format(messages.getString(code), args);
+          @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code,
+          final Object... args) {
+    return new MessageFormat(messages.getString(code),Locale.getDefault()).format(args);
   }
 
   /**
@@ -83,7 +83,7 @@ public final class LocaleUtil {
    * @return the english message for given code
    */
   public static String enMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code) {
+          @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code) {
     return enMessages.getString(code);
   }
 
@@ -95,9 +95,9 @@ public final class LocaleUtil {
    * @return the formatted english message for given code and arguments
    */
   public static String enMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code,
-      final Object... args) {
-    return MessageFormat.format(enMessages.getString(code), args);
+          @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final String code,
+          final Object... args) {
+    return new MessageFormat(enMessages.getString(code),Locale.ENGLISH).format(args);
   }
 
   public static String[] getSupportedLanguages() {
