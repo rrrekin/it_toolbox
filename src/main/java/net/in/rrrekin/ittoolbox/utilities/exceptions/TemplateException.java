@@ -10,6 +10,6 @@ import org.jetbrains.annotations.NotNull;
 public class TemplateException extends LocalizedException {
 
   public TemplateException(final @NotNull String template, final Throwable cause) {
-    super("TEMPLATE_EXCEPTION", cause, template, cause.getLocalizedMessage());
+    super("EX_TEMPLATE_EXCEPTION", cause, template, cause.getLocalizedMessage());
   }
 }

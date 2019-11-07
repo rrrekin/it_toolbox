@@ -1,4 +1,4 @@
-package net.in.rrrekin.ittoolbox.configuration;
+package net.in.rrrekin.ittoolbox.infrastructure;
 
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class LogConfigurator {
 
   private static final String LOGS_SUBDIRECTORY = "logs";
-  private static final String STARTUP_ERROR_TITLE = "STARTUP_ERROR";
+  private static final String STARTUP_ERROR_TITLE = "APP_STARTUP_ERROR";
 
   /**
    * Sets file logs location.
@@ -33,7 +33,7 @@ public class LogConfigurator {
     if (!appDir.isDirectory() || !appDir.canWrite()) {
       JOptionPane.showMessageDialog(
           null,
-          localMessage("CANNOT_CREATE_APP_DIR", appDir),
+          localMessage("APP_CANNOT_CREATE_APP_DIR", appDir),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
       ErrorCode.CANNOT_CREATE_APP_DIRECTORY.exit();
@@ -45,7 +45,7 @@ public class LogConfigurator {
     if (!appDir.isDirectory() || !appDir.canWrite()) {
       JOptionPane.showMessageDialog(
           null,
-          localMessage("CANNOT_CREATE_LOGS_DIR", logsDir),
+          localMessage("APP_CANNOT_CREATE_LOGS_DIR", logsDir),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
       ErrorCode.CANNOT_CREATE_LOGS_DIRECTORY.exit();
@@ -58,7 +58,7 @@ public class LogConfigurator {
     if (!(configFile.isFile() && configFile.canRead())) {
       JOptionPane.showMessageDialog(
           null,
-          localMessage("CANNOT_CREATE_LOGGING_CONFIG", configFile),
+          localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", configFile),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
       ErrorCode.CANNOT_CREATE_LOGS_CONFIG.exit();
@@ -79,7 +79,7 @@ public class LogConfigurator {
     } catch (final IOException e) {
       JOptionPane.showMessageDialog(
           null,
-          localMessage("CANNOT_CREATE_LOGGING_CONFIG", e.getLocalizedMessage()),
+          localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", e.getLocalizedMessage()),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
       ErrorCode.CANNOT_CREATE_LOGS_CONFIG.exit();

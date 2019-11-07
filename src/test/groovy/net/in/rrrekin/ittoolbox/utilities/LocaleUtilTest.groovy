@@ -53,7 +53,7 @@ class LocaleUtilTest extends Specification {
     def "should return localized messages"() {
         given:
         def arg = 'abc'
-        def code = 'MISSING_CFG_FILE'
+        def code = 'EX_MISSING_CFG_FILE'
 
         expect:
         LocaleUtil.localMessage(code) == 'Brak pliku konfiguracyjnego ({0})'
@@ -63,7 +63,7 @@ class LocaleUtilTest extends Specification {
     def "should return english messages"() {
         given:
         def arg = 'abc'
-        def code = 'MISSING_CFG_FILE'
+        def code = 'EX_MISSING_CFG_FILE'
 
         expect:
         LocaleUtil.enMessage(code) == 'Missing configuration file ({0})'

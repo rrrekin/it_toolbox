@@ -8,7 +8,7 @@ import spock.lang.Specification
 class InvalidConfigurationExceptionTest extends Specification {
 
     static final CAUSE = new NullPointerException("NPE")
-    static final CODE = 'UNKNOWN_VERSION'
+    static final CODE = 'EX_UNKNOWN_VERSION'
     static final FILENAME = 'sample_file.pdf'
     static final VERSION = 3.14
     static final MSG = 'Unable to read configuration file ({0}). Unsupported version: {1}.'

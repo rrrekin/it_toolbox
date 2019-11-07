@@ -14,7 +14,7 @@ class MissingConfigurationExceptionTest extends Specification {
         def cause = new FileNotFoundException("Brak pliku")
 
         when:
-        def exception = new MissingConfigurationException('MISSING_CFG_FILE', cause, 'sample_file.txt' as File)
+        def exception = new MissingConfigurationException('EX_MISSING_CFG_FILE', cause, 'sample_file.txt' as File)
 
         then:
         exception.getMessage() == 'Missing configuration file (sample_file.txt)'

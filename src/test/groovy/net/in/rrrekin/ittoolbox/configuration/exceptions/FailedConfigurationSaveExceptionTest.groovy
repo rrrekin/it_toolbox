@@ -10,7 +10,7 @@ import java.text.MessageFormat
 class FailedConfigurationSaveExceptionTest extends Specification {
 
     static final CAUSE = new FileNotFoundException("Brak pliku")
-    static final CODE = 'CONFIG_SAVE_ERROR'
+    static final CODE = 'EX_CONFIG_SAVE_ERROR'
     static final FILENAME = 'sample_file.pdf'
     static final ERROR = 'buuuu'
     static final MSG = ResourceBundle.getBundle(LocaleUtil.MESSAGES_PROPERTY_BUNDLE, Locale.forLanguageTag('')).getString(CODE)

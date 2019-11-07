@@ -50,7 +50,7 @@ public class NodeFactory {
     final NodeType type = NodeType.of(typeName);
     if (type == null) {
       throw new InvalidConfigurationException(
-          "CANNOT_CREATE", StringUtils.isBlank(typeName) ? localMessage("UNKNOWN_TYPE") : typeName);
+              "EX_CANNOT_CREATE", StringUtils.isBlank(typeName) ? localMessage("CFG_UNKNOWN_TYPE") : typeName);
     }
     Constructor<? extends NetworkNode> constructor = null;
 
@@ -65,7 +65,7 @@ public class NodeFactory {
         return constructor.newInstance(dto, this, parentInfo);
       } catch (final Exception e) {
         log.error("Failed to create {} with 3 argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException("FAILED_3_ARG_CONSTRUCTOR", e, type.getTypeName());
+        throw new InvalidConfigurationException("EX_FAILED_3_ARG_CONSTRUCTOR", e, type.getTypeName());
       }
     }
 
@@ -79,7 +79,7 @@ public class NodeFactory {
         return constructor.newInstance(dto);
       } catch (final Exception e) {
         log.error("Failed to create {} with 1 argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException("FAILED_1_ARG_CONSTRUCTOR", e, type.getTypeName());
+        throw new InvalidConfigurationException("EX_FAILED_1_ARG_CONSTRUCTOR", e, type.getTypeName());
       }
     }
 
@@ -93,12 +93,12 @@ public class NodeFactory {
         return constructor.newInstance(dto);
       } catch (final Exception e) {
         log.error("Failed to create {} with no argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException("UNABLE_CREATE_NODE", e, type);
+        throw new InvalidConfigurationException("EX_UNABLE_CREATE_NODE", e, type);
       }
     }
 
     log.error("Unable to find constructor for type {} in {} with {}.", type, parentInfo, dto);
-    throw new InvalidConfigurationException("CANNOT_FIND_CONSTRUCTOR_FOR", type.getTypeName());
+    throw new InvalidConfigurationException("EX_CANNOT_FIND_CONSTRUCTOR_FOR", type.getTypeName());
   }
 
   /**
@@ -122,7 +122,7 @@ public class NodeFactory {
               new ConfigurationErrorEvent(
                   CANNOT_CREATE_NETWORK_NODE,
                   localMessage(
-                      "CANNOT_CREATE_NETWORK_NODE",
+                          "CFG_CANNOT_CREATE_NETWORK_NODE",
                       parentInfo,
                       e.getLocalizedMessage(),
                       abbreviate(childMap.toString(), MAX_DESCRIPTION_WIDTH))));
@@ -133,7 +133,7 @@ public class NodeFactory {
             new ConfigurationErrorEvent(
                 INVALID_OBJECT_ON_DTO_LIST,
                 localMessage(
-                    "INVALID_OBJECT_ON_DTO_LIST",
+                        "CFG_INVALID_OBJECT_ON_DTO_LIST",
                     parentInfo,
                     abbreviate(String.valueOf(child), MAX_DESCRIPTION_WIDTH))));
       }

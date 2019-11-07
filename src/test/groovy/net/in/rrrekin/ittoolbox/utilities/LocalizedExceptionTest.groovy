@@ -11,7 +11,7 @@ import java.text.MessageFormat
 class LocalizedExceptionTest extends Specification {
 
     static final CAUSE = new FileNotFoundException("Brak pliku")
-    static final CODE = 'MISSING_CFG_FILE'
+    static final CODE = 'EX_MISSING_CFG_FILE'
     static final FILENAME = 'sample_file.pdf'
     static final MSG = ResourceBundle.getBundle(LocaleUtil.MESSAGES_PROPERTY_BUNDLE, Locale.forLanguageTag('')).getString(CODE)
     static final LOC_MSG = ResourceBundle.getBundle(LocaleUtil.MESSAGES_PROPERTY_BUNDLE, Locale.forLanguageTag('pl')).getString(CODE)

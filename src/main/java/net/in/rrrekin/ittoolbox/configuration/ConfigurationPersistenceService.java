@@ -104,20 +104,21 @@ public class ConfigurationPersistenceService {
   public Configuration load(final @NonNull File configFile)
       throws InvalidConfigurationException, MissingConfigurationException {
 
+    log.info("Loading configuration from '{}'", configFile);
     final Yaml yaml = new Yaml(yamlOptions);
     final Map<String, ?> configurationDto;
     try (final InputStream inputStream = new BufferedInputStream(new FileInputStream(configFile))) {
       configurationDto = yaml.load(inputStream);
     } catch (final FileNotFoundException e) {
       log.warn("Configuration file ({}) not present.", configFile);
-      throw new MissingConfigurationException("MISSING_CFG_FILE", e, configFile);
+      throw new MissingConfigurationException("EX_MISSING_CFG_FILE", e, configFile);
     } catch (final IOException | ClassCastException e) {
       log.warn("Failed to read configuration file ({}): {}", configFile, e.getLocalizedMessage());
-      throw new InvalidConfigurationException("UNREADABLE_CFG_FILE", e, configFile);
+      throw new InvalidConfigurationException("EX_UNREADABLE_CFG_FILE", e, configFile);
     }
 
     if (configurationDto == null) {
-      throw new InvalidConfigurationException("UNREADABLE_CFG_FILE", configFile);
+      throw new InvalidConfigurationException("EX_UNREADABLE_CFG_FILE", configFile);
     }
 
     if (configurationDto.get(LOCALE_PROPERTY) != null) {
@@ -137,7 +138,7 @@ public class ConfigurationPersistenceService {
         log.warn("Failed to read server list.");
         eventBus.post(
             new ConfigurationErrorEvent(
-                SERVER_LIST_UNREADABLE, LocaleUtil.localMessage("SERVER_LIST_UNREADABLE")));
+                SERVER_LIST_UNREADABLE, LocaleUtil.localMessage("CFG_SERVER_LIST_UNREADABLE")));
         networkNodes = Lists.newArrayList();
       }
 
@@ -162,7 +163,7 @@ public class ConfigurationPersistenceService {
                 new ConfigurationErrorEvent(
                     INVALID_MODULE_OPTIONS,
                     LocaleUtil.localMessage(
-                        "INVALID_MODULE_OPTIONS",
+                        "CFG_INVALID_MODULE_OPTIONS",
                         moduleId,
                         abbreviate(String.valueOf(optionsDto), MAX_OBJECT_DESCRIPTION_WIDTH))));
           }
@@ -171,7 +172,7 @@ public class ConfigurationPersistenceService {
         log.warn("Failed to read application modules configuration.");
         eventBus.post(
             new ConfigurationErrorEvent(
-                INVALID_MODULE_LIST, LocaleUtil.localMessage("INVALID_MODULE_LIST")));
+                INVALID_MODULE_LIST, LocaleUtil.localMessage("CFG_INVALID_MODULE_LIST")));
       }
 
       // Read service configuration
@@ -188,7 +189,7 @@ public class ConfigurationPersistenceService {
                 new ConfigurationErrorEvent(
                     INVALID_SERVICE_CONFIGURATION,
                     LocaleUtil.localMessage(
-                        "INVALID_SERVICE_CONFIGURATION",
+                        "CFG_INVALID_SERVICE_CONFIGURATION",
                         serviceId,
                         abbreviate(String.valueOf(serviceOptions), MAX_OBJECT_DESCRIPTION_WIDTH))));
           }
@@ -197,13 +198,13 @@ public class ConfigurationPersistenceService {
         log.warn("Failed to read services list.");
         eventBus.post(
             new ConfigurationErrorEvent(
-                INVALID_SERVICES_SECTION, LocaleUtil.localMessage("INVALID_SERVICES_SECTION")));
+                INVALID_SERVICES_SECTION, LocaleUtil.localMessage("CFG_INVALID_SERVICES_SECTION")));
       }
 
       return new Configuration(networkNodes, modules);
 
     } else {
-      throw new InvalidConfigurationException("UNKNOWN_VERSION", configFile, version);
+      throw new InvalidConfigurationException("EX_UNKNOWN_VERSION", configFile, version);
     }
   }
 
@@ -224,7 +225,7 @@ public class ConfigurationPersistenceService {
     } catch (final IOException e) {
       log.warn("Failed to write configuration file ({}): {}", configFile, e.getLocalizedMessage());
       throw new FailedConfigurationSaveException(
-          "CONFIG_SAVE_ERROR", e, configFile, e.getLocalizedMessage());
+          "EX_CONFIG_SAVE_ERROR", e, configFile, e.getLocalizedMessage());
     }
   }
 
