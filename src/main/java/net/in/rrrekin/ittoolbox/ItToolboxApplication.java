@@ -90,8 +90,7 @@ public class ItToolboxApplication {
           localMessage("INITIALIZATION_FAILURE", e.getLocalizedMessage()),
           localMessage(UNEXPECTED_APP_ERROR),
           JOptionPane.ERROR_MESSAGE);
-      //noinspection CallToSystemExit
-      System.exit(ErrorCode.INITIALIZATION_ERROR.getValue());
+      ErrorCode.INITIALIZATION_ERROR.exit();
     }
   }
 
@@ -102,8 +101,7 @@ public class ItToolboxApplication {
     } catch (final InterruptedException e) {
       log.info("Application interrupted.", e);
       Thread.currentThread().interrupt();
-      //noinspection CallToSystemExit
-      System.exit(ErrorCode.INTERRUPTED.getValue());
+      ErrorCode.INTERRUPTED.exit();
     } catch (final Exception e) {
       log.error("Unexpected error while application running.", e);
       JOptionPane.showMessageDialog(
@@ -112,7 +110,7 @@ public class ItToolboxApplication {
           localMessage(UNEXPECTED_APP_ERROR),
           JOptionPane.ERROR_MESSAGE);
       //noinspection CallToSystemExit
-      System.exit(ErrorCode.RUNTIME_ERROR.getValue());
+      ErrorCode.RUNTIME_ERROR.exit();
     }
   }
 

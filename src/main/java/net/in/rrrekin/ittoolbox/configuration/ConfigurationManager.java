@@ -1,6 +1,7 @@
 package net.in.rrrekin.ittoolbox.configuration;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import java.io.File;
@@ -8,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -51,6 +53,11 @@ public class ConfigurationManager {
     active = false;
     configChangeTimer.cancel();
     configChangeTimer.purge();
+  }
+
+  @Subscribe
+  public void handleConfigurationReadErrors(final @NotNull ConfigurationErrorEvent event) {
+    log.error("CFG_ERR: {}: {}", event.getCode(), event.getMessage());
   }
 
   public @NotNull File getConfigFile() {

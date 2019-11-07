@@ -20,4 +20,9 @@ public enum ErrorCode {
   ErrorCode(final int value) {
     this.value = value;
   }
+
+  /** Terminates application with this error code. */
+  public void exit() {
+    System.exit(value);
+  }
 }

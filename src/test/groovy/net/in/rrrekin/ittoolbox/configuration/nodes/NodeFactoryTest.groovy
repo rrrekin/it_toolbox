@@ -1,8 +1,12 @@
 package net.in.rrrekin.ittoolbox.configuration.nodes
 
+import com.google.common.eventbus.EventBus
 import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationException
 import org.yaml.snakeyaml.Yaml
 import spock.lang.Specification
+
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.CANNOT_CREATE_NETWORK_NODE
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_OBJECT_ON_DTO_LIST
 
 /**
  * @author michal.rudewicz@gmail.com
@@ -28,30 +32,38 @@ class NodeFactoryTest extends Specification {
             new GenericNode('s13', 'd13', [:], ['http:8080']),
             new Server('s14', 'a14', 'd14', [:], ['ftp', 'telnet']),
     ]
+    static final PARENT_PATH = 'servers/customer/application/production'
 
-    def instance = new NodeFactory()
+    EventBus eventBus = Mock()
+
+    def instance = new NodeFactory(eventBus)
 
     def "should create nodes"() {
         when:
-        def nodes = instance.createFrom(CONFIG.servers)
+        def nodes = instance.createFrom(CONFIG.servers, PARENT_PATH)
 
         then:
+        0 * eventBus._
         nodes == SAMPLE_NODES
     }
 
     def "should handle invalid elements on node list"() {
         when:
-        def nodes = instance.createFrom([2, new Server('42').dtoProperties, "abc", [abc: 67]])
+        def nodes = instance.createFrom([2, new Server('42').dtoProperties, "abc", [abc: 67]], PARENT_PATH)
 
         then:
+        2 * eventBus.post({ it.code == INVALID_OBJECT_ON_DTO_LIST })
+        1 * eventBus.post({ it.code == CANNOT_CREATE_NETWORK_NODE })
+        0 * eventBus._
         nodes == [new Server('42')]
     }
 
     def "should handle invalid type"() {
         when:
-        def nodes = instance.createFrom([type:'abc'])
+        def nodes = instance.createFrom([type: 'abc'], PARENT_PATH)
 
         then:
+        0 * eventBus._
         thrown InvalidConfigurationException
     }
 

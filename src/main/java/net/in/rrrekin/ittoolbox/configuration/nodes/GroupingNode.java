@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public class GroupingNode implements NetworkNode {
 
+  public static final char LOCATION_PATH_SEPARATOR = '/';
   @Getter @Setter private @NonNull String name;
   @Getter @Setter private @NonNull String description;
   @Getter private final @NotNull List<NetworkNode> childNodes;
@@ -51,7 +53,8 @@ public class GroupingNode implements NetworkNode {
    * @param dto the dto
    * @param factory the factory
    */
-  public GroupingNode(final Map<String, Object> dto, final NodeFactory factory) {
+  public GroupingNode(
+          final Map<String, Object> dto, final NodeFactory factory, @NonNls final @NonNull String parentInfo) {
     final String type = toStringOrEmpty(dto.get(TYPE_PROPERTY));
     checkArgument(
         NodeType.GROUP.getTypeName().equalsIgnoreCase(type),
@@ -67,7 +70,9 @@ public class GroupingNode implements NetworkNode {
     }
     final Object childNodesDtos = dto.get(CHILD_NODES_PROPERTY);
     if (childNodesDtos instanceof List) {
-      childNodes.addAll(factory.createFrom((List<?>) childNodesDtos));
+      childNodes.addAll(
+          factory.createFrom(
+              (List<?>) childNodesDtos, parentInfo + LOCATION_PATH_SEPARATOR + name));
     }
   }
 

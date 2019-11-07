@@ -36,7 +36,7 @@ public class LogConfigurator {
           localMessage("CANNOT_CREATE_APP_DIR", appDir),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
-      System.exit(ErrorCode.CANNOT_CREATE_APP_DIRECTORY.getValue());
+      ErrorCode.CANNOT_CREATE_APP_DIRECTORY.exit();
     }
 
     final File logsDir = new File(appDir, LOGS_SUBDIRECTORY);
@@ -48,7 +48,7 @@ public class LogConfigurator {
           localMessage("CANNOT_CREATE_LOGS_DIR", logsDir),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
-      System.exit(ErrorCode.CANNOT_CREATE_LOGS_DIRECTORY.getValue());
+      ErrorCode.CANNOT_CREATE_LOGS_DIRECTORY.exit();
     }
 
     final File configFile = new File(appDir, "logback.xml");
@@ -61,7 +61,7 @@ public class LogConfigurator {
           localMessage("CANNOT_CREATE_LOGGING_CONFIG", configFile),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
-      System.exit(ErrorCode.CANNOT_CREATE_LOGS_CONFIG.getValue());
+      ErrorCode.CANNOT_CREATE_LOGS_CONFIG.exit();
     }
 
     System.setProperty("LOG_FILE_LOCATION", logsDir.getAbsolutePath());
@@ -82,7 +82,7 @@ public class LogConfigurator {
           localMessage("CANNOT_CREATE_LOGGING_CONFIG", e.getLocalizedMessage()),
           localMessage(STARTUP_ERROR_TITLE),
           JOptionPane.ERROR_MESSAGE);
-      System.exit(ErrorCode.CANNOT_CREATE_LOGS_CONFIG.getValue());
+      ErrorCode.CANNOT_CREATE_LOGS_CONFIG.exit();
     }
   }
 }

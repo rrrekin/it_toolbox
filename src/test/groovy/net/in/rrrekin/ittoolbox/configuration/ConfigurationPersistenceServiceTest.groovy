@@ -1,5 +1,6 @@
 package net.in.rrrekin.ittoolbox.configuration
 
+import com.google.common.eventbus.EventBus
 import net.in.rrrekin.ittoolbox.configuration.exceptions.FailedConfigurationSaveException
 import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationException
 import net.in.rrrekin.ittoolbox.configuration.exceptions.MissingConfigurationException
@@ -14,6 +15,12 @@ import org.yaml.snakeyaml.Yaml
 import spock.lang.Specification
 
 import java.util.stream.Stream
+
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_MODULE_LIST
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_MODULE_OPTIONS
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICES_SECTION
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICE_CONFIGURATION
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.SERVER_LIST_UNREADABLE
 
 /**
  * @author michal.rudewicz@gmail.com
@@ -41,9 +48,9 @@ class ConfigurationPersistenceServiceTest extends Specification {
             [type: 'Server', name: 's1', address: 'a1', description: '2018年1月1日 星期一 下午03时20分34秒', services: []],
             [type: 'GenericNode', name: 's2', description: 'd2', services: ['vlan:1001'], _p1: 'vvv1'],
             [type: 'Server', name: 's3', address: 'a3', description: 'd3', services: ['ssh', 'telnet', 'ftp', 'http', 'https', 'actuator']],
-            [type: 'Group', name: 'g4', description: 'zażółć gęślą jaźń', children: [
+            [type      : 'Group', name: 'g4', description: 'zażółć gęślą jaźń', children: [
                     [type: 'Server', name: 's5', address: 'a5', description: 'd5', services: ['ssh']],
-                    [type: 'Group', name: 'g8', description: 'd8', children: [
+                    [type      : 'Group', name: 'g8', description: 'd8', children: [
                             [type: 'Server', name: 's9', address: 'a9', description: 'd9', services: ['https']],
                             [type: 'GenericNode', name: 's10', description: 'd10', services: ['cmd:cluster-restart'], '_p2': 'vvv2', '_p3': 'vvv4'],
                             [type: 'Server', name: 's11', address: 'a11', description: 'd11', services: ['rest:8080:GET:/api/v1/abc']]
@@ -65,12 +72,14 @@ class ConfigurationPersistenceServiceTest extends Specification {
         getId() >> 'service2'; getConfiguration() >> 'service2 configuration'
     }
 
+    EventBus eventBus = Mock()
+
     static final SAMPLE_CONFIG_FILE = 'src/test/resources/sample_config.yml' as File
 
     def ServiceRegistry serviceRegistry = Mock()
     def NodeFactory nodeFactory = Mock()
 
-    def service = new ConfigurationPersistenceService(serviceRegistry, nodeFactory)
+    def service = new ConfigurationPersistenceService(serviceRegistry, nodeFactory, eventBus)
 
     void cleanup() {
         // Reset locale to default
@@ -79,20 +88,26 @@ class ConfigurationPersistenceServiceTest extends Specification {
 
     def "should validate constructor arguments"() {
         when:
-        new ConfigurationPersistenceService(null, nodeFactory)
+        new ConfigurationPersistenceService(null, nodeFactory, eventBus)
         then:
         thrown NullPointerException
 
         when:
-        new ConfigurationPersistenceService(serviceRegistry, null)
+        new ConfigurationPersistenceService(serviceRegistry, null, eventBus)
+        then:
+        thrown NullPointerException
+
+        when:
+        new ConfigurationPersistenceService(serviceRegistry, nodeFactory, null)
         then:
         thrown NullPointerException
     }
 
     def "should validate load arguments"() {
         when:
-        service.load(null, true)
+        service.load(null)
         then:
+        0 * eventBus._
         thrown NullPointerException
     }
 
@@ -100,11 +115,13 @@ class ConfigurationPersistenceServiceTest extends Specification {
         when:
         service.save(null, CONFIGURATION)
         then:
+        0 * eventBus._
         thrown NullPointerException
 
         when:
         service.save('a' as File, null)
         then:
+        0 * eventBus._
         thrown NullPointerException
     }
 
@@ -122,16 +139,18 @@ class ConfigurationPersistenceServiceTest extends Specification {
         1 * serviceRegistry.stream() >> Stream.of(service1, service2)
         0 * serviceRegistry._
         0 * nodeFactory._
+        0 * eventBus._
 
         when:
-        def configuration = service.load(file, false)
+        def configuration = service.load(file)
 
         then:
-        1 * nodeFactory.createFrom(SAMPLE_NODES_DTO) >> SAMPLE_NODES
+        1 * nodeFactory.createFrom(SAMPLE_NODES_DTO, 'servers') >> SAMPLE_NODES
         1 * serviceRegistry.configureService('service1', 'service1 configuration')
         1 * serviceRegistry.configureService('service2', 'service2 configuration')
         0 * serviceRegistry._
         0 * nodeFactory._
+        0 * eventBus._
         configuration.networkNodes == SAMPLE_NODES
         configuration.modules == SAMPLE_MODULES
         configuration == CONFIGURATION
@@ -142,9 +161,10 @@ class ConfigurationPersistenceServiceTest extends Specification {
 
     def "should handle non existing file"() {
         when:
-        service.load('non-existing-file.yml' as File, false)
+        service.load('non-existing-file.yml' as File)
 
         then:
+        0 * eventBus._
         thrown MissingConfigurationException
     }
 
@@ -153,9 +173,10 @@ class ConfigurationPersistenceServiceTest extends Specification {
         file.text = 'dsrhjj cn34i542ku v342utsx54c 45p8954cnf25t8948t25vn458}}}\n\n}}*#@'
 
         when:
-        service.load(file, false)
+        service.load(file)
 
         then:
+        0 * eventBus._
         thrown InvalidConfigurationException
 
         cleanup:
@@ -167,9 +188,10 @@ class ConfigurationPersistenceServiceTest extends Specification {
         file.mkdirs()
 
         when:
-        service.load(file, false)
+        service.load(file)
 
         then:
+        0 * eventBus._
         thrown MissingConfigurationException
 
         cleanup:
@@ -181,9 +203,10 @@ class ConfigurationPersistenceServiceTest extends Specification {
         file.text = 'version: 0.3\n'
 
         when:
-        service.load(file, false)
+        service.load(file)
 
         then:
+        0 * eventBus._
         thrown InvalidConfigurationException
 
         cleanup:
@@ -195,9 +218,10 @@ class ConfigurationPersistenceServiceTest extends Specification {
         file.text = ''
 
         when:
-        service.load(file, false)
+        service.load(file)
 
         then:
+        0 * eventBus._
         thrown InvalidConfigurationException
 
         cleanup:
@@ -209,16 +233,24 @@ class ConfigurationPersistenceServiceTest extends Specification {
         file.text = 'version: "1.0"\nservers: abc'
 
         when:
-        def config = service.load(file, false)
+        def config = service.load(file)
 
         then:
+        1 * eventBus.post({ it.code == SERVER_LIST_UNREADABLE })
+        1 * eventBus.post({ it.code == INVALID_MODULE_LIST })
+        1 * eventBus.post({ it.code == INVALID_SERVICES_SECTION })
+        0 * eventBus._
         config.getNetworkNodes().isEmpty()
 
         when:
         file.text = 'version: "1.0"\nservers:\n  abc:  def\n'
-        config = service.load(file, false)
+        config = service.load(file)
 
         then:
+        1 * eventBus.post({ it.code == SERVER_LIST_UNREADABLE })
+        1 * eventBus.post({ it.code == INVALID_MODULE_LIST })
+        1 * eventBus.post({ it.code == INVALID_SERVICES_SECTION })
+        0 * eventBus._
         config.getNetworkNodes().isEmpty()
 
         cleanup:
@@ -231,22 +263,60 @@ class ConfigurationPersistenceServiceTest extends Specification {
         file.text = 'version: "1.0"\nmodules:\n  not a map\n'
 
         when:
-        def config = service.load(file, false)
+        def config = service.load(file)
 
         then:
+        1 * eventBus.post({ it.code == SERVER_LIST_UNREADABLE })
+        1 * eventBus.post({ it.code == INVALID_MODULE_LIST })
+        1 * eventBus.post({ it.code == INVALID_SERVICES_SECTION })
+        0 * eventBus._
         config.modules.isEmpty()
 
         when:
         file.text = 'version: "1.0"\nmodules:\n  ssh: not a map\n'
-        config = service.load(file, false)
+        config = service.load(file)
 
         then:
-        config.modules == [ssh:[:]]
+        1 * eventBus.post({ it.code == SERVER_LIST_UNREADABLE })
+        1 * eventBus.post({ it.code == INVALID_MODULE_OPTIONS })
+        1 * eventBus.post({ it.code == INVALID_SERVICES_SECTION })
+        0 * eventBus._
+        config.modules == [ssh: [:]]
 
         cleanup:
         file.delete()
     }
 
+
+    def "should reject invalid services config"() {
+        File file = File.createTempFile(this.class.simpleName + '_', '.yml')
+        file.text = 'version: "1.0"\nservices:\n  not a map\n'
+
+        when:
+        def config = service.load(file)
+
+        then:
+        1 * eventBus.post({ it.code == SERVER_LIST_UNREADABLE })
+        1 * eventBus.post({ it.code == INVALID_MODULE_LIST })
+        1 * eventBus.post({ it.code == INVALID_SERVICES_SECTION })
+        0 * serviceRegistry._
+        0 * eventBus._
+
+        when:
+        file.text = 'version: "1.0"\nservices:\n  ssh: options of the service\n'
+        config = service.load(file)
+
+        then:
+        1 * eventBus.post({ it.code == SERVER_LIST_UNREADABLE })
+        1 * eventBus.post({ it.code == INVALID_MODULE_LIST })
+        1 * eventBus.post({ it.code == INVALID_SERVICE_CONFIGURATION })
+        1 * serviceRegistry.configureService('ssh', 'options of the service') >> { throw new IllegalArgumentException()}
+        0 * serviceRegistry._
+        0 * eventBus._
+
+        cleanup:
+        file.delete()
+    }
 
 
     def "should handle write errors"() {
@@ -257,6 +327,7 @@ class ConfigurationPersistenceServiceTest extends Specification {
         service.save(file, CONFIGURATION)
 
         then:
+        0 * eventBus._
         thrown FailedConfigurationSaveException
 
         cleanup:
@@ -278,14 +349,16 @@ class ConfigurationPersistenceServiceTest extends Specification {
 
         then:
         1 * serviceRegistry.stream() >> Stream.of(service1, service2)
+        0 * eventBus._
         LocaleUtil.localeCode == null
         Locale.getDefault() == LocaleUtil.@systemLocale
 
         when: "read config file"
-        def newConfig = service.load(file, false)
+        def newConfig = service.load(file)
 
         then:
-        1 * nodeFactory.createFrom(SAMPLE_NODES_DTO) >> SAMPLE_NODES
+        1 * nodeFactory.createFrom(SAMPLE_NODES_DTO, 'servers') >> SAMPLE_NODES
+        0 * eventBus._
         LocaleUtil.localeCode == 'zh'
         Locale.getDefault() == Locale.CHINESE
         new Yaml().load(file.text).locale == 'zh'

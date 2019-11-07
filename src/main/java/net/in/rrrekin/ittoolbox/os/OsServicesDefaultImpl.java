@@ -1,6 +1,7 @@
 package net.in.rrrekin.ittoolbox.os;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
 import com.google.common.collect.ImmutableList;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -33,6 +35,7 @@ public class OsServicesDefaultImpl implements OsServices {
   private static final String OPTIONS_PLACEHOLDER = "${options.trim()?' '+options:''}";
   private static final String ADDRESS_PLACEHOLDER = " ${server.address}";
   private static final String PORT_SEMICOLON_PLACEHOLDER = "${port>0?':'+port:''}";
+  private static final Pattern COMMENT_PATTERN = Pattern.compile("#.*");
   @NonNls private final ProgramLocationService locationService;
 
   public OsServicesDefaultImpl(final @NonNull ProgramLocationService locationService) {
@@ -159,7 +162,7 @@ public class OsServicesDefaultImpl implements OsServices {
         "xfreerdp",
         "${user.trim()?' /u:\"'+user+'\"':''}${password.trim()?' /p:\"'+password+'\"':''}"
             + OPTIONS_PLACEHOLDER
-                + " /v:${server.address}"
+            + " /v:${server.address}"
             + PORT_SEMICOLON_PLACEHOLDER,
         response);
     if (response.isEmpty()) {
@@ -201,7 +204,11 @@ public class OsServicesDefaultImpl implements OsServices {
     }
     try (final Stream<String> lines = Files.lines(Paths.get(SHELL_LIST_FILE))) {
       final List<String> otherShells =
-          lines.filter(shell -> !shell.equals(shellFromEnv)).collect(Collectors.toList());
+          lines
+              .map(line -> COMMENT_PATTERN.matcher(line).replaceAll(EMPTY))
+              .filter(StringUtils::isNotBlank)
+              .filter(shell -> !shell.equals(shellFromEnv))
+              .collect(Collectors.toList());
       log.info("Other shells from {}: {}", SHELL_LIST_FILE, String.join(", ", otherShells));
       response.addAll(otherShells);
     } catch (final IOException e) {

@@ -1,8 +1,16 @@
 package net.in.rrrekin.ittoolbox.configuration;
 
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_MODULE_LIST;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_MODULE_OPTIONS;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICES_SECTION;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICE_CONFIGURATION;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.SERVER_LIST_UNREADABLE;
+import static org.apache.commons.lang3.StringUtils.abbreviate;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -25,6 +33,7 @@ import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationExc
 import net.in.rrrekin.ittoolbox.configuration.exceptions.MissingConfigurationException;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeFactory;
+import net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceRegistry;
 import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
@@ -48,9 +57,11 @@ public class ConfigurationPersistenceService {
   private static final String SERVICES_PROPERTY = "services";
   private static final String LOCALE_PROPERTY = "locale";
   private static final int YAML_LINE_WIDTH = 130;
+  public static final int MAX_OBJECT_DESCRIPTION_WIDTH = 40;
   private final @NonNull DumperOptions yamlOptions;
   private final @NonNull ServiceRegistry serviceRegistry;
   private final @NonNull NodeFactory nodeFactory;
+  private final @NonNull EventBus eventBus;
 
   /**
    * Instantiates a new Configuration persistence service.
@@ -60,7 +71,9 @@ public class ConfigurationPersistenceService {
    */
   @Inject
   public ConfigurationPersistenceService(
-      final @NonNull ServiceRegistry serviceRegistry, final @NonNull NodeFactory nodeFactory) {
+      final @NonNull ServiceRegistry serviceRegistry,
+      final @NonNull NodeFactory nodeFactory,
+      final @NonNull EventBus eventBus) {
     log.debug("Initializing ConfigurationPersistenceService");
     yamlOptions = new DumperOptions();
     yamlOptions.setIndent(4);
@@ -74,6 +87,7 @@ public class ConfigurationPersistenceService {
     yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
     this.serviceRegistry = serviceRegistry;
     this.nodeFactory = nodeFactory;
+    this.eventBus = eventBus;
   }
 
   // TODO: Add user notifications on minor configuration read errors during initial load.
@@ -83,12 +97,11 @@ public class ConfigurationPersistenceService {
    * Creates a new Configuration object based on a configuration YAML file.
    *
    * @param configFile the config file
-   * @param initialLoad the initial load flag. When true minor errors will be ignored.
    * @return the configuration
    * @throws InvalidConfigurationException when configuration cannot be properly read
    * @throws MissingConfigurationException when configuration file is missing
    */
-  public Configuration load(final @NonNull File configFile, final boolean initialLoad)
+  public Configuration load(final @NonNull File configFile)
       throws InvalidConfigurationException, MissingConfigurationException {
 
     final Yaml yaml = new Yaml(yamlOptions);
@@ -96,10 +109,10 @@ public class ConfigurationPersistenceService {
     try (final InputStream inputStream = new BufferedInputStream(new FileInputStream(configFile))) {
       configurationDto = yaml.load(inputStream);
     } catch (final FileNotFoundException e) {
-      log.info("Configuration file ({}) not present.", configFile);
+      log.warn("Configuration file ({}) not present.", configFile);
       throw new MissingConfigurationException("MISSING_CFG_FILE", e, configFile);
     } catch (final IOException | ClassCastException e) {
-      log.info("Failed to read configuration file ({}): {}", configFile, e.getLocalizedMessage());
+      log.warn("Failed to read configuration file ({}): {}", configFile, e.getLocalizedMessage());
       throw new InvalidConfigurationException("UNREADABLE_CFG_FILE", e, configFile);
     }
 
@@ -119,9 +132,12 @@ public class ConfigurationPersistenceService {
       final List<NetworkNode> networkNodes;
       final Object serversDto = configurationDto.get(SERVERS_PROPERTY);
       if (serversDto instanceof List) {
-        networkNodes = nodeFactory.createFrom((List<?>) serversDto);
+        networkNodes = nodeFactory.createFrom((List<?>) serversDto, SERVERS_PROPERTY);
       } else {
         log.warn("Failed to read server list.");
+        eventBus.post(
+            new ConfigurationErrorEvent(
+                SERVER_LIST_UNREADABLE, LocaleUtil.localMessage("SERVER_LIST_UNREADABLE")));
         networkNodes = Lists.newArrayList();
       }
 
@@ -140,14 +156,22 @@ public class ConfigurationPersistenceService {
               final String optionValue = StringUtils.toStringOrEmpty(optionEntry.getValue());
               moduleConfig.put(optionId, optionValue);
             }
-
           } else {
             log.warn("Failed to read options for module {}", moduleId);
+            eventBus.post(
+                new ConfigurationErrorEvent(
+                    INVALID_MODULE_OPTIONS,
+                    LocaleUtil.localMessage(
+                        "INVALID_MODULE_OPTIONS",
+                        moduleId,
+                        abbreviate(String.valueOf(optionsDto), MAX_OBJECT_DESCRIPTION_WIDTH))));
           }
         }
-
       } else {
         log.warn("Failed to read application modules configuration.");
+        eventBus.post(
+            new ConfigurationErrorEvent(
+                INVALID_MODULE_LIST, LocaleUtil.localMessage("INVALID_MODULE_LIST")));
       }
 
       // Read service configuration
@@ -156,13 +180,28 @@ public class ConfigurationPersistenceService {
         for (final Map.Entry<?, ?> entry : ((Map<?, ?>) servicesDto).entrySet()) {
           final String serviceId = StringUtils.toStringOrEmpty(entry.getKey());
           final String serviceOptions = StringUtils.toStringOrEmpty(entry.getValue());
-          serviceRegistry.configureService(serviceId, serviceOptions);
+          try {
+            serviceRegistry.configureService(serviceId, serviceOptions);
+          } catch (final Exception e) {
+            log.warn("Failed to configure service {}.", serviceId);
+            eventBus.post(
+                new ConfigurationErrorEvent(
+                    INVALID_SERVICE_CONFIGURATION,
+                    LocaleUtil.localMessage(
+                        "INVALID_SERVICE_CONFIGURATION",
+                        serviceId,
+                        abbreviate(String.valueOf(serviceOptions), MAX_OBJECT_DESCRIPTION_WIDTH))));
+          }
         }
       } else {
         log.warn("Failed to read services list.");
+        eventBus.post(
+            new ConfigurationErrorEvent(
+                INVALID_SERVICES_SECTION, LocaleUtil.localMessage("INVALID_SERVICES_SECTION")));
       }
 
       return new Configuration(networkNodes, modules);
+
     } else {
       throw new InvalidConfigurationException("UNKNOWN_VERSION", configFile, version);
     }
@@ -183,7 +222,7 @@ public class ConfigurationPersistenceService {
             new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8))) {
       yaml.dump(getDto(config), output);
     } catch (final IOException e) {
-      log.info("Failed to write configuration file ({}): {}", configFile, e.getLocalizedMessage());
+      log.warn("Failed to write configuration file ({}): {}", configFile, e.getLocalizedMessage());
       throw new FailedConfigurationSaveException(
           "CONFIG_SAVE_ERROR", e, configFile, e.getLocalizedMessage());
     }

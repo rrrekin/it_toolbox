@@ -1,5 +1,6 @@
 package net.in.rrrekin.ittoolbox.configuration.nodes
 
+import com.google.common.eventbus.EventBus
 import spock.lang.Specification
 
 /**
@@ -10,6 +11,9 @@ class GroupingNodeTest extends Specification {
     static final DESCRIPTION = 'Main server example.com'
     static final CHILD_NODES = [new Server('abc'), new GenericNode('asdfaasdf'), new Server('adsfdsf')]
     static final SERVICES = ['ssh', 'http']
+    static final NODE_PATH = 'abc/def'
+    EventBus eventBus = Mock()
+    def nodeFactory = new NodeFactory(eventBus)
 
     def sampleDto = [
             (NetworkNode.TYPE_PROPERTY)       : NodeType.GROUP.typeName,
@@ -82,7 +86,7 @@ class GroupingNodeTest extends Specification {
 
     def "should create object from minimal dto"() {
         when:
-        def instance = new GroupingNode([type: 'group'], new NodeFactory())
+        def instance = new GroupingNode([type: 'group'], nodeFactory, NODE_PATH)
 
         then:
         instance.name == ''
@@ -96,7 +100,7 @@ class GroupingNodeTest extends Specification {
 
     def "should validate dto"() {
         when:
-        def instance = new GroupingNode([type: 'x'], new NodeFactory())
+        def instance = new GroupingNode([type: 'x'], nodeFactory, NODE_PATH)
 
         then:
         thrown IllegalArgumentException
@@ -113,14 +117,14 @@ class GroupingNodeTest extends Specification {
         dto == sampleDto
 
         when:
-        def newInstance = new GroupingNode(dto, new NodeFactory())
+        def newInstance = new GroupingNode(dto, nodeFactory, NODE_PATH)
 
         then:
         newInstance == instance
 
         when:
         dto.type=NodeType.GROUP.typeName.toUpperCase()
-        newInstance = new GroupingNode(dto, new NodeFactory())
+        newInstance = new GroupingNode(dto, nodeFactory, NODE_PATH)
 
         then:
         newInstance
@@ -131,7 +135,7 @@ class GroupingNodeTest extends Specification {
         sampleDto[NetworkNode.SERVICES_PROPERTY] = 'not a list'
 
         when:
-        def newInstance = new GroupingNode(sampleDto, new NodeFactory())
+        def newInstance = new GroupingNode(sampleDto, nodeFactory, NODE_PATH)
 
         then:
         newInstance == new GroupingNode(NAME, DESCRIPTION, CHILD_NODES, [])
@@ -141,14 +145,14 @@ class GroupingNodeTest extends Specification {
         given:
         sampleDto[NetworkNode.CHILD_NODES_PROPERTY] = [null, 'abc', 7, new Server('asdfasd').dtoProperties, 42]
         when:
-        def newInstance = new GroupingNode(sampleDto, new NodeFactory())
+        def newInstance = new GroupingNode(sampleDto, nodeFactory, NODE_PATH)
 
         then:
         newInstance == new GroupingNode(NAME, DESCRIPTION, [new Server('asdfasd')], SERVICES)
 
         when:
         sampleDto[NetworkNode.CHILD_NODES_PROPERTY] = 7
-        newInstance = new GroupingNode(sampleDto, new NodeFactory())
+        newInstance = new GroupingNode(sampleDto, nodeFactory, NODE_PATH)
 
         then:
         newInstance == new GroupingNode(NAME, DESCRIPTION, [], SERVICES)
