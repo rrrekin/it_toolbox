@@ -76,7 +76,7 @@ public class ConfigurationManager {
       final @NonNull EventBus eventBus,
       final @NonNull ConfigurationPersistenceService persistenceService,
       @Named(APP_DIRECTORY) final @NonNull File appDirectory) {
-    log.debug("Creating ConfigurationManager");
+    log.info("Creating ConfigurationManager");
     this.eventBus = eventBus;
     this.persistenceService = persistenceService;
     configurationFile = new File(appDirectory, CONFIG_FILE_NAME);
@@ -84,7 +84,7 @@ public class ConfigurationManager {
 
   /** Init. */
   public void init() {
-    log.debug("Initializing ConfigurationManager");
+    log.info("Initializing ConfigurationManager");
     eventBus.register(this);
     load();
     configChangeTimer.schedule(
@@ -94,7 +94,7 @@ public class ConfigurationManager {
 
   /** Shutdown. */
   public void shutdown() {
-    log.debug("Stopping ConfigurationManager");
+    log.info("Stopping ConfigurationManager");
     saveIfDirty();
     active = false;
     configChangeTimer.cancel();

@@ -2,6 +2,7 @@ package net.in.rrrekin.ittoolbox.infrastructure;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import javax.swing.JOptionPane;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ public class BlockingApplicationEventsHandler {
 
   private final @NonNull EventBus eventBus;
 
+  @Inject
   public BlockingApplicationEventsHandler(final @NonNull EventBus eventBus) {
     log.info("Creating BlockingApplicationEventsHandler");
     this.eventBus = eventBus;
