@@ -146,37 +146,29 @@ public class ItToolboxApplication {
   static File calculateAppDirectory(final @NonNull SystemWrapper system) {
     final String osName = Strings.nullToEmpty(system.getProperty(OsServices.OS_NAME_ENV_VAR));
     if (osName.toLowerCase(Locale.ENGLISH).startsWith(LINUX)) {
-      return Paths.get(
-              StringUtils.defaultIfBlank(system.getProperty(OsServices.USER_HOME_ENV_VAR), "/tmp"),
-              ".local",
-              "share",
-              VENDOR_NAME,
-              APPLICATION_ID)
-          .toFile();
+      final String home = system.getProperty(OsServices.USER_HOME_ENV_VAR);
+      return StringUtils.isBlank(home)
+          ? new File(APPLICATION_ID)
+          : Paths.get(home, ".local", "share", VENDOR_NAME, APPLICATION_ID).toFile();
     } else if (osName.toLowerCase(Locale.ENGLISH).startsWith(WINDOWS)) {
       final String appdir = system.getenv(APPDATA_ENV_VAR);
       if (StringUtils.isNotBlank(appdir)) {
         return Paths.get(appdir, VENDOR_NAME, APPLICATION_ID).toFile();
       } else {
-        return Paths.get(
-                StringUtils.defaultIfBlank(
-                    system.getProperty(OsServices.USER_HOME_ENV_VAR), "C:\\tmp"),
-                "AppData",
-                VENDOR_NAME,
-                APPLICATION_ID)
-            .toFile();
+        final String home = system.getProperty(OsServices.USER_HOME_ENV_VAR);
+        return StringUtils.isBlank(home)
+            ? new File(APPLICATION_ID)
+            : Paths.get(home, "AppData", VENDOR_NAME, APPLICATION_ID).toFile();
       }
     } else if (osName.toLowerCase(Locale.ENGLISH).startsWith(MAC)) {
-      return Paths.get(
-              StringUtils.defaultIfBlank(system.getProperty(OsServices.USER_HOME_ENV_VAR), "/tmp"),
-              "Library",
-              "Application Support",
-              VENDOR_NAME,
-              APPLICATION_ID)
-          .toFile();
+      final String home = system.getProperty(OsServices.USER_HOME_ENV_VAR);
+      return StringUtils.isBlank(home)
+          ? new File(APPLICATION_ID)
+          : Paths.get(home, "Library", "Application Support", VENDOR_NAME, APPLICATION_ID).toFile();
     }
-    return new File(
-        StringUtils.defaultIfBlank(system.getProperty(OsServices.USER_HOME_ENV_VAR), "/tmp"),
-        "." + APPLICATION_ID);
+    final String home = system.getProperty(OsServices.USER_HOME_ENV_VAR);
+    return StringUtils.isBlank(home)
+        ? new File(APPLICATION_ID)
+        : new File(home, "." + APPLICATION_ID);
   }
 }
