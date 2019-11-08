@@ -1,10 +1,12 @@
 package net.in.rrrekin.ittoolbox.configuration.nodes;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import java.util.Locale;
 import java.util.Map;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -20,8 +22,8 @@ public enum NodeType {
   /** Generic node configuration node. */
   GENERIC_NODE("GenericNode", GenericNode.class);
 
-  @Getter private final String typeName;
-  @Getter private final Class<? extends NetworkNode> clazz;
+  @Getter private final @NotNull String typeName;
+  @Getter private final @NotNull Class<? extends NetworkNode> clazz;
 
   private static final Map<String, NodeType> typeNameMapping = Maps.newHashMap();
   private static final Map<Class<? extends NetworkNode>, NodeType> classMapping = Maps.newHashMap();
@@ -34,7 +36,7 @@ public enum NodeType {
   }
 
   @Contract(pure = true)
-  NodeType(final String typeName, final Class<? extends NetworkNode> clazz) {
+  NodeType(final @NotNull String typeName, final @NotNull Class<? extends NetworkNode> clazz) {
     this.typeName = typeName;
     this.clazz = clazz;
   }
@@ -45,8 +47,8 @@ public enum NodeType {
    * @param name the configuration key
    * @return the config enum
    */
-  public static @Nullable NodeType of(final String name) {
-    return typeNameMapping.get(name.toLowerCase(Locale.ENGLISH));
+  public static @Nullable NodeType of(final @Nullable String name) {
+    return typeNameMapping.get(Strings.nullToEmpty(name).toLowerCase(Locale.ENGLISH));
   }
 
   /**
@@ -55,7 +57,7 @@ public enum NodeType {
    * @param clazz the object class
    * @return the config enum
    */
-  public static @Nullable NodeType of(final Class<?> clazz) {
+  public static @Nullable NodeType of(final @Nullable Class<?> clazz) {
     return classMapping.get(clazz);
   }
 }

@@ -13,6 +13,6 @@ public class ConfigurationFileReadEvent {
   private final @NonNull String message;
 
   public enum Code {
-    OK, MISSING, FAILED;
+    OK, MISSING, FAILED, NEW;
   }
 }

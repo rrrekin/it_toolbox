@@ -10,6 +10,7 @@ import com.google.inject.name.Names;
 import java.io.File;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 import net.in.rrrekin.ittoolbox.os.OsServices;
 import net.in.rrrekin.ittoolbox.os.OsServicesFactory;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
@@ -46,7 +47,7 @@ public class ItToolboxInfrastructure extends AbstractModule {
    */
   @Provides
   @Inject
-  OsServices getOsServices(final @NonNull ProgramLocationService locationService) {
-    return new OsServicesFactory(locationService).create();
+  OsServices getOsServices(final @NonNull ProgramLocationService locationService, final @NonNull SystemWrapper system) {
+    return new OsServicesFactory(locationService, system).create();
   }
 }

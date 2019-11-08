@@ -10,6 +10,24 @@ import java.nio.file.Paths
  */
 class ProgramLocationServiceTest extends Specification {
 
+    def "should accept null paths"() {
+        when:
+        def instance = new ProgramLocationService(null)
+
+        then:
+        instance.paths.isEmpty()
+    }
+
+    def "should validate arguments"() {
+        given:
+        def instance = new ProgramLocationService(null)
+
+        when:
+        instance.getProgramBinary(null)
+
+        then:
+        thrown NullPointerException
+    }
 
     @IgnoreIf({ os.windows })
     def "should find applications"() {

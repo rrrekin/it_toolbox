@@ -53,7 +53,7 @@ public class Server implements NetworkNode {
    *
    * @param dto the dto
    */
-  public Server(final Map<String, Object> dto) {
+  public Server(final @NonNull Map<String, Object> dto) {
     final String type = toStringOrEmpty(dto.get(TYPE_PROPERTY));
     checkArgument(
         NodeType.SERVER.getTypeName().equalsIgnoreCase(type),
@@ -71,7 +71,7 @@ public class Server implements NetworkNode {
     for (final Map.Entry<String, Object> entry : dto.entrySet()) {
       final String property = entry.getKey();
       final Object value = entry.getValue();
-      if (property.startsWith(PROPERTIES_PREFIX)) {
+      if (property != null && property.startsWith(PROPERTIES_PREFIX)) {
         final String propertyName = property.substring(PROPERTIES_PREFIX.length());
         properties.put(propertyName, toStringOrEmpty(value));
       }

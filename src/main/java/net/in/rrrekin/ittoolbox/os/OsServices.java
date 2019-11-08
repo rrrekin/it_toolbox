@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
  * @author michal.rudewicz @gmail.com
  */
 public interface OsServices {
-
   /** Java property key for operating system name (os.name). */
   String OS_NAME_ENV_VAR = "os.name";
 
@@ -29,20 +28,6 @@ public interface OsServices {
   /** Java property key for use name (user.name). */
   String USER_NAME_ENV_VAR = "user.name";
 
-  /** Value of operating system name (os.name). */
-  @NotNull String OS_NAME = System.getProperty(OS_NAME_ENV_VAR);
-
-  /** Value of operating system version (os.version). */
-  @NotNull String OS_VERSION = System.getProperty(OS_VERSION_ENV_VAR);
-
-  /** Value of operating system architecture (os.arch). */
-  @NotNull String OS_ARCH = System.getProperty(OS_ARCH_ENV_VAR);
-
-  /** Value of user home directory path (user.home). */
-  @NotNull String USER_NAME = System.getProperty(USER_NAME_ENV_VAR);
-
-  /** Value of use name (user.name). */
-  @NotNull String USER_HOME = System.getProperty(USER_HOME_ENV_VAR);
 
   /** Log OS configuration data. */
   void logOsConfiguration();

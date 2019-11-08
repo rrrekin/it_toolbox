@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import java.util.Locale;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
 
 /**
@@ -14,15 +15,22 @@ import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
 @Slf4j
 public final class OsServicesFactory {
 
-  private static final String LINUX = "linux";
-  private static final String WINDOWS = "windows";
-  private static final String MAC = "mac";
+  /** The constant for determination of Linux OS. */
+  public static final String LINUX = "linux";
+
+  /** The constant for determination of Windows OS. */
+  public static final String WINDOWS = "windows";
+
+  /** The constant for determination od MacOS. */
+  public static final String MAC = "mac";
 
   private final @NonNull ProgramLocationService locationService;
+  private final @NonNull SystemWrapper system;
 
   @Inject
-  public OsServicesFactory(final @NonNull ProgramLocationService locationService) {
+  public OsServicesFactory(final @NonNull ProgramLocationService locationService, final @NonNull SystemWrapper system) {
     this.locationService = locationService;
+    this.system = system;
   }
 
   /**
@@ -33,13 +41,13 @@ public final class OsServicesFactory {
    */
   public OsServices create(final @NonNull String osName) {
     if (osName.toLowerCase(Locale.ENGLISH).startsWith(LINUX)) {
-      return new OsServicesLinuxImpl(locationService);
+      return new OsServicesLinuxImpl(system, locationService);
     } else if (osName.toLowerCase(Locale.ENGLISH).startsWith(WINDOWS)) {
-      return new OsServicesWindowsImpl(locationService);
+      return new OsServicesWindowsImpl(system, locationService);
     } else if (osName.toLowerCase(Locale.ENGLISH).startsWith(MAC)) {
-      return new OsServicesMacOsImpl(locationService);
+      return new OsServicesMacOsImpl(system, locationService);
     } else {
-      return new OsServicesDefaultImpl(locationService);
+      return new OsServicesDefaultImpl(system, locationService);
     }
   }
 
@@ -50,6 +58,6 @@ public final class OsServicesFactory {
    * @return the os services
    */
   public OsServices create() {
-    return create(OsServices.OS_NAME);
+    return create(system.getProperty(OsServices.OS_NAME_ENV_VAR));
   }
 }

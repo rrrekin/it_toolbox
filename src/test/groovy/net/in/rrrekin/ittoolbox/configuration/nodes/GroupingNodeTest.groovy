@@ -53,6 +53,21 @@ class GroupingNodeTest extends Specification {
         new GroupingNode(NAME, DESCRIPTION, CHILD_NODES, null)
         then:
         thrown NullPointerException
+
+        when:
+        new GroupingNode(null, nodeFactory, 'parent')
+        then:
+        thrown NullPointerException
+
+        when:
+        new GroupingNode(sampleDto, null, 'parent')
+        then:
+        thrown NullPointerException
+
+        when:
+        new GroupingNode(sampleDto, nodeFactory, null)
+        then:
+        thrown NullPointerException
     }
 
     def "should create instance for given address"() {

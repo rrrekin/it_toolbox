@@ -40,6 +40,18 @@ class StringUtilsTest extends Specification {
         '${url.host}'                                                       | COMPLEX_VARS | 'google.com'
     }
 
+    def "should validate applyTemplate arguments"() {
+        when:
+        StringUtils.applyTemplate(null, [:])
+        then:
+        thrown NullPointerException
+
+        when:
+        StringUtils.applyTemplate('$missing',null)
+        then:
+        thrown NullPointerException
+    }
+
     def "should fail for missing variable"() {
         when:
         StringUtils.applyTemplate('$missing', [:])

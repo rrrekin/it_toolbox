@@ -1,6 +1,7 @@
 package net.in.rrrekin.ittoolbox.os
 
 import net.in.rrrekin.ittoolbox.configuration.nodes.Server
+import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService
 import spock.lang.Shared
 import spock.lang.Specification
@@ -37,9 +38,21 @@ class OsServicesDefaultImplTest extends Specification {
 
     ProgramLocationService locationService = Mock()
 
-    def instance = new OsServicesDefaultImpl(locationService)
+    SystemWrapper system = new SystemWrapper()
+    def instance = new OsServicesDefaultImpl(system, locationService)
     def server = new Server('Google', 'google.com', 'Google server', [property1: 'value1', property2: 'value2'], []).immutableDataCopy()
 
+    def "should validate constructor argumants"() {
+        when:
+        new OsServicesDefaultImpl(null, locationService)
+        then:
+        thrown NullPointerException
+
+        when:
+        new OsServicesDefaultImpl(system, null)
+        then:
+        thrown NullPointerException
+    }
 
     @Unroll
     def "should provide terminal command list proper for given machine"() {
@@ -185,13 +198,13 @@ class OsServicesDefaultImplTest extends Specification {
 
     def "should provide ssh command list proper for given machine"() {
         when:
-        def list = instance.getPossibleNslookupCommands()
+        def list = instance.getPossibleSshCommands()
 
         then:
-        list == ['nslookup${options.trim()?\' \'+options:\'\'} ${server.address}']
+        list == ['ssh ${server.address}${user.trim()?\' -l "\'+user+\'"\':\'\'}${port>0?\' -p \'+port:\'\'}${options.trim()?\' \'+options:\'\'}']
 
         when:
-        def defaultCommand = instance.getDefaultNslookupCommand()
+        def defaultCommand = instance.getDefaultSshCommand()
 
         then:
         defaultCommand == list[0]
@@ -269,6 +282,20 @@ class OsServicesDefaultImplTest extends Specification {
         'xfreerdp' | ''          | ''         | 1022 | ''                          || "$xfreerdp.absolutePath /v:google.com:1022"
         'xfreerdp' | ''          | ''         | 0    | '-D -L 1234:localhost:4321' || "$xfreerdp.absolutePath -D -L 1234:localhost:4321 /v:google.com"
         'xfreerdp' | 'user.name' | 'password' | 1222 | '-D -L 1234:localhost:4321' || "$xfreerdp.absolutePath /u:\"user.name\" /p:\"password\" -D -L 1234:localhost:4321 /v:google.com:1222"
+    }
+
+    def "should provide vnc command list proper for given machine"() {
+        when:
+        def list = instance.getPossibleVncCommands()
+
+        then:
+        list == ['xvncviewer ${server.address}${port>0?\':\'+port:\'\'}${options.trim()?\' \'+options:\'\'}']
+
+        when:
+        def defaultCommand = instance.getDefaultVncCommand()
+
+        then:
+        defaultCommand == list[0]
     }
 
     @Unroll

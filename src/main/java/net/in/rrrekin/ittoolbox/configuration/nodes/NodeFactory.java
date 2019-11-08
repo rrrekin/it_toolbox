@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationException;
 import net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Factory of {@link NetworkNode} object based on a generic Map DTO.
@@ -27,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class NodeFactory {
 
-  public static final int MAX_DESCRIPTION_WIDTH = 40;
+  private static final int MAX_DESCRIPTION_WIDTH = 40;
   private final @NonNull EventBus eventBus;
 
   @Inject
@@ -50,7 +51,8 @@ public class NodeFactory {
     final NodeType type = NodeType.of(typeName);
     if (type == null) {
       throw new InvalidConfigurationException(
-              "EX_CANNOT_CREATE", StringUtils.isBlank(typeName) ? localMessage("CFG_UNKNOWN_TYPE") : typeName);
+          "EX_CANNOT_CREATE",
+          StringUtils.isBlank(typeName) ? localMessage("CFG_UNKNOWN_TYPE") : typeName);
     }
     Constructor<? extends NetworkNode> constructor = null;
 
@@ -65,7 +67,8 @@ public class NodeFactory {
         return constructor.newInstance(dto, this, parentInfo);
       } catch (final Exception e) {
         log.error("Failed to create {} with 3 argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException("EX_FAILED_3_ARG_CONSTRUCTOR", e, type.getTypeName());
+        throw new InvalidConfigurationException(
+            "EX_FAILED_3_ARG_CONSTRUCTOR", e, type.getTypeName());
       }
     }
 
@@ -79,7 +82,8 @@ public class NodeFactory {
         return constructor.newInstance(dto);
       } catch (final Exception e) {
         log.error("Failed to create {} with 1 argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException("EX_FAILED_1_ARG_CONSTRUCTOR", e, type.getTypeName());
+        throw new InvalidConfigurationException(
+            "EX_FAILED_1_ARG_CONSTRUCTOR", e, type.getTypeName());
       }
     }
 
@@ -107,7 +111,8 @@ public class NodeFactory {
    * @param dtoList the DTO list
    * @return the NetworkNode list
    */
-  public List<NetworkNode> createFrom(final List<?> dtoList, final @NonNull String parentInfo) {
+  public @NotNull List<NetworkNode> createFrom(
+      final @NonNull List<?> dtoList, final @NonNull String parentInfo) {
     final List<NetworkNode> response = Lists.newArrayList();
     for (final Object child : dtoList) {
       if (child instanceof Map) {
@@ -122,7 +127,7 @@ public class NodeFactory {
               new ConfigurationErrorEvent(
                   CANNOT_CREATE_NETWORK_NODE,
                   localMessage(
-                          "CFG_CANNOT_CREATE_NETWORK_NODE",
+                      "CFG_CANNOT_CREATE_NETWORK_NODE",
                       parentInfo,
                       e.getLocalizedMessage(),
                       abbreviate(childMap.toString(), MAX_DESCRIPTION_WIDTH))));
@@ -133,7 +138,7 @@ public class NodeFactory {
             new ConfigurationErrorEvent(
                 INVALID_OBJECT_ON_DTO_LIST,
                 localMessage(
-                        "CFG_INVALID_OBJECT_ON_DTO_LIST",
+                    "CFG_INVALID_OBJECT_ON_DTO_LIST",
                     parentInfo,
                     abbreviate(String.valueOf(child), MAX_DESCRIPTION_WIDTH))));
       }

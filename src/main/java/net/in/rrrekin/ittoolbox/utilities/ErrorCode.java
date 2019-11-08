@@ -1,6 +1,8 @@
 package net.in.rrrekin.ittoolbox.utilities;
 
 import lombok.Getter;
+import lombok.Setter;
+import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 
 /**
  * Error codes returned by application on failures.
@@ -17,14 +19,16 @@ public enum ErrorCode {
   SAVE_ERROR(2000),
   LOAD_ERROR(2001);
 
-  @Getter private final int value;
+  @Getter @Setter private static SystemWrapper system = new SystemWrapper();
 
-  ErrorCode(final int value) {
-    this.value = value;
+  @Getter private final int status;
+
+  ErrorCode(final int status) {
+    this.status = status;
   }
 
   /** Terminates application with this error code. */
   public void exit() {
-    System.exit(value);
+    system.exit(status);
   }
 }

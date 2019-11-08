@@ -23,6 +23,7 @@ class ServerTest extends Specification {
             _cpuCount                         : '8',
     ]
 
+
     def "should require constructor parameters"() {
         when:
         new Server(null as String)
@@ -107,6 +108,36 @@ class ServerTest extends Specification {
         //instance.icon
     }
 
+    def "should create immutable data copy"() {
+        when:
+        def instance = new Server(NAME, ADDRESS, DESCRIPTION, PROPERTIES, SERVICES)
+
+        then:
+        instance.immutableDataCopy() == new Server.Data(NAME, ADDRESS, DESCRIPTION, PROPERTIES)
+    }
+
+    def "immutable data copy should validate arguments"() {
+        when:
+        new Server.Data(null, ADDRESS, DESCRIPTION, PROPERTIES)
+        then:
+        thrown NullPointerException
+
+        when:
+        new Server.Data(NAME, null, DESCRIPTION, PROPERTIES)
+        then:
+        thrown NullPointerException
+
+        when:
+        new Server.Data(NAME, ADDRESS, null, PROPERTIES)
+        then:
+        thrown NullPointerException
+
+        when:
+        new Server.Data(NAME, ADDRESS, DESCRIPTION, null)
+        then:
+        thrown NullPointerException
+    }
+
     def "should validate dto"() {
         when:
         def instance = new Server([type: 'x'])
@@ -136,7 +167,14 @@ class ServerTest extends Specification {
         newInstance = new Server(dto)
 
         then:
-        newInstance
+        newInstance == instance
+
+        when:
+        dto[null] = 'NULL'
+        newInstance = new Server(dto)
+
+        then:
+        newInstance == instance
     }
 
     def "should handle invalid dto"() {

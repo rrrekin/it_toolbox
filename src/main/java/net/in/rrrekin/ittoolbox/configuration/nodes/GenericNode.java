@@ -49,11 +49,11 @@ public class GenericNode implements NetworkNode {
    *
    * @param dto the dto
    */
-  public GenericNode(final Map<String, Object> dto) {
+  public GenericNode(final @NonNull Map<String, Object> dto) {
     final String type = toStringOrEmpty(dto.get(TYPE_PROPERTY));
     checkArgument(
         NodeType.GENERIC_NODE.getTypeName().equalsIgnoreCase(type),
-            enMessage("NODE_CONSTRUCTOR_TYPE_MISMATCH"),
+        enMessage("NODE_CONSTRUCTOR_TYPE_MISMATCH"),
         type);
     name = toStringOrEmpty(dto.get(NAME_PROPERTY));
     description = toStringOrEmpty(dto.get(DESCRIPTION_PROPERTY));
@@ -61,12 +61,12 @@ public class GenericNode implements NetworkNode {
     serviceDescriptors = Lists.newArrayList();
     if (dto.get(SERVICES_PROPERTY) instanceof List) {
       ((List<?>) dto.get(SERVICES_PROPERTY))
-              .forEach(it -> serviceDescriptors.add(toStringOrEmpty(it)));
+          .forEach(it -> serviceDescriptors.add(toStringOrEmpty(it)));
     }
     for (final Map.Entry<String, Object> entry : dto.entrySet()) {
       final String property = entry.getKey();
       final Object value = entry.getValue();
-      if (property.startsWith(PROPERTIES_PREFIX)) {
+      if (property != null && property.startsWith(PROPERTIES_PREFIX)) {
         final String propertyName = property.substring(PROPERTIES_PREFIX.length());
         properties.put(propertyName, toStringOrEmpty(value));
       }

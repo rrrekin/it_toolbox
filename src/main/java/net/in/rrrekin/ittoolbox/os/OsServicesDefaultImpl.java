@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NonNls;
@@ -36,20 +37,22 @@ public class OsServicesDefaultImpl implements OsServices {
   private static final String ADDRESS_PLACEHOLDER = " ${server.address}";
   private static final String PORT_SEMICOLON_PLACEHOLDER = "${port>0?':'+port:''}";
   private static final Pattern COMMENT_PATTERN = Pattern.compile("#.*");
-  @NonNls private final ProgramLocationService locationService;
+  private final @NonNull SystemWrapper system;
+  @NonNls private final @NonNull ProgramLocationService locationService;
 
-  public OsServicesDefaultImpl(final @NonNull ProgramLocationService locationService) {
+  public OsServicesDefaultImpl(final @NonNull SystemWrapper system, final @NonNull ProgramLocationService locationService) {
+    this.system = system;
     this.locationService = locationService;
   }
 
   @Override
   public void logOsConfiguration() {
-    log.info("OS_NAME: {}", OsServices.OS_NAME);
-    log.info("OS_VERSION: {}", OsServices.OS_VERSION);
-    log.info("OS_ARCH: {}", OsServices.OS_ARCH);
-    log.info("USER_NAME: {}", OsServices.USER_NAME);
-    log.info("USER_HOME: {}", OsServices.USER_HOME);
-    log.info("LINE_SEPARATOR: {}", escapeJava(System.lineSeparator()));
+    log.info("OS_NAME: {}", system.getProperty(OsServices.OS_NAME_ENV_VAR));
+    log.info("OS_VERSION: {}", system.getProperty(OsServices.OS_VERSION_ENV_VAR));
+    log.info("OS_ARCH: {}", system.getProperty(OsServices.OS_ARCH_ENV_VAR));
+    log.info("USER_NAME: {}", system.getProperty(OsServices.USER_NAME_ENV_VAR));
+    log.info("USER_HOME: {}", system.getProperty(OsServices.USER_HOME_ENV_VAR));
+    log.info("LINE_SEPARATOR: {}", escapeJava(system.lineSeparator()));
     log.info("FILE_SEPARATOR: {}", File.separator);
     log.info("PATH_SEPARATOR: {}", File.pathSeparator);
   }
@@ -194,7 +197,7 @@ public class OsServicesDefaultImpl implements OsServices {
 
   @Override
   public @NotNull List<String> getPossibleShellCommands() {
-    final String shellFromEnv = System.getenv(SHELL_ENV_VAR);
+    final String shellFromEnv = system.getenv(SHELL_ENV_VAR);
     @NonNls final List<String> response = newArrayList();
     if (!StringUtils.isBlank(shellFromEnv)) {
       log.info("Detected default shell: {}", shellFromEnv);

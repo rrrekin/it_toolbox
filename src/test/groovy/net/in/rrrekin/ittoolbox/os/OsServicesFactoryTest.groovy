@@ -1,5 +1,6 @@
 package net.in.rrrekin.ittoolbox.os
 
+import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -9,13 +10,39 @@ import spock.lang.Unroll
 class OsServicesFactoryTest extends Specification {
 
     ProgramLocationService locationService = Stub()
+    SystemWrapper system = Mock()
+    def instance = new OsServicesFactory(locationService, system)
 
-    def instance = new OsServicesFactory(locationService)
+    def "should validate constructor arguments"() {
+        when:
+        new OsServicesFactory(null, system)
+        then:
+        thrown NullPointerException
+
+        when:
+        new OsServicesFactory(locationService, null)
+        then:
+        thrown NullPointerException
+    }
+
+    def "should validate create() argument"() {
+        when:
+        instance.create(null)
+        then:
+        thrown NullPointerException
+    }
 
     @Unroll
     def "should create proper implementation for #os operating system"() {
         expect:
         instance.create(os).class == clazz
+
+        when:
+        def instance = instance.create()
+
+        then:
+        1 * system.getProperty('os.name') >> os
+        instance.class == clazz
 
         where:
         os              | clazz

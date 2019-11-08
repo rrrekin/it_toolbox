@@ -29,7 +29,9 @@ import org.jetbrains.annotations.NotNull;
 @AllArgsConstructor
 public class GroupingNode implements NetworkNode {
 
-  public static final char LOCATION_PATH_SEPARATOR = '/';
+  /** Separator used to join parent hierarchy of network nodes. */
+  private static final char LOCATION_PATH_SEPARATOR = '/';
+
   @Getter @Setter private @NonNull String name;
   @Getter @Setter private @NonNull String description;
   @Getter private final @NotNull List<NetworkNode> childNodes;
@@ -54,7 +56,9 @@ public class GroupingNode implements NetworkNode {
    * @param factory the factory
    */
   public GroupingNode(
-          final Map<String, Object> dto, final NodeFactory factory, @NonNls final @NonNull String parentInfo) {
+      final @NonNull Map<String, Object> dto,
+      final @NonNull NodeFactory factory,
+      @NonNls final @NonNull String parentInfo) {
     final String type = toStringOrEmpty(dto.get(TYPE_PROPERTY));
     checkArgument(
         NodeType.GROUP.getTypeName().equalsIgnoreCase(type),

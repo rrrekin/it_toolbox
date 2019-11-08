@@ -38,6 +38,13 @@ class NodeFactoryTest extends Specification {
 
     def instance = new NodeFactory(eventBus)
 
+    def "should validate constructor arguments"() {
+        when:
+        new NodeFactory(null)
+        then:
+        thrown NullPointerException
+    }
+
     def "should create nodes"() {
         when:
         def nodes = instance.createFrom(CONFIG.servers, PARENT_PATH)
@@ -45,6 +52,29 @@ class NodeFactoryTest extends Specification {
         then:
         0 * eventBus._
         nodes == SAMPLE_NODES
+    }
+
+    def "should validate factory method arguments"() {
+        when:
+        instance.createFrom(null as Map<String, Object>, PARENT_PATH)
+        then:
+        thrown NullPointerException
+
+        when:
+        instance.createFrom(null as List, PARENT_PATH)
+        then:
+        thrown NullPointerException
+
+        when:
+        instance.createFrom(CONFIG.servers, null)
+        then:
+        thrown NullPointerException
+
+        when:
+        instance.createFrom([], null)
+        then:
+        thrown NullPointerException
+
     }
 
     def "should handle invalid elements on node list"() {

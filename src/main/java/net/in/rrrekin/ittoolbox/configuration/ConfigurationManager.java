@@ -4,6 +4,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.FAILED;
 import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.MISSING;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.NEW;
 import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.OK;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
@@ -14,7 +15,6 @@ import com.google.inject.name.Named;
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -30,13 +30,12 @@ import net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent;
 import net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent;
 import net.in.rrrekin.ittoolbox.utilities.ErrorCode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Class responsible for managing saving/loading configuration depending on changes and providing
  * access to configuration to other classes.
  *
- * @author michal.rudewicz@gmail.com
+ * @author michal.rudewicz @gmail.com
  */
 @Slf4j
 public class ConfigurationManager {
@@ -45,78 +44,103 @@ public class ConfigurationManager {
   public static final String APP_DIRECTORY = "appDirectory";
 
   private static final String CONFIG_SYNC_TIMER_NAME = "ConfigSyncTimer";
-  private static final String CONFIG_FILE_NAME = ItToolboxApplication.APPLICATION_ID + ".yml";
+  private static final String CONFIG_FILE_NAME =
+      ItToolboxApplication.APPLICATION_ID + "-config.yml";
   private static final long CONFIG_DELAY_SYNC_MS = 5000;
 
   private final @NonNull EventBus eventBus;
-  private final @NotNull ConfigurationPersistenceService persistenceService;
-  private final @NonNull File appDirectory;
-  private @Nullable File configurationFile = null;
+  private final @NonNull ConfigurationPersistenceService persistenceService;
+  private final @NotNull File configurationFile;
   private final @NonNull AtomicReference<Configuration> configuration =
       new AtomicReference<>(new Configuration(newArrayList(), newHashMap()));
-  private long lastLoadedChangeTs = 0l;
-  private final Timer configChangeTimer = new Timer(CONFIG_SYNC_TIMER_NAME);
-  private volatile boolean active = false;
+  private final Timer configChangeTimer = new Timer(CONFIG_SYNC_TIMER_NAME, true);
   private final Object configFileAccessMonitor = new Object();
   private final List<ConfigurationErrorEvent> loadErrors = newArrayList();
 
+  /** Returns timestamp of last loaded config file. */
+  @Getter private long lastLoadedChangeTs = 0L;
+  /** True if ConfigurationManager is initialized. () */
+  @Getter private boolean active = false;
+  /** True if configuration needs to be saved. */
   @Getter @Setter private boolean dirty = false;
 
+  /**
+   * Instantiates a new Configuration manager.
+   *
+   * @param eventBus the event bus
+   * @param persistenceService the persistence service
+   * @param appDirectory the app directory
+   */
   @Inject
   public ConfigurationManager(
       final @NonNull EventBus eventBus,
-      final @NotNull ConfigurationPersistenceService persistenceService,
+      final @NonNull ConfigurationPersistenceService persistenceService,
       @Named(APP_DIRECTORY) final @NonNull File appDirectory) {
     log.debug("Creating ConfigurationManager");
     this.eventBus = eventBus;
     this.persistenceService = persistenceService;
-    this.appDirectory = appDirectory;
+    configurationFile = new File(appDirectory, CONFIG_FILE_NAME);
   }
 
+  /** Init. */
   public void init() {
     log.debug("Initializing ConfigurationManager");
     eventBus.register(this);
-    configChangeTimer.schedule(
-        new ConfigurationManager.ConfigSyncTask(this), CONFIG_DELAY_SYNC_MS, CONFIG_DELAY_SYNC_MS);
-    configurationFile = new File(appDirectory, CONFIG_FILE_NAME);
     load();
+    configChangeTimer.schedule(
+        new ConfigSyncTask(this), CONFIG_DELAY_SYNC_MS, CONFIG_DELAY_SYNC_MS);
     active = true;
   }
 
+  /** Shutdown. */
   public void shutdown() {
     log.debug("Stopping ConfigurationManager");
+    saveIfDirty();
     active = false;
     configChangeTimer.cancel();
     configChangeTimer.purge();
+    eventBus.unregister(this);
   }
 
+  /**
+   * Gets current configuration.
+   *
+   * @return the configuration
+   */
+  public Configuration getConfig() {
+    return configuration.get();
+  }
+
+  /**
+   * Handle configuration read errors.
+   *
+   * @param event the event
+   */
   @Subscribe
   public void handleConfigurationReadErrors(final @NotNull ConfigurationErrorEvent event) {
     log.debug("CFG_ERR: {}: {}", event.getCode(), event.getMessage());
     loadErrors.add(event);
   }
 
-  public @NotNull File getConfigFile() {
-    return new File("config.yml");
-  }
-
   /** Blocking initial configuration load. */
   void load() {
-    log.trace("ConfigurationManager#loadIfChanged");
-    if (configurationFile != null && configurationFile.exists()) {
+    log.trace("ConfigurationManager#load");
+    if (configurationFile.exists()) {
       try {
+        final Configuration newConfig;
         synchronized (configFileAccessMonitor) {
           loadErrors.clear();
-          final long lastChangeTs = configurationFile.lastModified();
-          if (lastChangeTs > lastLoadedChangeTs) {
-            final Configuration newConfig = persistenceService.load(configurationFile);
-            if (loadErrors.isEmpty()) {
-              configuration.set(newConfig);
-              lastLoadedChangeTs = configurationFile.lastModified();
-            }
+          newConfig = persistenceService.load(configurationFile);
+          if (loadErrors.isEmpty()) {
+            configuration.set(newConfig);
+            dirty = false;
+            lastLoadedChangeTs = configurationFile.lastModified();
           }
         }
-        if (!loadErrors.isEmpty()) {
+        if (loadErrors.isEmpty()) {
+          eventBus.post(new ConfigurationFileReadEvent(OK, localMessage("CFG_CONFIG_LOADED")));
+        } else {
+          log.info("Errors detected in configuration file {}", configurationFile);
           eventBus.post(
               new BlockingApplicationErrorEvent(
                   ErrorCode.LOAD_ERROR,
@@ -128,7 +152,12 @@ public class ConfigurationManager {
                           .map(ConfigurationErrorEvent::singleLineError)
                           .collect(Collectors.joining("\n"))),
                   false));
+          configuration.set(newConfig);
+          dirty = false;
+          lastLoadedChangeTs = configurationFile.lastModified();
           loadErrors.clear();
+          eventBus.post(
+              new ConfigurationFileReadEvent(OK, localMessage("CFG_CONFIG_LOAD_INCOMPLETE")));
         }
       } catch (final InvalidConfigurationException e) {
         log.warn("Failed to read existing configuration file '{}'.", configurationFile, e);
@@ -138,8 +167,14 @@ public class ConfigurationManager {
                 localMessage("CFG_LOAD_ERROR_TITLE"),
                 localMessage("CFG_LOAD_FAILURE_QUESTION", configurationFile),
                 false));
+        dirty = false;
+        eventBus.post(
+            new ConfigurationFileReadEvent(NEW, localMessage("CFG_CONFIG_NEW", configurationFile)));
       } catch (final MissingConfigurationException e) {
         log.info("Missing configuration file '{}'. Continue with defaults", configurationFile);
+        dirty = false;
+        eventBus.post(
+            new ConfigurationFileReadEvent(NEW, localMessage("CFG_CONFIG_NEW", configurationFile)));
       }
     }
   }
@@ -147,8 +182,9 @@ public class ConfigurationManager {
   /** Non blocking configuration reload. */
   void loadIfChanged() {
     log.trace("ConfigurationManager#loadIfChanged");
-    if (active && configurationFile != null && configurationFile.exists()) {
+    if (active && configurationFile.exists()) {
       try {
+        boolean loaded = false;
         synchronized (configFileAccessMonitor) {
           loadErrors.clear();
           final long lastChangeTs = configurationFile.lastModified();
@@ -156,13 +192,18 @@ public class ConfigurationManager {
             final Configuration newConfig = persistenceService.load(configurationFile);
             if (loadErrors.isEmpty()) {
               configuration.set(newConfig);
+              dirty = false;
               lastLoadedChangeTs = configurationFile.lastModified();
+              loaded = true;
             }
           }
         }
-        if (loadErrors.isEmpty()) {
+        if (loaded) {
           eventBus.post(new ConfigurationFileReadEvent(OK, localMessage("CFG_CONFIG_LOADED")));
-        } else {
+        } else if (!loadErrors.isEmpty()) {
+          log.info(
+              "Errors detected in configuration file {}. File ignored while reloading.",
+              configurationFile);
           eventBus.post(
               new ConfigurationFileReadEvent(
                   FAILED,
@@ -188,12 +229,13 @@ public class ConfigurationManager {
     }
   }
 
+  /** Save configuration if dirty. */
   void saveIfDirty() {
     log.trace("ConfigurationManager#saveIfDirty");
-    if (active && dirty && configurationFile != null) {
+    if (active && (dirty || !configurationFile.exists())) {
       try {
         synchronized (configFileAccessMonitor) {
-          if (dirty) {
+          if (dirty || !configurationFile.exists()) {
             persistenceService.save(configurationFile, configuration.get());
             lastLoadedChangeTs = configurationFile.lastModified();
             dirty = false;
@@ -207,26 +249,6 @@ public class ConfigurationManager {
                 localMessage("CFG_SAVE_ERROR_TITLE"),
                 localMessage("CFG_SAVE_FAILURE", configurationFile, e.getLocalizedMessage()),
                 false));
-      }
-    }
-  }
-
-  @Slf4j
-  private static class ConfigSyncTask extends TimerTask {
-    private final ConfigurationManager configurationManager;
-
-    ConfigSyncTask(final ConfigurationManager configurationManager) {
-      this.configurationManager = configurationManager;
-    }
-
-    @Override
-    public void run() {
-      try {
-        log.debug("Syncing configuration with file");
-        configurationManager.saveIfDirty();
-        configurationManager.loadIfChanged();
-      } catch (final Exception e) {
-        log.warn("Exception in {} task", CONFIG_SYNC_TIMER_NAME, e);
       }
     }
   }

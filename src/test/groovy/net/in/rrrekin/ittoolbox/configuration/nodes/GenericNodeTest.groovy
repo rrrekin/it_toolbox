@@ -28,6 +28,11 @@ class GenericNodeTest extends Specification {
         thrown NullPointerException
 
         when:
+        new GenericNode(null as Map<String, Object>)
+        then:
+        thrown NullPointerException
+
+        when:
         new GenericNode(null)
         then:
         thrown NullPointerException
@@ -127,6 +132,13 @@ class GenericNodeTest extends Specification {
 
         then:
         newInstance == instance
+
+        when:
+        dto[null] = 'NULL'
+        newInstance = new GenericNode(dto)
+
+        then:
+        newInstance == instance
     }
 
     def "should handle invalid dto"() {
@@ -138,7 +150,6 @@ class GenericNodeTest extends Specification {
 
         then:
         newInstance == new GenericNode(NAME, DESCRIPTION, PROPERTIES, [])
-
     }
 
 }
