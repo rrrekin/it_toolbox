@@ -14,10 +14,11 @@ class NodeTypeTest extends Specification {
         NodeType.values().size() == 3
 
         and:
-        node.clazz == clazz
         node.typeName == typeName
-        NodeType.of(clazz) == node
         NodeType.of(typeName) == node
+
+        and: "creates type instance"
+        node.create([type: typeName], '', Stub(NodeFactory)).class == clazz
 
         where:
         node                  | clazz        | typeName
@@ -28,9 +29,7 @@ class NodeTypeTest extends Specification {
 
     def "should return null for unknown class and typeName"() {
         expect:
-        NodeType.of(String) == null
         NodeType.of('Bomb') == null
-        NodeType.class.getMethod('of', String).invoke(null, [null] as Object[]) == null
-        NodeType.class.getMethod('of', Class).invoke(null, [null] as Object[]) == null
+        NodeType.of(null) == null
     }
 }

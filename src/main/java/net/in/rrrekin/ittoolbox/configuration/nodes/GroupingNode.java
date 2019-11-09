@@ -68,6 +68,7 @@ public class GroupingNode implements NetworkNode {
     description = toStringOrEmpty(dto.get(DESCRIPTION_PROPERTY));
     childNodes = Lists.newArrayList();
     serviceDescriptors = Lists.newArrayList();
+    // TODO: implement notifications on errors in service and child lists (also for other node types)
     if (dto.get(SERVICES_PROPERTY) instanceof List) {
       ((List<?>) dto.get(SERVICES_PROPERTY))
           .forEach(it -> serviceDescriptors.add(toStringOrEmpty(it)));
@@ -75,7 +76,7 @@ public class GroupingNode implements NetworkNode {
     final Object childNodesDtos = dto.get(CHILD_NODES_PROPERTY);
     if (childNodesDtos instanceof List) {
       childNodes.addAll(
-          factory.createFrom(
+          factory.createNodeList(
               (List<?>) childNodesDtos, parentInfo + LOCATION_PATH_SEPARATOR + name));
     }
   }

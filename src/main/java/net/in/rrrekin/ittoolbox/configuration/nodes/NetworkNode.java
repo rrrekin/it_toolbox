@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,6 +35,7 @@ public interface NetworkNode {
   String SERVICES_PROPERTY = "services";
 
   /** The constant PROPERTIES_PREFIX for custom properties in configuration DTO. */
+  @NonNls
   String PROPERTIES_PREFIX = "_";
 
   /**

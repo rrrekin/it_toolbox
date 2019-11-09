@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
@@ -44,7 +43,7 @@ public class NodeFactory {
    * @return the network node
    * @throws InvalidConfigurationException the invalid configuration exception
    */
-  public NetworkNode createFrom(
+  public NetworkNode createNode(
       final @NonNull Map<String, Object> dto, final @NonNull String parentInfo)
       throws InvalidConfigurationException {
     final String typeName = toStringOrEmpty(dto.get(NetworkNode.TYPE_PROPERTY));
@@ -54,55 +53,12 @@ public class NodeFactory {
           "EX_CANNOT_CREATE",
           StringUtils.isBlank(typeName) ? localMessage("CFG_UNKNOWN_TYPE") : typeName);
     }
-    Constructor<? extends NetworkNode> constructor = null;
-
     try {
-      constructor =
-          type.getClazz().getDeclaredConstructor(Map.class, NodeFactory.class, String.class);
-    } catch (final NoSuchMethodException | SecurityException ignored) {
-      // Try other constructors
+      return type.create(dto, parentInfo, this);
+    } catch (final Exception e) {
+      log.warn("Failed to create {} in {}", type, parentInfo, e);
+      throw new InvalidConfigurationException("EX_FAILED_NODE_CONSTRUCTION", e, type.getTypeName());
     }
-    if (constructor != null) {
-      try {
-        return constructor.newInstance(dto, this, parentInfo);
-      } catch (final Exception e) {
-        log.error("Failed to create {} with 3 argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException(
-            "EX_FAILED_3_ARG_CONSTRUCTOR", e, type.getTypeName());
-      }
-    }
-
-    try {
-      constructor = type.getClazz().getDeclaredConstructor(Map.class);
-    } catch (final NoSuchMethodException | SecurityException ignored) {
-      // Try other constructors
-    }
-    if (constructor != null) {
-      try {
-        return constructor.newInstance(dto);
-      } catch (final Exception e) {
-        log.error("Failed to create {} with 1 argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException(
-            "EX_FAILED_1_ARG_CONSTRUCTOR", e, type.getTypeName());
-      }
-    }
-
-    try {
-      constructor = type.getClazz().getDeclaredConstructor();
-    } catch (final NoSuchMethodException | SecurityException ignored) {
-      // Try other constructors
-    }
-    if (constructor != null) {
-      try {
-        return constructor.newInstance(dto);
-      } catch (final Exception e) {
-        log.error("Failed to create {} with no argument constructor in {}", type, parentInfo, e);
-        throw new InvalidConfigurationException("EX_UNABLE_CREATE_NODE", e, type);
-      }
-    }
-
-    log.error("Unable to find constructor for type {} in {} with {}.", type, parentInfo, dto);
-    throw new InvalidConfigurationException("EX_CANNOT_FIND_CONSTRUCTOR_FOR", type.getTypeName());
   }
 
   /**
@@ -111,7 +67,7 @@ public class NodeFactory {
    * @param dtoList the DTO list
    * @return the NetworkNode list
    */
-  public @NotNull List<NetworkNode> createFrom(
+  public @NotNull List<NetworkNode> createNodeList(
       final @NonNull List<?> dtoList, final @NonNull String parentInfo) {
     final List<NetworkNode> response = Lists.newArrayList();
     for (final Object child : dtoList) {
@@ -120,7 +76,7 @@ public class NodeFactory {
         final Map<String, Object> propertyMap = Maps.newLinkedHashMap();
         childMap.forEach((property, value) -> propertyMap.put(toStringOrEmpty(property), value));
         try {
-          response.add(createFrom(propertyMap, parentInfo));
+          response.add(createNode(propertyMap, parentInfo));
         } catch (final InvalidConfigurationException e) {
           log.warn("{} / Skipping invalid element in {}: {}, ", e.getMessage(), parentInfo, child);
           eventBus.post(

@@ -5,40 +5,65 @@ import com.google.common.collect.Maps;
 import java.util.Locale;
 import java.util.Map;
 import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Enum defining possible configuration file objects and their mappings to configuration classes.
+ * Enum defining possible configuration file objects and provides method to create them from
+ * configuration data.
  *
  * @author michal.rudewicz @gmail.com
  */
 public enum NodeType {
   /** Server group configuration node. */
-  GROUP("Group", GroupingNode.class),
+  GROUP("Group") {
+    @Override
+    @NotNull
+    NetworkNode create(
+        final @NonNull Map<String, Object> dto,
+        final @NonNull String parentInfo,
+        final @NonNull NodeFactory nodeFactory) {
+      return new GroupingNode(dto, nodeFactory, parentInfo);
+    }
+  },
   /** Server configuration node. */
-  SERVER("Server", Server.class),
+  SERVER("Server") {
+    @Override
+    @NotNull
+    NetworkNode create(
+        final @NonNull Map<String, Object> dto,
+        final @NonNull String parentInfo,
+        final @NonNull NodeFactory nodeFactory) {
+      return new Server(dto);
+    }
+  },
   /** Generic node configuration node. */
-  GENERIC_NODE("GenericNode", GenericNode.class);
+  GENERIC_NODE("GenericNode") {
+    @Override
+    @NotNull
+    NetworkNode create(
+        final @NonNull Map<String, Object> dto,
+        final @NonNull String parentInfo,
+        final @NonNull NodeFactory nodeFactory) {
+      return new GenericNode(dto);
+    }
+  };
 
   @Getter private final @NotNull String typeName;
-  @Getter private final @NotNull Class<? extends NetworkNode> clazz;
 
   private static final Map<String, NodeType> typeNameMapping = Maps.newHashMap();
-  private static final Map<Class<? extends NetworkNode>, NodeType> classMapping = Maps.newHashMap();
 
   static {
     for (final NodeType it : NodeType.values()) {
       typeNameMapping.put(it.getTypeName().toLowerCase(Locale.ENGLISH), it);
-      classMapping.put(it.getClazz(), it);
     }
   }
 
   @Contract(pure = true)
-  NodeType(final @NotNull String typeName, final @NotNull Class<? extends NetworkNode> clazz) {
+  NodeType(final @NotNull String typeName) {
     this.typeName = typeName;
-    this.clazz = clazz;
   }
 
   /**
@@ -52,12 +77,15 @@ public enum NodeType {
   }
 
   /**
-   * Gwt enum for given class.
+   * Create a new {@link NetworkNode} of given type.
    *
-   * @param clazz the object class
-   * @return the config enum
+   * @param dto the dto with node data
+   * @param parentInfo the parent info (path in hierarchy)
+   * @param nodeFactory the node factory (to create possible child nodes)
+   * @return the network node
    */
-  public static @Nullable NodeType of(final @Nullable Class<?> clazz) {
-    return classMapping.get(clazz);
-  }
+  abstract @NotNull NetworkNode create(
+      final @NonNull Map<String, Object> dto,
+      final @NonNull String parentInfo,
+      final @NonNull NodeFactory nodeFactory);
 }

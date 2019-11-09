@@ -145,7 +145,7 @@ class ConfigurationPersistenceServiceTest extends Specification {
         def configuration = service.load(file)
 
         then:
-        1 * nodeFactory.createFrom(SAMPLE_NODES_DTO, 'servers') >> SAMPLE_NODES
+        1 * nodeFactory.createNodeList(SAMPLE_NODES_DTO, 'servers') >> SAMPLE_NODES
         1 * serviceRegistry.configureService('service1', 'service1 configuration')
         1 * serviceRegistry.configureService('service2', 'service2 configuration')
         0 * serviceRegistry._
@@ -357,7 +357,7 @@ class ConfigurationPersistenceServiceTest extends Specification {
         def newConfig = service.load(file)
 
         then:
-        1 * nodeFactory.createFrom(SAMPLE_NODES_DTO, 'servers') >> SAMPLE_NODES
+        1 * nodeFactory.createNodeList(SAMPLE_NODES_DTO, 'servers') >> SAMPLE_NODES
         0 * eventBus._
         LocaleUtil.localeCode == 'zh'
         Locale.getDefault() == Locale.CHINESE

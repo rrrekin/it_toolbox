@@ -133,7 +133,7 @@ public class ConfigurationPersistenceService {
       final List<NetworkNode> networkNodes;
       final Object serversDto = configurationDto.get(SERVERS_PROPERTY);
       if (serversDto instanceof List) {
-        networkNodes = nodeFactory.createFrom((List<?>) serversDto, SERVERS_PROPERTY);
+        networkNodes = nodeFactory.createNodeList((List<?>) serversDto, SERVERS_PROPERTY);
       } else {
         log.warn("Failed to read server list.");
         eventBus.post(

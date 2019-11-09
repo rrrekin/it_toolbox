@@ -47,7 +47,7 @@ class NodeFactoryTest extends Specification {
 
     def "should create nodes"() {
         when:
-        def nodes = instance.createFrom(CONFIG.servers, PARENT_PATH)
+        def nodes = instance.createNodeList(CONFIG.servers, PARENT_PATH)
 
         then:
         0 * eventBus._
@@ -56,30 +56,29 @@ class NodeFactoryTest extends Specification {
 
     def "should validate factory method arguments"() {
         when:
-        instance.createFrom(null as Map<String, Object>, PARENT_PATH)
+        instance.createNode(null, PARENT_PATH)
         then:
         thrown NullPointerException
 
         when:
-        instance.createFrom(null as List, PARENT_PATH)
+        instance.createNodeList(null, PARENT_PATH)
         then:
         thrown NullPointerException
 
         when:
-        instance.createFrom(CONFIG.servers, null)
+        instance.createNodeList(CONFIG.servers, null)
         then:
         thrown NullPointerException
 
         when:
-        instance.createFrom([], null)
+        instance.createNode([:], null)
         then:
         thrown NullPointerException
-
     }
 
     def "should handle invalid elements on node list"() {
         when:
-        def nodes = instance.createFrom([2, new Server('42').dtoProperties, "abc", [abc: 67]], PARENT_PATH)
+        def nodes = instance.createNodeList([2, new Server('42').dtoProperties, "abc", [abc: 67]], PARENT_PATH)
 
         then:
         2 * eventBus.post({ it.code == INVALID_OBJECT_ON_DTO_LIST })
@@ -90,11 +89,10 @@ class NodeFactoryTest extends Specification {
 
     def "should handle invalid type"() {
         when:
-        def nodes = instance.createFrom([type: 'abc'], PARENT_PATH)
+        def nodes = instance.createNode([type: 'abc'], PARENT_PATH)
 
         then:
         0 * eventBus._
         thrown InvalidConfigurationException
     }
-
 }
