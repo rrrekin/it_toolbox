@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
+import lombok.NonNull;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,8 +36,10 @@ public interface NetworkNode {
   String SERVICES_PROPERTY = "services";
 
   /** The constant PROPERTIES_PREFIX for custom properties in configuration DTO. */
-  @NonNls
-  String PROPERTIES_PREFIX = "_";
+  @NonNls String PROPERTIES_PREFIX = "_";
+
+  /** Size of icons in tree view. */
+  int ICON_SIZE = 20;
 
   /**
    * Gets name.
@@ -47,11 +50,19 @@ public interface NetworkNode {
   String getName();
 
   /**
+   * Sets name of the node.
+   *
+   * @param name new node name (not null)
+   */
+  void setName(@NonNull String name);
+
+  /**
    * Gets description.
    *
    * @return the description
    */
-  @NotNull String getDescription();
+  @NotNull
+  String getDescription();
 
   /**
    * Gets icon.
@@ -59,7 +70,14 @@ public interface NetworkNode {
    * @return the icon
    */
   @NotNull
-  ImageIcon getIcon();
+  Icon getIcon();
+
+  /**
+   * Sets icon to be displayed for node.
+   *
+   * @param icon the icon
+   */
+  void setIcon(Icon icon);
 
   /**
    * True if given node cannot have children.
@@ -75,7 +93,7 @@ public interface NetworkNode {
    *
    * @return the child nodes
    */
-  default @NotNull List<NetworkNode> getChildNodes() {
+  default @NotNull List<@NotNull NetworkNode> getChildNodes() {
     return Collections.emptyList();
   }
 
@@ -108,4 +126,7 @@ public interface NetworkNode {
    */
   @NotNull
   Map<String, Object> getDtoProperties();
+
+  /** Gets HTML description of the node. */
+  String toHtml();
 }

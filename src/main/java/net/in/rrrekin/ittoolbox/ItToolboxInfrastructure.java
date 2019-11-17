@@ -10,7 +10,14 @@ import com.google.inject.name.Names;
 import java.io.File;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import net.in.rrrekin.ittoolbox.configuration.ConfigurationManager;
+import net.in.rrrekin.ittoolbox.configuration.nodes.NodeFactory;
+import net.in.rrrekin.ittoolbox.gui.EdtInvokeService;
+import net.in.rrrekin.ittoolbox.gui.MainWindow;
+import net.in.rrrekin.ittoolbox.gui.nodetree.NetworkNodesTreeModelFacade;
+import net.in.rrrekin.ittoolbox.infrastructure.BlockingApplicationEventsHandler;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
+import net.in.rrrekin.ittoolbox.infrastructure.UnhandledMessagesLogger;
 import net.in.rrrekin.ittoolbox.os.OsServices;
 import net.in.rrrekin.ittoolbox.os.OsServicesFactory;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
@@ -37,6 +44,13 @@ public class ItToolboxInfrastructure extends AbstractModule {
     final EventBus eventBus = new EventBus(MAIN_EVENT_BUS_NAME);
     bind(EventBus.class).toInstance(eventBus);
     bind(File.class).annotatedWith(Names.named(APP_DIRECTORY)).toInstance(appDirectory);
+    bind(ConfigurationManager.class).asEagerSingleton();
+    bind(NodeFactory.class).asEagerSingleton();
+    bind(UnhandledMessagesLogger.class).asEagerSingleton();
+    bind(BlockingApplicationEventsHandler.class).asEagerSingleton();
+    bind(NetworkNodesTreeModelFacade.class).asEagerSingleton();
+    bind(MainWindow.class).asEagerSingleton();
+    bind(EdtInvokeService.class).asEagerSingleton();
   }
 
   /**

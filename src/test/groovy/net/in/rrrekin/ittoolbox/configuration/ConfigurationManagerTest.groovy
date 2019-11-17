@@ -8,7 +8,7 @@ import net.in.rrrekin.ittoolbox.configuration.nodes.GenericNode
 import net.in.rrrekin.ittoolbox.configuration.nodes.Server
 import net.in.rrrekin.ittoolbox.events.BlockingApplicationErrorEvent
 import net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent
-import net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent
+import net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent
 import net.in.rrrekin.ittoolbox.utilities.ErrorCode
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -16,7 +16,7 @@ import spock.lang.Specification
 
 import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICES_SECTION
 import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICE_CONFIGURATION
-import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.*
+import static net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent.Code.*
 
 /**
  * @author michal.rudewicz@gmail.com
@@ -87,7 +87,7 @@ class ConfigurationManagerTest extends Specification {
         instance.@configChangeTimer.thread.newTasksMayBeScheduled
         1 * eventBus.register(instance)
         1 * persistenceService.load(configFile) >> CONFIG
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == OK })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == OK })
         0 * _._
 
         when:
@@ -158,7 +158,7 @@ class ConfigurationManagerTest extends Specification {
         instance.lastLoadedChangeTs == configFile.lastModified()
         !instance.dirty
         1 * persistenceService.load(configFile) >> CONFIG
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == OK })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == OK })
         0 * _._
 
         when: "not re-loaded"
@@ -179,7 +179,7 @@ class ConfigurationManagerTest extends Specification {
         instance.lastLoadedChangeTs == configFile.lastModified()
         !instance.dirty
         1 * persistenceService.load(configFile) >> CONFIG_2
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == OK })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == OK })
         0 * _._
 
         when: "not reloaded"
@@ -199,7 +199,7 @@ class ConfigurationManagerTest extends Specification {
         instance.config.is CONFIG
         instance.lastLoadedChangeTs == configFile.lastModified()
         !instance.dirty
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == OK })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == OK })
         1 * persistenceService.load(configFile) >> CONFIG
         0 * _._
 
@@ -229,7 +229,7 @@ class ConfigurationManagerTest extends Specification {
             CONFIG
         }
         1 * eventBus.post({ BlockingApplicationErrorEvent error -> error.errorCode == ErrorCode.LOAD_ERROR && !error.fatal } as BlockingApplicationErrorEvent)
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == OK } as ConfigurationFileReadEvent)
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == OK } as ConfigurationFileSyncEvent)
         0 * _._
     }
 
@@ -266,13 +266,13 @@ class ConfigurationManagerTest extends Specification {
         then:
         instance.config.modules.isEmpty()
         instance.config.networkNodes.isEmpty()
-        instance.lastLoadedChangeTs == 0L
+        instance.lastLoadedChangeTs != 0L
         !instance.dirty
         1 * persistenceService.load(configFile) >> {
             throw new InvalidConfigurationException('EX_UNREADABLE_CFG_FILE')
         }
         1 * eventBus.post({ BlockingApplicationErrorEvent error -> error.errorCode == ErrorCode.LOAD_ERROR && !error.fatal } as BlockingApplicationErrorEvent)
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == NEW } as ConfigurationFileReadEvent)
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == NEW } as ConfigurationFileSyncEvent)
         0 * _._
     }
 
@@ -287,7 +287,7 @@ class ConfigurationManagerTest extends Specification {
         thrown IllegalStateException
         instance.config.modules.isEmpty()
         instance.config.networkNodes.isEmpty()
-        instance.lastLoadedChangeTs == 0L
+        instance.lastLoadedChangeTs != 0L
         instance.dirty
         1 * persistenceService.load(configFile) >> {
             throw new InvalidConfigurationException('EX_UNREADABLE_CFG_FILE')
@@ -313,7 +313,7 @@ class ConfigurationManagerTest extends Specification {
         1 * persistenceService.load(configFile) >> {
             throw new MissingConfigurationException('EX_MISSING_CFG_FILE', new IllegalStateException(), configFile)
         }
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == NEW })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == NEW })
         0 * _._
     }
 
@@ -347,7 +347,7 @@ class ConfigurationManagerTest extends Specification {
             instance.handleConfigurationReadErrors(ERROR_1)
             CONFIG
         }
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == FAILED })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == FAILED })
         0 * _._
     }
 
@@ -362,12 +362,12 @@ class ConfigurationManagerTest extends Specification {
         then:
         instance.config.modules.isEmpty()
         instance.config.networkNodes.isEmpty()
-        instance.lastLoadedChangeTs == 0L
+        instance.lastLoadedChangeTs != 0L
         instance.dirty
         1 * persistenceService.load(configFile) >> {
             throw new InvalidConfigurationException('EX_UNREADABLE_CFG_FILE')
         }
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == FAILED })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == FAILED })
         0 * _._
     }
 
@@ -387,7 +387,7 @@ class ConfigurationManagerTest extends Specification {
         1 * persistenceService.load(configFile) >> {
             throw new MissingConfigurationException('EX_MISSING_CFG_FILE', new IllegalStateException(), configFile)
         }
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == MISSING })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == MISSING })
         0 * _._
     }
 
@@ -426,7 +426,7 @@ class ConfigurationManagerTest extends Specification {
         then:
         !instance.dirty
         1 * persistenceService.save(configFile, instance.config)
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == OK })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == SAVED })
         0 * _._
     }
 
@@ -441,7 +441,7 @@ class ConfigurationManagerTest extends Specification {
         then:
         !instance.dirty
         1 * persistenceService.save(configFile, instance.config)
-        1 * eventBus.post({ ConfigurationFileReadEvent ev -> ev.code == OK })
+        1 * eventBus.post({ ConfigurationFileSyncEvent ev -> ev.code == SAVED })
         0 * _._
     }
 

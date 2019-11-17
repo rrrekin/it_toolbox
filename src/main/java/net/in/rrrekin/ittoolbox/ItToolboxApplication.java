@@ -14,9 +14,13 @@ import com.google.inject.Injector;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Locale;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
 import lombok.NonNull;
 import net.in.rrrekin.ittoolbox.configuration.ConfigurationManager;
 import net.in.rrrekin.ittoolbox.events.BlockingApplicationErrorEvent;
+import net.in.rrrekin.ittoolbox.gui.MainWindow;
+import net.in.rrrekin.ittoolbox.gui.nodetree.NetworkNodesTreeModelFacade;
 import net.in.rrrekin.ittoolbox.infrastructure.BlockingApplicationEventsHandler;
 import net.in.rrrekin.ittoolbox.infrastructure.LogConfigurator;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
@@ -51,7 +55,9 @@ public class ItToolboxApplication {
   private final @NonNull UnhandledMessagesLogger unhandledMessagesLogger;
   private final @NonNull EventBus eventBus;
   private final @NonNull BlockingApplicationEventsHandler blockingApplicationEventsHandler;
+  private final @NonNull NetworkNodesTreeModelFacade treeModelFacade;
   private final @NonNull ConfigurationManager configurationManager;
+  private final @NonNull MainWindow mainWindow;
 
   /**
    * Main application entry point.
@@ -66,6 +72,7 @@ public class ItToolboxApplication {
 
     // Start application
     log.info("Starting {} Application", APPLICATION_NAME);
+    IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
     final Injector injector = Guice.createInjector(new ItToolboxInfrastructure(appDirectory));
     final ItToolboxApplication application = injector.getInstance(ItToolboxApplication.class);
 
@@ -80,18 +87,24 @@ public class ItToolboxApplication {
    * @param unhandledMessagesLogger UnhandledMessagesLogger singleton instance
    * @param eventBus EventBus singleton instance
    * @param blockingApplicationEventsHandler BlockingApplicationEventsHandler singleton instance
+   * @param treeModelFacade NetworkNodesTreeModelFacade singleton instance
    * @param configurationManager ConfigurationManager singleton instance
+   * @param mainWindow Application main window
    */
   @Inject
   public ItToolboxApplication(
       final @NonNull UnhandledMessagesLogger unhandledMessagesLogger,
       final @NonNull EventBus eventBus,
       final @NonNull BlockingApplicationEventsHandler blockingApplicationEventsHandler,
-      final @NonNull ConfigurationManager configurationManager) {
+      final @NonNull NetworkNodesTreeModelFacade treeModelFacade,
+      final @NonNull ConfigurationManager configurationManager,
+      final @NonNull MainWindow mainWindow) {
     this.unhandledMessagesLogger = unhandledMessagesLogger;
     this.eventBus = eventBus;
     this.blockingApplicationEventsHandler = blockingApplicationEventsHandler;
+    this.treeModelFacade = treeModelFacade;
     this.configurationManager = configurationManager;
+    this.mainWindow = mainWindow;
   }
 
   /** Initialize application. */
@@ -100,6 +113,9 @@ public class ItToolboxApplication {
       log.info("Initializing {} Application", APPLICATION_NAME);
       unhandledMessagesLogger.init();
       blockingApplicationEventsHandler.init();
+      treeModelFacade
+          .init(); // Should be initialized before configuration manager to get events from its
+                   // initialization
       configurationManager.init();
     } catch (final Exception e) {
       log.error("Unexpected application initialization error.", e);
@@ -115,11 +131,12 @@ public class ItToolboxApplication {
   /** Run application. */
   void run() {
     try {
-      Thread.sleep(10000);
-    } catch (final InterruptedException e) {
-      log.info("Application interrupted.", e);
-      Thread.currentThread().interrupt();
-      ErrorCode.INTERRUPTED.exit();
+      mainWindow.start();
+      //      Thread.sleep(10000);
+      //    } catch (final InterruptedException e) {
+      //      log.info("Application interrupted.", e);
+      //      Thread.currentThread().interrupt();
+      //      ErrorCode.INTERRUPTED.exit();
     } catch (final Exception e) {
       log.error("Unexpected error while application running.", e);
       eventBus.post(

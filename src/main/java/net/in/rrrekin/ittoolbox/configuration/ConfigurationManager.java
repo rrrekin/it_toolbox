@@ -2,10 +2,11 @@ package net.in.rrrekin.ittoolbox.configuration;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.FAILED;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.MISSING;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.NEW;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent.Code.OK;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent.Code.FAILED;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent.Code.MISSING;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent.Code.NEW;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent.Code.OK;
+import static net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent.Code.SAVED;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.eventbus.EventBus;
@@ -27,7 +28,7 @@ import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationExc
 import net.in.rrrekin.ittoolbox.configuration.exceptions.MissingConfigurationException;
 import net.in.rrrekin.ittoolbox.events.BlockingApplicationErrorEvent;
 import net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent;
-import net.in.rrrekin.ittoolbox.events.ConfigurationFileReadEvent;
+import net.in.rrrekin.ittoolbox.events.ConfigurationFileSyncEvent;
 import net.in.rrrekin.ittoolbox.utilities.ErrorCode;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,6 +63,7 @@ public class ConfigurationManager {
   /** True if ConfigurationManager is initialized. () */
   @Getter private boolean active = false;
   /** True if configuration needs to be saved. */
+  // TODO: Provide proper synchronization with saving / reading code
   @Getter @Setter private boolean dirty = false;
 
   /**
@@ -107,7 +109,7 @@ public class ConfigurationManager {
    *
    * @return the configuration
    */
-  public Configuration getConfig() {
+  public @NotNull Configuration getConfig() {
     return configuration.get();
   }
 
@@ -138,7 +140,7 @@ public class ConfigurationManager {
           }
         }
         if (loadErrors.isEmpty()) {
-          eventBus.post(new ConfigurationFileReadEvent(OK, localMessage("CFG_CONFIG_LOADED")));
+          eventBus.post(new ConfigurationFileSyncEvent(OK, localMessage("CFG_CONFIG_LOADED")));
         } else {
           log.info("Errors detected in configuration file {}", configurationFile);
           eventBus.post(
@@ -157,24 +159,29 @@ public class ConfigurationManager {
           lastLoadedChangeTs = configurationFile.lastModified();
           loadErrors.clear();
           eventBus.post(
-              new ConfigurationFileReadEvent(OK, localMessage("CFG_CONFIG_LOAD_INCOMPLETE")));
+              new ConfigurationFileSyncEvent(OK, localMessage("CFG_CONFIG_LOAD_INCOMPLETE")));
         }
       } catch (final InvalidConfigurationException e) {
         log.warn("Failed to read existing configuration file '{}'.", configurationFile, e);
+        lastLoadedChangeTs = configurationFile.lastModified();
+        final String message =
+            e.getCause() == null
+                ? localMessage("CFG_LOAD_FAILURE_QUESTION", configurationFile)
+                : localMessage(
+                    "CFG_LOAD_FAILURE_QUESTION_WITH_ERROR",
+                    configurationFile,
+                    e.getCause().getLocalizedMessage());
         eventBus.post(
             new BlockingApplicationErrorEvent(
-                ErrorCode.LOAD_ERROR,
-                localMessage("CFG_LOAD_ERROR_TITLE"),
-                localMessage("CFG_LOAD_FAILURE_QUESTION", configurationFile),
-                false));
+                ErrorCode.LOAD_ERROR, localMessage("CFG_LOAD_ERROR_TITLE"), message, false));
         dirty = false;
         eventBus.post(
-            new ConfigurationFileReadEvent(NEW, localMessage("CFG_CONFIG_NEW", configurationFile)));
+            new ConfigurationFileSyncEvent(NEW, localMessage("CFG_CONFIG_NEW", configurationFile)));
       } catch (final MissingConfigurationException e) {
         log.info("Missing configuration file '{}'. Continue with defaults", configurationFile);
         dirty = false;
         eventBus.post(
-            new ConfigurationFileReadEvent(NEW, localMessage("CFG_CONFIG_NEW", configurationFile)));
+            new ConfigurationFileSyncEvent(NEW, localMessage("CFG_CONFIG_NEW", configurationFile)));
       }
     }
   }
@@ -199,13 +206,13 @@ public class ConfigurationManager {
           }
         }
         if (loaded) {
-          eventBus.post(new ConfigurationFileReadEvent(OK, localMessage("CFG_CONFIG_LOADED")));
+          eventBus.post(new ConfigurationFileSyncEvent(OK, localMessage("CFG_CONFIG_LOADED")));
         } else if (!loadErrors.isEmpty()) {
           log.info(
               "Errors detected in configuration file {}. File ignored while reloading.",
               configurationFile);
           eventBus.post(
-              new ConfigurationFileReadEvent(
+              new ConfigurationFileSyncEvent(
                   FAILED,
                   localMessage(
                       "CFG_CONFIG_LOAD_FAILURE",
@@ -217,13 +224,19 @@ public class ConfigurationManager {
         }
       } catch (final InvalidConfigurationException e) {
         log.warn("Failed to re-read configuration", e);
-        eventBus.post(
-            new ConfigurationFileReadEvent(
-                FAILED, localMessage("CFG_CONFIG_LOAD_ERROR", e.getLocalizedMessage())));
+        lastLoadedChangeTs = configurationFile.lastModified();
+        final String message =
+            e.getCause() == null
+                ? localMessage("CFG_CONFIG_LOAD_ERROR", e.getLocalizedMessage())
+                : localMessage(
+                    "CFG_CONFIG_LOAD_ERROR_WITH_CAUSE",
+                    e.getLocalizedMessage(),
+                    e.getCause().getLocalizedMessage());
+        eventBus.post(new ConfigurationFileSyncEvent(FAILED, message));
       } catch (final MissingConfigurationException e) {
         log.warn("Failed to re-read configuration", e);
         eventBus.post(
-            new ConfigurationFileReadEvent(
+            new ConfigurationFileSyncEvent(
                 MISSING, localMessage("CFG_MISSING_CFG_FILE_ERROR", configurationFile)));
       }
     }
@@ -241,7 +254,7 @@ public class ConfigurationManager {
             dirty = false;
           }
         }
-        eventBus.post(new ConfigurationFileReadEvent(OK, localMessage("CFG_CONFIG_SAVED")));
+        eventBus.post(new ConfigurationFileSyncEvent(SAVED, localMessage("CFG_CONFIG_SAVED")));
       } catch (final FailedConfigurationSaveException e) {
         eventBus.post(
             new BlockingApplicationErrorEvent(

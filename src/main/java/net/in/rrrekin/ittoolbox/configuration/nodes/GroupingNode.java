@@ -3,21 +3,24 @@ package net.in.rrrekin.ittoolbox.configuration.nodes;
 import static com.google.common.base.Preconditions.checkArgument;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.enMessage;
 import static net.in.rrrekin.ittoolbox.utilities.StringUtils.toStringOrEmpty;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.swing.ImageIcon;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import javax.swing.Icon;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a group of other network nodes.
@@ -25,8 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * @author michal.rudewicz @gmail.com
  */
 @ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GroupingNode implements NetworkNode {
 
   /** Separator used to join parent hierarchy of network nodes. */
@@ -34,8 +36,10 @@ public class GroupingNode implements NetworkNode {
 
   @Getter @Setter private @NonNull String name;
   @Getter @Setter private @NonNull String description;
-  @Getter private final @NotNull List<NetworkNode> childNodes;
+  @ToString.Exclude @Setter private @Nullable Icon icon = null;
+  @ToString.Exclude @Getter private final @NotNull List<@NotNull NetworkNode> childNodes;
   @Getter private final @NonNull List<String> serviceDescriptors;
+
 
   /**
    * Instantiates a new Grouping node.
@@ -68,7 +72,8 @@ public class GroupingNode implements NetworkNode {
     description = toStringOrEmpty(dto.get(DESCRIPTION_PROPERTY));
     childNodes = Lists.newArrayList();
     serviceDescriptors = Lists.newArrayList();
-    // TODO: implement notifications on errors in service and child lists (also for other node types)
+    // TODO: implement notifications on errors in service and child lists (also for other node
+    // types)
     if (dto.get(SERVICES_PROPERTY) instanceof List) {
       ((List<?>) dto.get(SERVICES_PROPERTY))
           .forEach(it -> serviceDescriptors.add(toStringOrEmpty(it)));
@@ -82,8 +87,11 @@ public class GroupingNode implements NetworkNode {
   }
 
   @Override
-  public @NotNull ImageIcon getIcon() {
-    return new ImageIcon();
+  public @NotNull Icon getIcon() {
+    if (icon == null) {
+      icon = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.FOLDER_OPEN, NetworkNode.ICON_SIZE);
+    }
+    return icon;
   }
 
   @Override
@@ -102,5 +110,15 @@ public class GroupingNode implements NetworkNode {
         childNodes.stream().map(NetworkNode::getDtoProperties).collect(Collectors.toList()));
     response.put(SERVICES_PROPERTY, serviceDescriptors);
     return response;
+  }
+
+  @NonNls
+  @Override
+  public String toHtml() {
+    return "<h1>"
+        + escapeHtml4(name)
+        + "</h1><p><i>"
+        + escapeHtml4(description)
+        + "</i></p>";
   }
 }

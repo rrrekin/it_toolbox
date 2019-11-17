@@ -3,19 +3,23 @@ package net.in.rrrekin.ittoolbox.configuration.nodes;
 import static com.google.common.base.Preconditions.checkArgument;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.enMessage;
 import static net.in.rrrekin.ittoolbox.utilities.StringUtils.toStringOrEmpty;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
-import javax.swing.ImageIcon;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import javax.swing.Icon;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents an entity tha has no address, e.g. vlan, clustered application instance, etc.
@@ -23,14 +27,15 @@ import org.jetbrains.annotations.NotNull;
  * @author michal.rudewicz @gmail.com
  */
 @ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GenericNode implements NetworkNode {
 
   @Getter @Setter private @NonNull String name;
   @Getter @Setter private @NonNull String description;
+  @ToString.Exclude @Setter private @Nullable Icon icon = null;
   @Getter private final @NonNull Map<String, String> properties;
   @Getter private final @NonNull List<String> serviceDescriptors;
+
 
   /**
    * Instantiates a new Generic node.
@@ -74,8 +79,11 @@ public class GenericNode implements NetworkNode {
   }
 
   @Override
-  public @NotNull ImageIcon getIcon() {
-    return new ImageIcon();
+  public @NotNull Icon getIcon() {
+    if (icon == null) {
+      icon = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.LABEL_OUTLINE, NetworkNode.ICON_SIZE);
+    }
+    return icon;
   }
 
   @Override
@@ -87,5 +95,15 @@ public class GenericNode implements NetworkNode {
     response.put(SERVICES_PROPERTY, serviceDescriptors);
     properties.forEach((property, value) -> response.put(PROPERTIES_PREFIX + property, value));
     return response;
+  }
+
+  @NonNls
+  @Override
+  public String toHtml() {
+    return "<h1>"
+      + escapeHtml4(name)
+      + "</h1><p><i>"
+      + escapeHtml4(description)
+      + "</i></p>";
   }
 }

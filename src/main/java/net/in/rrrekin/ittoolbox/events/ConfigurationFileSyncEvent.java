@@ -8,11 +8,11 @@ import lombok.Value;
  * @author michal.rudewicz@gmail.com
  */
 @Value
-public class ConfigurationFileReadEvent {
-  private final @NonNull ConfigurationFileReadEvent.Code code;
+public class ConfigurationFileSyncEvent {
+  private final @NonNull ConfigurationFileSyncEvent.Code code;
   private final @NonNull String message;
 
   public enum Code {
-    OK, MISSING, FAILED, NEW;
+    OK, MISSING, FAILED, NEW, SAVED;
   }
 }

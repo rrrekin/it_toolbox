@@ -2,22 +2,27 @@ package net.in.rrrekin.ittoolbox.configuration.nodes;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.enMessage;
+import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 import static net.in.rrrekin.ittoolbox.utilities.StringUtils.toStringOrEmpty;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
-import javax.swing.ImageIcon;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import javax.swing.Icon;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
+import jiconfont.swing.IconFontSwing;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.Value;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Representation of a standard server with its own address.
@@ -25,15 +30,16 @@ import org.jetbrains.annotations.NotNull;
  * @author michal.rudewicz @gmail.com
  */
 @ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Server implements NetworkNode {
 
   @Getter @Setter private @NonNull String name;
   @Getter @Setter private @NonNull String address;
   @Getter @Setter private @NonNull String description;
+  @ToString.Exclude @Setter private @Nullable Icon icon = null;
   @Getter private final @NonNull Map<String, String> properties;
   @Getter private final @NonNull List<String> serviceDescriptors;
+
 
   /**
    * Instantiates a new Server for given address.
@@ -79,8 +85,11 @@ public class Server implements NetworkNode {
   }
 
   @Override
-  public @NotNull ImageIcon getIcon() {
-    return new ImageIcon();
+  public @NotNull Icon getIcon() {
+    if (icon == null) {
+      icon = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.COMPUTER, NetworkNode.ICON_SIZE);
+    }
+    return icon;
   }
 
   @Override
@@ -96,8 +105,22 @@ public class Server implements NetworkNode {
     return response;
   }
 
+  @NonNls
+  @Override
+  public String toHtml() {
+    return "<h1>"
+        + escapeHtml4(name)
+        + "</h1><p><b>"
+        + escapeHtml4(localMessage("N_ADDRESS"))
+        + " "
+        + escapeHtml4(address)
+        + "</b></p><p><i>"
+        + escapeHtml4(description)
+        + "</i></p>";
+  }
+
   /**
-   * Data copy object.
+   * Data copy object. TODO: Possibly should be changed to model for gui
    *
    * @return the object
    */

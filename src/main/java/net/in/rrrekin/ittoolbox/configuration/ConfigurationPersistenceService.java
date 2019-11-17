@@ -41,6 +41,7 @@ import net.in.rrrekin.ittoolbox.utilities.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * Service responsible for saving and loading application configuration.
@@ -112,7 +113,7 @@ public class ConfigurationPersistenceService {
     } catch (final FileNotFoundException e) {
       log.warn("Configuration file ({}) not present.", configFile);
       throw new MissingConfigurationException("EX_MISSING_CFG_FILE", e, configFile);
-    } catch (final IOException | ClassCastException e) {
+    } catch (final YAMLException | IOException | ClassCastException e) {
       log.warn("Failed to read configuration file ({}): {}", configFile, e.getLocalizedMessage());
       throw new InvalidConfigurationException("EX_UNREADABLE_CFG_FILE", e, configFile);
     }

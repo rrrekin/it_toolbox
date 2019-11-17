@@ -22,9 +22,9 @@ public enum NodeType {
     @Override
     @NotNull
     NetworkNode create(
-        final @NonNull Map<String, Object> dto,
-        final @NonNull String parentInfo,
-        final @NonNull NodeFactory nodeFactory) {
+        final Map<String, Object> dto,
+        final String parentInfo,
+        final NodeFactory nodeFactory) {
       return new GroupingNode(dto, nodeFactory, parentInfo);
     }
   },
@@ -33,9 +33,9 @@ public enum NodeType {
     @Override
     @NotNull
     NetworkNode create(
-        final @NonNull Map<String, Object> dto,
-        final @NonNull String parentInfo,
-        final @NonNull NodeFactory nodeFactory) {
+        final Map<String, Object> dto,
+        final String parentInfo,
+        final NodeFactory nodeFactory) {
       return new Server(dto);
     }
   },
@@ -44,9 +44,9 @@ public enum NodeType {
     @Override
     @NotNull
     NetworkNode create(
-        final @NonNull Map<String, Object> dto,
-        final @NonNull String parentInfo,
-        final @NonNull NodeFactory nodeFactory) {
+        final Map<String, Object> dto,
+        final String parentInfo,
+        final NodeFactory nodeFactory) {
       return new GenericNode(dto);
     }
   };
