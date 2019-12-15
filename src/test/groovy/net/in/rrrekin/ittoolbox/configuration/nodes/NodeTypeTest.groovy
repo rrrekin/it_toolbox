@@ -8,28 +8,26 @@ import spock.lang.Unroll
  */
 class NodeTypeTest extends Specification {
 
-    @Unroll
-    def "should define #node"() {
-        expect:
-        NodeType.values().size() == 3
+  @Unroll
+  def "should define #node"() {
+    expect:
+    NodeType.values().size() == 3
 
-        and:
-        node.typeName == typeName
-        NodeType.of(typeName) == node
+    and:
+    node.typeName == typeName
+    NodeType.of(typeName) == node
+    NodeType.of(ccTypeName) == node
 
-        and: "creates type instance"
-        node.create([type: typeName], '', Stub(NodeFactory)).class == clazz
+    where:
+    node                  | typeName      | ccTypeName
+    NodeType.GROUP        | 'Group'       | 'GrOUp'
+    NodeType.SERVER       | 'Server'      | 'server'
+    NodeType.GENERIC_NODE | 'GenericNode' | 'GeneRicNode'
+  }
 
-        where:
-        node                  | clazz        | typeName
-        NodeType.GROUP        | GroupingNode | 'Group'
-        NodeType.SERVER       | Server       | 'Server'
-        NodeType.GENERIC_NODE | GenericNode  | 'GenericNode'
-    }
-
-    def "should return null for unknown class and typeName"() {
-        expect:
-        NodeType.of('Bomb') == null
-        NodeType.of(null) == null
-    }
+  def "should return null for unknown class and typeName"() {
+    expect:
+    NodeType.of('Bomb') == null
+    NodeType.of(null) == null
+  }
 }

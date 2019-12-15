@@ -1,18 +1,19 @@
 package net.in.rrrekin.ittoolbox.os;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.inject.Inject;
 import java.util.Locale;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 /**
  * Factory of {@link OsServices} implementations based on OS name.
  *
  * @author michal.rudewicz @gmail.com
  */
-@Slf4j
 public final class OsServicesFactory {
 
   /** The constant for determination of Linux OS. */
@@ -23,14 +24,15 @@ public final class OsServicesFactory {
 
   /** The constant for determination od MacOS. */
   public static final String MAC = "mac";
+  private static final Logger log = org.slf4j.LoggerFactory.getLogger(OsServicesFactory.class);
 
-  private final @NonNull ProgramLocationService locationService;
-  private final @NonNull SystemWrapper system;
+  private final @NotNull ProgramLocationService locationService;
+  private final @NotNull SystemWrapper system;
 
   @Inject
-  public OsServicesFactory(final @NonNull ProgramLocationService locationService, final @NonNull SystemWrapper system) {
-    this.locationService = locationService;
-    this.system = system;
+  public OsServicesFactory(final @NotNull ProgramLocationService locationService, final @NotNull SystemWrapper system) {
+    this.locationService = requireNonNull(locationService, "LocationService must not be null");
+    this.system = requireNonNull(system, "System must not be null");
   }
 
   /**
@@ -39,7 +41,8 @@ public final class OsServicesFactory {
    * @param osName the os name
    * @return the os services
    */
-  public OsServices create(final @NonNull String osName) {
+  public OsServices create(final @NotNull String osName) {
+    requireNonNull(osName, "OsName must not be null");
     if (osName.toLowerCase(Locale.ENGLISH).startsWith(LINUX)) {
       return new OsServicesLinuxImpl(system, locationService);
     } else if (osName.toLowerCase(Locale.ENGLISH).startsWith(WINDOWS)) {

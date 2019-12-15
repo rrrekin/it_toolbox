@@ -2,7 +2,6 @@ package net.in.rrrekin.ittoolbox.os;
 
 import java.util.List;
 import java.util.Map;
-import lombok.NonNull;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -184,5 +183,5 @@ public interface OsServices {
    * @param inTerminal if true, the command will be executed in a terminal window
    */
   void executeCommand(
-      @NonNull String command, @NonNull Map<String, String> env, @NonNull boolean inTerminal);
+      @NotNull String command, @NotNull Map<String, String> env, boolean inTerminal);
 }

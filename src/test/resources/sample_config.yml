@@ -5,11 +5,11 @@ servers:
   - type: Server
     name: s1
     address: a1
+    icon: SERVER:blue:true
     description: 2018年1月1日 星期一 下午03时20分34秒
-    services: [
-    ]
   - type: GenericNode
     name: s2
+    icon: GROUP:beige:true
     description: d2
     services:
       - vlan:1001
@@ -17,6 +17,7 @@ servers:
   - type: Server
     name: s3
     address: a3
+    icon: SERVER:blue:true
     description: d3
     services:
       - ssh
@@ -27,26 +28,34 @@ servers:
       - actuator
   - type: Group
     name: g4
+    icon: FOLDER:red:false
     description: zażółć gęślą jaźń
+    services:
+      - exec:report ${name}
+      - docker-compose:/path/to/dir
     children:
       - type: Server
         name: s5
         address: a5
+        icon: SERVER:blue:true
         description: d5
         services:
           - ssh
       - type: Group
         name: g8
+        icon: FOLDER:red:false
         description: d8
         children:
           - type: Server
             name: s9
             address: a9
+            icon: SERVER:blue:true
             description: d9
             services:
               - https
           - type: GenericNode
             name: s10
+            icon: FOLDER:red:false
             description: d10
             services:
               - cmd:cluster-restart
@@ -55,42 +64,44 @@ servers:
           - type: Server
             name: s11
             address: a11
+            icon: SERVER:blue:true
             description: d11
             services:
               - rest:8080:GET:/api/v1/abc
-        services: [
-            ]
       - type: GenericNode
         name: s6
+        icon: SERVER:blue:true
         description: d6
-        services: [
-        ]
       - type: Server
         name: s7
         address: a7
+        icon: GROUP:beige:true
         description: d7
         services:
           - ftp
-    services:
-      - docker-compose:/path/to/dir
   - type: Server
     name: s12
     address: a12
+    icon: GROUP:beige:true
     description: d12
     services:
       - https:9000
   - type: GenericNode
     name: s13
+    icon: GROUP:beige:true
     description: d13
     services:
       - http:8080
   - type: Server
     name: s14
     address: a14
+    icon: SERVER:blue:true
     description: d14
     services:
       - ftp
       - telnet
+    _p1: asdfasd,
+    _p2: '54235'
 services:
   service2: service2 configuration
   service1: service1 configuration

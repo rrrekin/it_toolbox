@@ -1,54 +1,43 @@
 package net.in.rrrekin.ittoolbox.infrastructure;
 
+import static java.util.Objects.requireNonNull;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import javax.swing.JOptionPane;
-import lombok.NonNull;
-import net.in.rrrekin.ittoolbox.utilities.ErrorCode;
+import net.in.rrrekin.ittoolbox.gui.GuiInvokeService;
+import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Utility class responsible for log infractructure setup.
+ * Utility class responsible for log infrastructure setup.
  *
  * @author michal.rudewicz @gmail.com
  */
 public class LogConfigurator {
 
   private static final String LOGS_SUBDIRECTORY = "logs";
-  private static final String STARTUP_ERROR_TITLE = "APP_STARTUP_ERROR";
 
   /**
    * Sets file logs location.
    *
    * @param appDir the logs
    */
-  public static void prepareLoggingConfiguration(final @NonNull File appDir) {
-
+  public static void prepareLoggingConfiguration(final @NotNull File appDir) {
+    requireNonNull(appDir, "AppDir must not be null");
     appDir.mkdirs(); // NOSONAR
     appDir.setWritable(true); // NOSONAR
     if (!appDir.isDirectory() || !appDir.canWrite()) {
-      JOptionPane.showMessageDialog(
-          null,
-          localMessage("APP_CANNOT_CREATE_APP_DIR", appDir),
-          localMessage(STARTUP_ERROR_TITLE),
-          JOptionPane.ERROR_MESSAGE);
-      ErrorCode.CANNOT_CREATE_APP_DIRECTORY.exit();
+      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_APP_DIR", appDir));
     }
 
     final File logsDir = new File(appDir, LOGS_SUBDIRECTORY);
     logsDir.mkdirs(); // NOSONAR
     logsDir.setWritable(true); // NOSONAR
     if (!appDir.isDirectory() || !appDir.canWrite()) {
-      JOptionPane.showMessageDialog(
-          null,
-          localMessage("APP_CANNOT_CREATE_LOGS_DIR", logsDir),
-          localMessage(STARTUP_ERROR_TITLE),
-          JOptionPane.ERROR_MESSAGE);
-      ErrorCode.CANNOT_CREATE_LOGS_DIRECTORY.exit();
+      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_LOGS_DIR", logsDir));
     }
 
     final File configFile = new File(appDir, "logback.xml");
@@ -56,12 +45,7 @@ public class LogConfigurator {
       createDefaultLogbackConfig(configFile);
     }
     if (!(configFile.isFile() && configFile.canRead())) {
-      JOptionPane.showMessageDialog(
-          null,
-          localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", configFile),
-          localMessage(STARTUP_ERROR_TITLE),
-          JOptionPane.ERROR_MESSAGE);
-      ErrorCode.CANNOT_CREATE_LOGS_CONFIG.exit();
+      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", configFile));
     }
 
     System.setProperty("LOG_FILE_LOCATION", logsDir.getAbsolutePath());
@@ -77,12 +61,7 @@ public class LogConfigurator {
         Files.copy(logbakcConfigStream, file.toPath());
       }
     } catch (final IOException e) {
-      JOptionPane.showMessageDialog(
-          null,
-          localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", e.getLocalizedMessage()),
-          localMessage(STARTUP_ERROR_TITLE),
-          JOptionPane.ERROR_MESSAGE);
-      ErrorCode.CANNOT_CREATE_LOGS_CONFIG.exit();
+      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", e.getLocalizedMessage()));
     }
   }
 }

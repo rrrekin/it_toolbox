@@ -1,6 +1,7 @@
 package net.in.rrrekin.ittoolbox.os;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
@@ -14,13 +15,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 /**
  * Default implementation of {@link OsServices}. Used for OS without specific support or when given
@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author michal.rudewicz @gmail.com
  */
-@Slf4j
 public class OsServicesDefaultImpl implements OsServices {
 
   private static final String SHELL_ENV_VAR = "SHELL";
@@ -37,12 +36,14 @@ public class OsServicesDefaultImpl implements OsServices {
   private static final String ADDRESS_PLACEHOLDER = " ${server.address}";
   private static final String PORT_SEMICOLON_PLACEHOLDER = "${port>0?':'+port:''}";
   private static final Pattern COMMENT_PATTERN = Pattern.compile("#.*");
-  private final @NonNull SystemWrapper system;
-  @NonNls private final @NonNull ProgramLocationService locationService;
+  private static final Logger log = org.slf4j.LoggerFactory.getLogger(OsServicesDefaultImpl.class);
+  private final @NotNull SystemWrapper system;
+  @NonNls private final @NotNull ProgramLocationService locationService;
 
-  public OsServicesDefaultImpl(final @NonNull SystemWrapper system, final @NonNull ProgramLocationService locationService) {
-    this.system = system;
-    this.locationService = locationService;
+  public OsServicesDefaultImpl(
+      final @NotNull SystemWrapper system, final @NotNull ProgramLocationService locationService) {
+    this.system = requireNonNull(system, "SystemWrapper must not be null");
+    this.locationService = requireNonNull(locationService, "LocationService must not be null");
   }
 
   @Override
@@ -225,7 +226,9 @@ public class OsServicesDefaultImpl implements OsServices {
 
   @Override
   public void executeCommand(
-      final String command, @NonNull Map<String, String> env, final boolean inTerminal) {
+      final @NotNull String command,
+      @NotNull final Map<String, String> env,
+      final boolean inTerminal) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 }

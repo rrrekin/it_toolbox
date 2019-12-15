@@ -1,7 +1,5 @@
 package net.in.rrrekin.ittoolbox.utilities;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 
 /**
@@ -9,6 +7,8 @@ import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
  *
  * @author michal.rudewicz@gmail.com
  */
+@Deprecated
+// TODO: remove
 public enum ErrorCode {
   INITIALIZATION_ERROR(1),
   RUNTIME_ERROR(2),
@@ -19,16 +19,28 @@ public enum ErrorCode {
   SAVE_ERROR(2000),
   LOAD_ERROR(2001);
 
-  @Getter @Setter private static SystemWrapper system = new SystemWrapper();
+  private static SystemWrapper system = new SystemWrapper();
 
-  @Getter private final int status;
+  private final int status;
 
   ErrorCode(final int status) {
     this.status = status;
   }
 
+  public static SystemWrapper getSystem() {
+    return ErrorCode.system;
+  }
+
+  public static void setSystem(SystemWrapper system) {
+    ErrorCode.system = system;
+  }
+
   /** Terminates application with this error code. */
   public void exit() {
     system.exit(status);
+  }
+
+  public int getStatus() {
+    return this.status;
   }
 }

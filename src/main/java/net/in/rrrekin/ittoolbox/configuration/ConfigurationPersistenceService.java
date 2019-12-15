@@ -1,16 +1,15 @@
 package net.in.rrrekin.ittoolbox.configuration;
 
-import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_MODULE_LIST;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_MODULE_OPTIONS;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICES_SECTION;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.INVALID_SERVICE_CONFIGURATION;
-import static net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent.Code.SERVER_LIST_UNREADABLE;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Objects.requireNonNull;
+import static net.in.rrrekin.ittoolbox.configuration.nodes.NodeConverter.CHILD_NODES_PROPERTY;
+import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 import static org.apache.commons.lang3.StringUtils.abbreviate;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -22,24 +21,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import javafx.scene.control.TreeItem;
 import net.in.rrrekin.ittoolbox.configuration.exceptions.FailedConfigurationSaveException;
 import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationException;
 import net.in.rrrekin.ittoolbox.configuration.exceptions.MissingConfigurationException;
+import net.in.rrrekin.ittoolbox.configuration.nodes.GroupingNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
-import net.in.rrrekin.ittoolbox.configuration.nodes.NodeFactory;
-import net.in.rrrekin.ittoolbox.events.ConfigurationErrorEvent;
+import net.in.rrrekin.ittoolbox.configuration.nodes.NodeConverter;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceRegistry;
-import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
 import net.in.rrrekin.ittoolbox.utilities.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.DumperOptions.NonPrintableStyle;
+import org.yaml.snakeyaml.DumperOptions.Version;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -48,7 +53,6 @@ import org.yaml.snakeyaml.error.YAMLException;
  *
  * @author michal.rudewicz @gmail.com
  */
-@Slf4j
 public class ConfigurationPersistenceService {
 
   private static final String VERSION = "1.0";
@@ -56,39 +60,42 @@ public class ConfigurationPersistenceService {
   private static final String SERVERS_PROPERTY = "servers";
   private static final String MODULES_PROPERTY = "modules";
   private static final String SERVICES_PROPERTY = "services";
-  private static final String LOCALE_PROPERTY = "locale";
   private static final int YAML_LINE_WIDTH = 130;
-  public static final int MAX_OBJECT_DESCRIPTION_WIDTH = 40;
-  private final @NonNull DumperOptions yamlOptions;
-  private final @NonNull ServiceRegistry serviceRegistry;
-  private final @NonNull NodeFactory nodeFactory;
-  private final @NonNull EventBus eventBus;
+  private static final int MAX_OBJECT_DESCRIPTION_WIDTH = 40;
+
+  @NonNls
+  private static final Logger log =
+      org.slf4j.LoggerFactory.getLogger(ConfigurationPersistenceService.class);
+  @NonNls
+  public static final String ROOT = "root";
+
+  private final @NotNull DumperOptions yamlOptions;
+  private final @NotNull ServiceRegistry serviceRegistry;
+  private final @NotNull NodeConverter nodeConverter;
+  //  private final @NonNull EventBus eventBus;
 
   /**
    * Instantiates a new Configuration persistence service.
    *
    * @param serviceRegistry the service registry
-   * @param nodeFactory the node factory
    */
   @Inject
   public ConfigurationPersistenceService(
-      final @NonNull ServiceRegistry serviceRegistry,
-      final @NonNull NodeFactory nodeFactory,
-      final @NonNull EventBus eventBus) {
+      final @NotNull ServiceRegistry serviceRegistry,
+      final @NotNull NodeConverter nodeConverter) {
     log.debug("Initializing ConfigurationPersistenceService");
     yamlOptions = new DumperOptions();
     yamlOptions.setIndent(4);
     yamlOptions.setAllowUnicode(true);
     yamlOptions.setIndicatorIndent(2);
-    yamlOptions.setNonPrintableStyle(DumperOptions.NonPrintableStyle.ESCAPE);
+    yamlOptions.setNonPrintableStyle(NonPrintableStyle.ESCAPE);
     yamlOptions.setWidth(YAML_LINE_WIDTH);
     yamlOptions.setSplitLines(true);
-    yamlOptions.setVersion(DumperOptions.Version.V1_1);
+    yamlOptions.setVersion(Version.V1_1);
     yamlOptions.setPrettyFlow(true);
-    yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-    this.serviceRegistry = serviceRegistry;
-    this.nodeFactory = nodeFactory;
-    this.eventBus = eventBus;
+    yamlOptions.setDefaultFlowStyle(FlowStyle.BLOCK);
+    this.serviceRegistry = requireNonNull(serviceRegistry, "ServiceRegistry must not be null");
+    this.nodeConverter = requireNonNull(nodeConverter, "NodeConverter must not be null");
   }
 
   // TODO: Add user notifications on minor configuration read errors during initial load.
@@ -102,10 +109,11 @@ public class ConfigurationPersistenceService {
    * @throws InvalidConfigurationException when configuration cannot be properly read
    * @throws MissingConfigurationException when configuration file is missing
    */
-  public Configuration load(final @NonNull File configFile)
+  public @NotNull ReadResult load(final @NotNull File configFile)
       throws InvalidConfigurationException, MissingConfigurationException {
 
     log.info("Loading configuration from '{}'", configFile);
+    requireNonNull(configFile, "ConfigFile must not be null");
     final Yaml yaml = new Yaml(yamlOptions);
     final Map<String, ?> configurationDto;
     try (final InputStream inputStream = new BufferedInputStream(new FileInputStream(configFile))) {
@@ -122,90 +130,157 @@ public class ConfigurationPersistenceService {
       throw new InvalidConfigurationException("EX_UNREADABLE_CFG_FILE", configFile);
     }
 
-    if (configurationDto.get(LOCALE_PROPERTY) != null) {
-      LocaleUtil.setLocale(
-          Locale.forLanguageTag(String.valueOf(configurationDto.get(LOCALE_PROPERTY))));
-    }
-
-    // TODO: simplify
     final Object version = configurationDto.get(VERSION_PROPERTY);
     if (VERSION.equals(version)) {
-      // Read Network nodes configuration
-      final List<NetworkNode> networkNodes;
-      final Object serversDto = configurationDto.get(SERVERS_PROPERTY);
+      final ReadResult result = readConfigV1(configurationDto);
+        result.configuration.setFilePath(configFile.getAbsoluteFile().toPath().normalize());
+      return result;
+    } else {
+      throw new InvalidConfigurationException("EX_UNKNOWN_VERSION", configFile, version);
+    }
+  }
+
+  private @NotNull ReadResult readConfigV1(
+      final @NotNull Map<String, ?> configurationDto) throws InvalidConfigurationException {
+    final List<String> warnings = newArrayList();
+    final TreeItem<NetworkNode> rootNode = readNetworkNodesV1(configurationDto, warnings);
+    final Map<String, Map<String, String>> modules = readModulesV1(configurationDto, warnings);
+    readServicesV1(configurationDto, warnings);
+
+    return new ReadResult(
+        new Configuration(rootNode, modules), warnings);
+  }
+
+  private @NotNull TreeItem<NetworkNode> readNetworkNodesV1(
+      final @NotNull Map<String, ?> configurationDto, final @NotNull List<String> warnings)
+      throws InvalidConfigurationException {
+    final TreeItem<NetworkNode> rootNode = new TreeItem<>(new GroupingNode(ROOT));
+    final Object serversDto = configurationDto.get(SERVERS_PROPERTY);
+    if (serversDto != null) {
       if (serversDto instanceof List) {
-        networkNodes = nodeFactory.createNodeList((List<?>) serversDto, SERVERS_PROPERTY);
+        rootNode.getChildren().addAll(readServerList((List<?>) serversDto, warnings));
       } else {
         log.warn("Failed to read server list.");
-        eventBus.post(
-            new ConfigurationErrorEvent(
-                SERVER_LIST_UNREADABLE, LocaleUtil.localMessage("CFG_SERVER_LIST_UNREADABLE")));
-        networkNodes = Lists.newArrayList();
+        throw new InvalidConfigurationException("CFG_INVALID_NODE_LIST");
       }
+    } else {
+      log.warn("Missing network node list");
+      warnings.add(localMessage("CFG_SERVER_LIST_MISSING"));
+    }
+    return rootNode;
+  }
 
-      // Read application modules configuration
-      final Map<String, Map<String, String>> modules = Maps.newHashMap();
-      final Object modulesDto = configurationDto.get(MODULES_PROPERTY);
+  private void readServicesV1(
+      final @NotNull Map<String, ?> configurationDto, final @NotNull List<String> warnings) {
+    final Object servicesDto = configurationDto.get(SERVICES_PROPERTY);
+    if (servicesDto instanceof Map) {
+      for (final Entry<?, ?> entry : ((Map<?, ?>) servicesDto).entrySet()) {
+        final String serviceId = StringUtils.toStringOrEmpty(entry.getKey());
+        final String serviceOptions = StringUtils.toStringOrEmpty(entry.getValue());
+        try {
+          serviceRegistry.configureService(serviceId, serviceOptions);
+        } catch (final Exception e) {
+          log.warn("Failed to configure service {}.", serviceId, e);
+          warnings.add(
+              localMessage(
+                  "CFG_INVALID_SERVICE_CONFIGURATION",
+                  serviceId,
+                  abbreviated(serviceOptions),
+                  MAX_OBJECT_DESCRIPTION_WIDTH));
+        }
+      }
+    } else {
+      log.warn("Failed to read services list.");
+      warnings.add(localMessage("CFG_INVALID_SERVICES_SECTION"));
+    }
+  }
+
+  private static @NotNull Map<String, Map<String, String>> readModulesV1(
+      final @NotNull Map<String, ?> configurationDto, final @NotNull List<String> warnings) {
+    final Map<String, Map<String, String>> modules = Maps.newHashMap();
+    final Object modulesDto = configurationDto.get(MODULES_PROPERTY);
+    if (modulesDto != null) {
       if (modulesDto instanceof Map) {
-        for (final Map.Entry<?, ?> entry : ((Map<?, ?>) modulesDto).entrySet()) {
+        for (final Entry<?, ?> entry : ((Map<?, ?>) modulesDto).entrySet()) {
           final String moduleId = StringUtils.toStringOrEmpty(entry.getKey());
           final Object optionsDto = entry.getValue();
-          final Map<String, String> moduleConfig = Maps.newHashMap();
-          modules.put(moduleId, moduleConfig);
           if (optionsDto instanceof Map) {
-            for (final Map.Entry<?, ?> optionEntry : ((Map<?, ?>) optionsDto).entrySet()) {
+            final Map<String, String> moduleConfig = Maps.newHashMap();
+            modules.put(moduleId, moduleConfig);
+            for (final Entry<?, ?> optionEntry : ((Map<?, ?>) optionsDto).entrySet()) {
               final String optionId = StringUtils.toStringOrEmpty(optionEntry.getKey());
               final String optionValue = StringUtils.toStringOrEmpty(optionEntry.getValue());
               moduleConfig.put(optionId, optionValue);
             }
           } else {
             log.warn("Failed to read options for module {}", moduleId);
-            eventBus.post(
-                new ConfigurationErrorEvent(
-                    INVALID_MODULE_OPTIONS,
-                    LocaleUtil.localMessage(
-                        "CFG_INVALID_MODULE_OPTIONS",
-                        moduleId,
-                        abbreviate(String.valueOf(optionsDto), MAX_OBJECT_DESCRIPTION_WIDTH))));
+            warnings.add(
+                localMessage(
+                    "CFG_INVALID_MODULE_OPTIONS",
+                    moduleId,
+                    abbreviate(String.valueOf(optionsDto), MAX_OBJECT_DESCRIPTION_WIDTH)));
           }
         }
       } else {
         log.warn("Failed to read application modules configuration.");
-        eventBus.post(
-            new ConfigurationErrorEvent(
-                INVALID_MODULE_LIST, LocaleUtil.localMessage("CFG_INVALID_MODULE_LIST")));
+        warnings.add(localMessage("CFG_INVALID_MODULE_LIST"));
       }
+    }
+    return modules;
+  }
 
-      // Read service configuration
-      final Object servicesDto = configurationDto.get(SERVICES_PROPERTY);
-      if (servicesDto instanceof Map) {
-        for (final Map.Entry<?, ?> entry : ((Map<?, ?>) servicesDto).entrySet()) {
-          final String serviceId = StringUtils.toStringOrEmpty(entry.getKey());
-          final String serviceOptions = StringUtils.toStringOrEmpty(entry.getValue());
-          try {
-            serviceRegistry.configureService(serviceId, serviceOptions);
-          } catch (final Exception e) {
-            log.warn("Failed to configure service {}.", serviceId);
-            eventBus.post(
-                new ConfigurationErrorEvent(
-                    INVALID_SERVICE_CONFIGURATION,
-                    LocaleUtil.localMessage(
-                        "CFG_INVALID_SERVICE_CONFIGURATION",
-                        serviceId,
-                        abbreviate(String.valueOf(serviceOptions), MAX_OBJECT_DESCRIPTION_WIDTH))));
-          }
+  private @NotNull List<TreeItem<NetworkNode>> readServerList(
+      final @NotNull Iterable<?> serversDto, final @NotNull Collection<String> warnings) {
+    final ImmutableList.Builder<TreeItem<NetworkNode>> response = ImmutableList.builder();
+    for (final Object dto : serversDto) {
+      if (dto instanceof Map) {
+        try {
+          response.add(readNode((Map) dto, warnings));
+        } catch (final InvalidConfigurationException e) {
+          warnings.add(localMessage("CFG_INVALID_OBJECT_ON_DTO_LIST", abbreviated(dto)));
         }
       } else {
-        log.warn("Failed to read services list.");
-        eventBus.post(
-            new ConfigurationErrorEvent(
-                INVALID_SERVICES_SECTION, LocaleUtil.localMessage("CFG_INVALID_SERVICES_SECTION")));
+        warnings.add(localMessage("CFG_INVALID_OBJECT_ON_DTO_LIST", abbreviated(dto)));
       }
+    }
+    return response.build();
+  }
 
-      return new Configuration(networkNodes, modules);
+  private @NotNull TreeItem<NetworkNode> readNode(
+      final @NotNull Map<?, ?> dto, final @NotNull Collection<String> warnings)
+      throws InvalidConfigurationException {
+    final NetworkNode node = nodeConverter.convertTo(dto);
+    final TreeItem<NetworkNode> response = new TreeItem<>(node, node.getIconDescriptor().getIcon());
+    if (!node.isLeaf()) {
+      final Object children = dto.get(CHILD_NODES_PROPERTY);
+      if (children instanceof List) {
+        response.getChildren().addAll(readServerList((List) children, warnings));
+      } else {
+        warnings.add(
+            localMessage(
+                "CFG_INVALID_OBJECT_ON_DTO_LIST2", CHILD_NODES_PROPERTY, abbreviated(children)));
+      }
+    }
+    return response;
+  }
 
-    } else {
-      throw new InvalidConfigurationException("EX_UNKNOWN_VERSION", configFile, version);
+  private static @Nullable String abbreviated(final @Nullable Object dto) {
+    return abbreviate(
+        StringEscapeUtils.escapeJava(String.valueOf(dto)), MAX_OBJECT_DESCRIPTION_WIDTH);
+  }
+
+  public static final class ReadResult {
+    public final @NotNull Configuration configuration;
+    public final @NotNull ImmutableList<String> warnings;
+
+    ReadResult(
+        final @NotNull Configuration configuration, final @NotNull Iterable<String> warnings) {
+      this.configuration = configuration;
+      this.warnings = ImmutableList.copyOf(warnings);
+    }
+
+    public boolean isClean() {
+      return warnings.isEmpty();
     }
   }
 
@@ -216,8 +291,10 @@ public class ConfigurationPersistenceService {
    * @param config the config
    * @throws FailedConfigurationSaveException when unable to save the configuration to the file
    */
-  public void save(final @NonNull File configFile, final @NonNull Configuration config)
+  public void save(final @NotNull File configFile, final @NotNull Configuration config)
       throws FailedConfigurationSaveException {
+    requireNonNull(configFile, "ConfigFile must not be null");
+    requireNonNull(config, "Config must not be null");
     final Yaml yaml = new Yaml(yamlOptions);
     try (final BufferedWriter output =
         new BufferedWriter(
@@ -232,23 +309,34 @@ public class ConfigurationPersistenceService {
 
   private @NotNull Map<String, ?> getDto(final @NotNull Configuration config) {
     final List<Map<String, ?>> serversDto =
-        config.getNetworkNodes().stream()
-            .map(NetworkNode::getDtoProperties)
+        config.getNetworkNodes().getChildren().stream()
+            .map(this::getDto)
             .collect(Collectors.toList());
     final Map<String, String> services =
         serviceRegistry.stream()
             .collect(
                 Collectors.toMap(ServiceDefinition::getId, ServiceDefinition::getConfiguration));
 
-    final ImmutableMap.Builder<String, Object> responseBuilder = ImmutableMap.builder();
+    final Builder<String, Object> responseBuilder = ImmutableMap.builder();
     responseBuilder.put(VERSION_PROPERTY, VERSION);
-    if (LocaleUtil.getLocaleCode() != null) {
-      responseBuilder.put(LOCALE_PROPERTY, LocaleUtil.getLocaleCode());
-    }
     responseBuilder.put(SERVERS_PROPERTY, serversDto);
     responseBuilder.put(SERVICES_PROPERTY, services);
     responseBuilder.put(MODULES_PROPERTY, config.getModules());
 
     return responseBuilder.build();
+  }
+
+  private @NotNull Map<String, ?> getDto(final @NotNull TreeItem<NetworkNode> item) {
+    final NetworkNode node = item.getValue();
+    if (node.isLeaf()) {
+      return nodeConverter.convertFrom(node);
+    } else {
+      final Builder<String, Object> response = ImmutableMap.builder();
+      response.putAll(nodeConverter.convertFrom(node));
+      response.put(
+          CHILD_NODES_PROPERTY,
+          item.getChildren().stream().map(this::getDto).collect(Collectors.toList()));
+      return response.build();
+    }
   }
 }

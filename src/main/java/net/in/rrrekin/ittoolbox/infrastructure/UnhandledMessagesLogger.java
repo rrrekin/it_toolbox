@@ -4,24 +4,27 @@ import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Objects;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 /**
  * Handler for lost events.
  *
  * @author michal.rudewicz@gmail.com
  */
-@Slf4j
 public class UnhandledMessagesLogger {
 
-  private final @NonNull EventBus eventBus;
+  @NonNls
+  private static final Logger log =
+      org.slf4j.LoggerFactory.getLogger(UnhandledMessagesLogger.class);
+  private final @NotNull EventBus eventBus;
 
   @Inject
-  public UnhandledMessagesLogger(final @NonNull EventBus eventBus) {
+  public UnhandledMessagesLogger(final @NotNull EventBus eventBus) {
     log.info("Creating UnhandledMessagesLogger");
-    this.eventBus = eventBus;
+    this.eventBus = Objects.requireNonNull(eventBus, "EventBuss must not be null");
   }
 
   public void init() {

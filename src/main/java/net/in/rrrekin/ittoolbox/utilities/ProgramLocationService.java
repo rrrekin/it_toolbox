@@ -1,5 +1,7 @@
 package net.in.rrrekin.ittoolbox.utilities;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import java.io.File;
@@ -7,9 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import lombok.Getter;
-import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ProgramLocationService {
 
-  @Getter private final List<Path> paths;
+  private final List<Path> paths;
 
   /**
    * Instantiates a new Program location service.
@@ -46,8 +47,8 @@ public class ProgramLocationService {
    * @param name the name
    * @return the file
    */
-  public @Nullable File getProgramBinary(final @NonNull String name) {
-
+  public @Nullable File getProgramBinary(final @NotNull String name) {
+    requireNonNull(name, "Name must not be null");
     for (final Path path : paths) {
       final Path binary = path.resolve(name);
       if (binary.toFile().isFile() && binary.toFile().canExecute()) {
@@ -56,5 +57,9 @@ public class ProgramLocationService {
     }
 
     return null;
+  }
+
+  public List<Path> getPaths() {
+    return this.paths;
   }
 }

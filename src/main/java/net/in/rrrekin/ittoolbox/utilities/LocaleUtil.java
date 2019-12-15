@@ -1,38 +1,45 @@
 package net.in.rrrekin.ittoolbox.utilities;
 
+import static java.util.Objects.requireNonNull;
+
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.PropertyKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class to handle localization.
  *
  * @author michal.rudewicz @gmail.com
  */
-@Slf4j
 public final class LocaleUtil {
+
+  @NonNls private static final Logger log = LoggerFactory.getLogger(LocaleUtil.class);
 
   /** Property bundle with global messages. */
   public static final String MESSAGES_PROPERTY_BUNDLE = "Messages";
 
-  @Getter private static @Nullable String localeCode = null;
+  private static @Nullable String localeCode = null;
 
-  /** Resource bundle used to create english messages (e.g. log entries). */
-  @Getter
+  @NonNls
   private static final @NotNull ResourceBundle enMessages =
-      ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE, Locale.ENGLISH);
+      requireNonNull(
+          ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE, Locale.ENGLISH),
+          "Failed to get english message bundle");
 
-  /** Resource bundle used to create localized messages (e.g. error dialog boxes). */
-  @Getter
+  @NonNls
   private static @NotNull ResourceBundle messages =
-      ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE);
+      requireNonNull(
+          ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE), "Failed to get local message bundle");
 
-  private static final @NotNull Locale systemLocale = Locale.getDefault();
+  @NonNls
+  private static final @NotNull Locale systemLocale =
+      requireNonNull(Locale.getDefault(), "Failed to get system locale");
 
   private LocaleUtil() {
     // private constructor to prevent instantiation
@@ -51,7 +58,10 @@ public final class LocaleUtil {
       localeCode = null;
       Locale.setDefault(systemLocale);
     }
-    messages = ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE);
+    messages =
+        requireNonNull(
+            ResourceBundle.getBundle(MESSAGES_PROPERTY_BUNDLE),
+            "Failed to get local message bundle");
   }
 
   /**
@@ -61,8 +71,7 @@ public final class LocaleUtil {
    * @return the localized message for given code
    */
   public static @NotNull String localMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE)
-          final @NotNull String code) {
+      @PropertyKey(resourceBundle = MESSAGES_PROPERTY_BUNDLE) final @NotNull String code) {
     try {
       return messages.getString(code);
     } catch (final Exception e) {
@@ -79,7 +88,7 @@ public final class LocaleUtil {
    * @return the formatted localized message for given code and arguments
    */
   public static @NotNull String localMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final @NotNull String code,
+      @PropertyKey(resourceBundle = MESSAGES_PROPERTY_BUNDLE) final @NotNull String code,
       final Object... args) {
     try {
       return new MessageFormat(messages.getString(code), Locale.getDefault()).format(args);
@@ -96,8 +105,7 @@ public final class LocaleUtil {
    * @return the english message for given code
    */
   public static @NotNull String enMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE)
-          final @NotNull String code) {
+      @PropertyKey(resourceBundle = MESSAGES_PROPERTY_BUNDLE) final @NotNull String code) {
     try {
       return enMessages.getString(code);
     } catch (final Exception e) {
@@ -114,7 +122,7 @@ public final class LocaleUtil {
    * @return the formatted english message for given code and arguments
    */
   public static @NotNull String enMessage(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE) final @NotNull String code,
+      @PropertyKey(resourceBundle = MESSAGES_PROPERTY_BUNDLE) final @NotNull String code,
       final Object... args) {
     try {
       return new MessageFormat(enMessages.getString(code), Locale.ENGLISH).format(args);
@@ -130,7 +138,7 @@ public final class LocaleUtil {
    * @return the string [ ]
    */
   public static String[] getSupportedLanguages() {
-    return enMessages.getString("IMPLEMENTED_LANGUAGES").split(",");
+    return enMessages.getString("__IMPLEMENTED_LANGUAGES").split(",");
   }
 
   /**
@@ -141,8 +149,7 @@ public final class LocaleUtil {
    * @return the character
    */
   public static @Nullable Character localCharacter(
-      @PropertyKey(resourceBundle = LocaleUtil.MESSAGES_PROPERTY_BUNDLE)
-          final @NotNull String code) {
+      @PropertyKey(resourceBundle = MESSAGES_PROPERTY_BUNDLE) final @NotNull String code) {
     try {
       final String value = messages.getString(code);
       return value.isEmpty() ? null : value.charAt(0);
@@ -150,5 +157,20 @@ public final class LocaleUtil {
       log.error("Missing resource bundle value for {}", code);
       return null;
     }
+  }
+
+  /** Gets language code of selected locale. */
+  public static @Nullable String getLocaleCode() {
+    return localeCode;
+  }
+
+  /** Resource bundle used to create english messages (e.g. log entries). */
+  public static @NotNull ResourceBundle getEnMessages() {
+    return enMessages;
+  }
+
+  /** Resource bundle used to create localized messages (e.g. error dialog boxes). */
+  public static @NotNull ResourceBundle getMessages() {
+    return messages;
   }
 }

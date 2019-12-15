@@ -1,0 +1,5 @@
+<root>
+  <item name='com.google.common.base.Preconditions void checkState(boolean, java.lang.Object) 1'>
+    <annotation name='org.jetbrains.annotations.NonNls'/>
+  </item>
+</root>

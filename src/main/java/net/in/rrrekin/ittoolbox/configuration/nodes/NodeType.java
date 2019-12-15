@@ -1,12 +1,6 @@
 package net.in.rrrekin.ittoolbox.configuration.nodes;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import java.util.Locale;
-import java.util.Map;
-import lombok.Getter;
-import lombok.NonNull;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,52 +12,27 @@ import org.jetbrains.annotations.Nullable;
  */
 public enum NodeType {
   /** Server group configuration node. */
-  GROUP("Group") {
-    @Override
-    @NotNull
-    NetworkNode create(
-        final Map<String, Object> dto,
-        final String parentInfo,
-        final NodeFactory nodeFactory) {
-      return new GroupingNode(dto, nodeFactory, parentInfo);
-    }
-  },
+  GROUP("Group"),
   /** Server configuration node. */
-  SERVER("Server") {
-    @Override
-    @NotNull
-    NetworkNode create(
-        final Map<String, Object> dto,
-        final String parentInfo,
-        final NodeFactory nodeFactory) {
-      return new Server(dto);
-    }
-  },
+  SERVER("Server"),
   /** Generic node configuration node. */
-  GENERIC_NODE("GenericNode") {
-    @Override
-    @NotNull
-    NetworkNode create(
-        final Map<String, Object> dto,
-        final String parentInfo,
-        final NodeFactory nodeFactory) {
-      return new GenericNode(dto);
-    }
-  };
+  GENERIC_NODE("GenericNode");
 
-  @Getter private final @NotNull String typeName;
-
-  private static final Map<String, NodeType> typeNameMapping = Maps.newHashMap();
-
-  static {
-    for (final NodeType it : NodeType.values()) {
-      typeNameMapping.put(it.getTypeName().toLowerCase(Locale.ENGLISH), it);
-    }
+  /**
+   * Gets name of node type used in YAML serialization.
+   *
+   * @return name of node type used in YAML serialization
+   */
+  public @NotNull String getTypeName() {
+    return typeName;
   }
 
-  @Contract(pure = true)
+  private final @NotNull String typeName;
+  private final @NotNull String lcTypeName;
+
   NodeType(final @NotNull String typeName) {
     this.typeName = typeName;
+    this.lcTypeName = typeName.toLowerCase();
   }
 
   /**
@@ -73,19 +42,14 @@ public enum NodeType {
    * @return the config enum
    */
   public static @Nullable NodeType of(final @Nullable String name) {
-    return typeNameMapping.get(Strings.nullToEmpty(name).toLowerCase(Locale.ENGLISH));
+    if (name != null) {
+      final String lcName = name.toLowerCase(Locale.ENGLISH);
+      for (final NodeType type : values()) {
+        if (type.lcTypeName.equals(lcName)) {
+          return type;
+        }
+      }
+    }
+    return null;
   }
-
-  /**
-   * Create a new {@link NetworkNode} of given type.
-   *
-   * @param dto the dto with node data
-   * @param parentInfo the parent info (path in hierarchy)
-   * @param nodeFactory the node factory (to create possible child nodes)
-   * @return the network node
-   */
-  abstract @NotNull NetworkNode create(
-      final @NonNull Map<String, Object> dto,
-      final @NonNull String parentInfo,
-      final @NonNull NodeFactory nodeFactory);
 }

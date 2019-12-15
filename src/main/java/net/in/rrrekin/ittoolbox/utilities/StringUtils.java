@@ -1,20 +1,22 @@
 package net.in.rrrekin.ittoolbox.utilities;
 
+import static java.util.Objects.requireNonNull;
+
 import groovy.text.SimpleTemplateEngine;
 import java.util.Map;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import net.in.rrrekin.ittoolbox.utilities.exceptions.TemplateException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Utility class to provide common string utilities.
  *
  * @author michal.rudewicz @gmail.com
  */
-@Slf4j
 public final class StringUtils {
+
+  private static final Logger log = org.slf4j.LoggerFactory.getLogger(StringUtils.class);
 
   private StringUtils() {
     // Private constructor to prevent instantiation
@@ -40,7 +42,8 @@ public final class StringUtils {
    * @return the string representation
    */
   public static @NotNull String toStringOrDefault(
-      final @Nullable Object object, final @NonNull String defaultValue) {
+      final @Nullable Object object, final @NotNull String defaultValue) {
+    requireNonNull(defaultValue, "Default value must not be null");
     return object == null ? defaultValue : String.valueOf(object);
   }
 
@@ -52,8 +55,10 @@ public final class StringUtils {
    * @return the string
    */
   public static String applyTemplate(
-      final @NonNull String template, final @NonNull Map<String, Object> variables)
+      final @NotNull String template, final @NotNull Map<String, Object> variables)
       throws TemplateException {
+    requireNonNull(template, "Template must not be null");
+    requireNonNull(variables, "Variables map must not be null");
     log.trace("Evaluating template '{}' with variables {}", template, variables);
     final SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
     try {

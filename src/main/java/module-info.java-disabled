@@ -1,0 +1,27 @@
+/**
+ * @author michal.rudewicz@gmail.com
+ */
+
+ module net.in.rrrekin.ittoolbox {
+   requires java.se;
+   requires static org.jetbrains.annotations;
+   requires slf4j.api;
+   requires javafx.base;
+   requires javafx.controls;
+   requires javafx.fxml;
+//   requires javafx.media;
+//   requires javafx.graphics;
+   requires org.controlsfx.controls;
+   requires com.google.gson;
+   requires logback.classic;
+   requires logback.core;
+   requires org.apache.commons.lang3;
+   requires jsr305;
+  requires com.google.common;
+  requires com.google.guice;
+  requires org.codehaus.groovy.templates;
+//   requires groovy.all;
+
+   exports net.in.rrrekin.ittoolbox;
+
+}

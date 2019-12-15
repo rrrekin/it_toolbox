@@ -1,24 +1,15 @@
 package net.in.rrrekin.ittoolbox.configuration.nodes;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.enMessage;
-import static net.in.rrrekin.ittoolbox.utilities.StringUtils.toStringOrEmpty;
-import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
+import static java.util.Objects.requireNonNullElse;
+import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.swing.Icon;
-import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
-import jiconfont.swing.IconFontSwing;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.jetbrains.annotations.NonNls;
+import java.util.Objects;
+import javafx.scene.paint.Color;
+import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
+import org.controlsfx.glyphfont.FontAwesome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,71 +18,67 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author michal.rudewicz @gmail.com
  */
-@ToString
-@RequiredArgsConstructor
 public class GroupingNode implements NetworkNode {
 
-  /** Separator used to join parent hierarchy of network nodes. */
-  private static final char LOCATION_PATH_SEPARATOR = '/';
+  private static final @NotNull IconDescriptor DEFAULT_ICON_DESCRIPTOR =
+      new IconDescriptor(FontAwesome.Glyph.FOLDER_OPEN, Color.BLUE, true);
 
-  @Getter @Setter private @NonNull String name;
-  @Getter @Setter private @NonNull String description;
-  @ToString.Exclude @Setter private @Nullable Icon icon = null;
-  @ToString.Exclude @Getter private final @NotNull List<@NotNull NetworkNode> childNodes;
-  @Getter private final @NonNull List<String> serviceDescriptors;
+  private final @NotNull String name;
+  private final @NotNull String description;
+  private final @NotNull IconDescriptor iconDescriptor;
+  private final @NotNull ImmutableList<String> serviceDescriptors;
 
+  public GroupingNode(
+      final @Nullable String name,
+      final @Nullable String description,
+      final @Nullable IconDescriptor iconDescriptor,
+      final @Nullable List<String> serviceDescriptors) {
+    this.name = requireNonNullElse(name, localMessage("NODE_GROUPING_NODE_DEFAULT_NAME"));
+    this.description = requireNonNullElse(description, this.name);
+    this.iconDescriptor = requireNonNullElse(iconDescriptor, DEFAULT_ICON_DESCRIPTOR);
+    this.serviceDescriptors =
+        ImmutableList.copyOf(requireNonNullElse(serviceDescriptors, ImmutableList.of()));
+  }
 
   /**
    * Instantiates a new Grouping node.
    *
    * @param name the name
    */
-  public GroupingNode(final @NonNull String name) {
-    this.name = name;
-    description = name;
-    childNodes = Lists.newArrayList();
-    serviceDescriptors = Lists.newArrayList();
+  public GroupingNode(final @Nullable String name) {
+    this.name = requireNonNullElse(name, localMessage("NODE_GROUPING_NODE_DEFAULT_NAME"));
+    this.description = this.name;
+    serviceDescriptors = ImmutableList.of();
+    iconDescriptor = DEFAULT_ICON_DESCRIPTOR;
   }
 
-  /**
-   * Instantiates a new Grouping node.
-   *
-   * @param dto the dto
-   * @param factory the factory
-   */
-  public GroupingNode(
-      final @NonNull Map<String, Object> dto,
-      final @NonNull NodeFactory factory,
-      @NonNls final @NonNull String parentInfo) {
-    final String type = toStringOrEmpty(dto.get(TYPE_PROPERTY));
-    checkArgument(
-        NodeType.GROUP.getTypeName().equalsIgnoreCase(type),
-        enMessage("NODE_CONSTRUCTOR_TYPE_MISMATCH"),
-        type);
-    name = toStringOrEmpty(dto.get(NAME_PROPERTY));
-    description = toStringOrEmpty(dto.get(DESCRIPTION_PROPERTY));
-    childNodes = Lists.newArrayList();
-    serviceDescriptors = Lists.newArrayList();
-    // TODO: implement notifications on errors in service and child lists (also for other node
-    // types)
-    if (dto.get(SERVICES_PROPERTY) instanceof List) {
-      ((List<?>) dto.get(SERVICES_PROPERTY))
-          .forEach(it -> serviceDescriptors.add(toStringOrEmpty(it)));
-    }
-    final Object childNodesDtos = dto.get(CHILD_NODES_PROPERTY);
-    if (childNodesDtos instanceof List) {
-      childNodes.addAll(
-          factory.createNodeList(
-              (List<?>) childNodesDtos, parentInfo + LOCATION_PATH_SEPARATOR + name));
-    }
+  public GroupingNode() {
+    this(null);
   }
 
   @Override
-  public @NotNull Icon getIcon() {
-    if (icon == null) {
-      icon = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.FOLDER_OPEN, NetworkNode.ICON_SIZE);
-    }
-    return icon;
+  public NodeType getType() {
+    return NodeType.GROUP;
+  }
+
+  @Override
+  public @NotNull String getName() {
+    return name;
+  }
+
+  @Override
+  public @NotNull String getDescription() {
+    return description;
+  }
+
+  @Override
+  public @NotNull IconDescriptor getIconDescriptor() {
+    return iconDescriptor;
+  }
+
+  @Override
+  public @NotNull ImmutableList<String> getServiceDescriptors() {
+    return serviceDescriptors;
   }
 
   @Override
@@ -100,25 +87,32 @@ public class GroupingNode implements NetworkNode {
   }
 
   @Override
-  public @NotNull Map<String, Object> getDtoProperties() {
-    final Map<String, Object> response = Maps.newLinkedHashMap();
-    response.put(TYPE_PROPERTY, NodeType.GROUP.getTypeName());
-    response.put(NAME_PROPERTY, name);
-    response.put(DESCRIPTION_PROPERTY, description);
-    response.put(
-        CHILD_NODES_PROPERTY,
-        childNodes.stream().map(NetworkNode::getDtoProperties).collect(Collectors.toList()));
-    response.put(SERVICES_PROPERTY, serviceDescriptors);
-    return response;
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+      .add("name", name)
+      .add("description", description)
+      .add("iconDescriptor", iconDescriptor)
+      .add("serviceDescriptors", serviceDescriptors)
+      .toString();
   }
 
-  @NonNls
   @Override
-  public String toHtml() {
-    return "<h1>"
-        + escapeHtml4(name)
-        + "</h1><p><i>"
-        + escapeHtml4(description)
-        + "</i></p>";
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final GroupingNode that = (GroupingNode) o;
+    return name.equals(that.name) &&
+      description.equals(that.description) &&
+      iconDescriptor.equals(that.iconDescriptor) &&
+      serviceDescriptors.equals(that.serviceDescriptors);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, description, iconDescriptor, serviceDescriptors);
   }
 }

@@ -1,14 +1,10 @@
 package net.in.rrrekin.ittoolbox
 
 import com.google.common.eventbus.EventBus
-import net.in.rrrekin.ittoolbox.configuration.ConfigurationManager
-import net.in.rrrekin.ittoolbox.events.BlockingApplicationErrorEvent
-import net.in.rrrekin.ittoolbox.gui.MainWindow
-import net.in.rrrekin.ittoolbox.gui.nodetree.NetworkNodesTreeModelFacade
-import net.in.rrrekin.ittoolbox.infrastructure.BlockingApplicationEventsHandler
+import com.google.inject.Injector
+import net.in.rrrekin.ittoolbox.gui.services.CommonResources
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper
 import net.in.rrrekin.ittoolbox.infrastructure.UnhandledMessagesLogger
-import net.in.rrrekin.ittoolbox.utilities.ErrorCode
 import org.slf4j.LoggerFactory
 import spock.lang.*
 
@@ -18,59 +14,33 @@ import spock.lang.*
 class ItToolboxApplicationTest extends Specification {
 
   UnhandledMessagesLogger unhandledMessagesLogger = Mock()
-  EventBus eventBus = Mock()
-  BlockingApplicationEventsHandler blockingApplicationEventsHandler = Mock()
-  ConfigurationManager configurationManager = Mock()
-  NetworkNodesTreeModelFacade treeModelFacade = Mock()
+  CommonResources commonResources = Mock()
   SystemWrapper system = Mock()
-  MainWindow mainWindow = Mock()
+  EventBus eventBus = Mock()
 
-  def instance = new ItToolboxApplication(unhandledMessagesLogger, eventBus, blockingApplicationEventsHandler, treeModelFacade, configurationManager, mainWindow)
+  Injector injector = Mock() {
+    getInstance(UnhandledMessagesLogger) >> unhandledMessagesLogger
+    getInstance(CommonResources) >> commonResources
+    getInstance(EventBus) >> eventBus
+  }
 
-  void setupSpec() {
-    ItToolboxApplication.log = LoggerFactory.getLogger(ItToolboxApplication)
+  def instance = new ItToolboxApplication()
+
+  void setup() {
+    ItToolboxApplication.@log = LoggerFactory.getLogger(ItToolboxApplication)
+    ItToolboxApplication.@injector = injector
+  }
+
+  void cleanup() {
+    ItToolboxApplication.@log = null
+    ItToolboxApplication.@injector = null
   }
 
   def "should properly build instance"() {
     expect:
-    instance.@unhandledMessagesLogger.is unhandledMessagesLogger
-    instance.@eventBus.is eventBus
-    instance.@blockingApplicationEventsHandler.is blockingApplicationEventsHandler
-    instance.@configurationManager.is configurationManager
-    instance.@mainWindow.is mainWindow
+    true
   }
 
-  def "should validate constructor arguments"() {
-    when:
-    new ItToolboxApplication(null, eventBus, blockingApplicationEventsHandler, treeModelFacade, configurationManager, mainWindow)
-    then:
-    thrown NullPointerException
-
-    when:
-    new ItToolboxApplication(unhandledMessagesLogger, null, blockingApplicationEventsHandler, treeModelFacade, configurationManager, mainWindow)
-    then:
-    thrown NullPointerException
-
-    when:
-    new ItToolboxApplication(unhandledMessagesLogger, eventBus, null, treeModelFacade, configurationManager, mainWindow)
-    then:
-    thrown NullPointerException
-
-    when:
-    new ItToolboxApplication(unhandledMessagesLogger, eventBus, blockingApplicationEventsHandler, null, configurationManager, mainWindow)
-    then:
-    thrown NullPointerException
-
-    when:
-    new ItToolboxApplication(unhandledMessagesLogger, eventBus, blockingApplicationEventsHandler, treeModelFacade, null, mainWindow)
-    then:
-    thrown NullPointerException
-
-    when:
-    new ItToolboxApplication(unhandledMessagesLogger, eventBus, blockingApplicationEventsHandler, treeModelFacade, configurationManager, null)
-    then:
-    thrown NullPointerException
-  }
 
   def "should validate calculateAppDirectory argument"() {
     when:
@@ -136,12 +106,10 @@ class ItToolboxApplicationTest extends Specification {
     instance.init()
 
     then:
-    1 * treeModelFacade.init()
     1 * unhandledMessagesLogger.init()
-    1 * blockingApplicationEventsHandler.init()
-    then:
-    1 * configurationManager.init()
-    0 * _._
+    and:
+    instance.@eventBus.is eventBus
+    instance.@commonResources.is commonResources
   }
 
   def "should terminate when get exception during initialization"() {
@@ -149,29 +117,8 @@ class ItToolboxApplicationTest extends Specification {
     instance.init()
 
     then:
-    1 * treeModelFacade.init() >> { throw new NullPointerException() }
-    1 * eventBus.post({ BlockingApplicationErrorEvent error -> error.errorCode == ErrorCode.INITIALIZATION_ERROR && error.fatal })
-
-    when:
-    instance.init()
-
-    then:
     1 * unhandledMessagesLogger.init() >> { throw new NullPointerException() }
-    1 * eventBus.post({ BlockingApplicationErrorEvent error -> error.errorCode == ErrorCode.INITIALIZATION_ERROR && error.fatal })
-
-    when:
-    instance.init()
-
-    then:
-    1 * blockingApplicationEventsHandler.init() >> { throw new NullPointerException() }
-    1 * eventBus.post({ BlockingApplicationErrorEvent error -> error.errorCode == ErrorCode.INITIALIZATION_ERROR && error.fatal })
-
-    when:
-    instance.init()
-
-    then:
-    1 * configurationManager.init() >> { throw new NullPointerException() }
-    1 * eventBus.post({ BlockingApplicationErrorEvent error -> error.errorCode == ErrorCode.INITIALIZATION_ERROR && error.fatal })
+    1 * commonResources.fatalException(_,null,_)
   }
 
   @Ignore("Not implemented yet")
@@ -180,23 +127,13 @@ class ItToolboxApplicationTest extends Specification {
     false
   }
 
+  @Ignore("Nothing to test up to now")
   def "should terminate application"() {
     when:
-    instance.shutdown()
+    instance.stop()
 
     then:
-    1 * configurationManager.shutdown()
     0 * _._
-  }
-
-  def "should ignore errors on application shutdown"() {
-    when:
-    instance.shutdown()
-
-    then:
-    1 * configurationManager.shutdown() >> { throw new NullPointerException() }
-    0 * _._
-    notThrown()
   }
 
 }

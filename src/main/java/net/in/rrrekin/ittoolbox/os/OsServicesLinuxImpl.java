@@ -1,8 +1,8 @@
 package net.in.rrrekin.ittoolbox.os;
 
-import lombok.NonNull;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Linux specific {@link OsServices} implementation.
@@ -10,7 +10,7 @@ import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
  * @author michal.rudewicz@gmail.com
  */
 public class OsServicesLinuxImpl extends OsServicesDefaultImpl {
-  public OsServicesLinuxImpl(final @NonNull SystemWrapper system, final @NonNull ProgramLocationService locationService) {
+  public OsServicesLinuxImpl(final @NotNull SystemWrapper system, final @NotNull ProgramLocationService locationService) {
     super(system, locationService);
   }
 }

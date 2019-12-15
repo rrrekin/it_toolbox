@@ -1,13 +1,8 @@
 package net.in.rrrekin.ittoolbox.configuration.nodes;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-import lombok.NonNull;
-import org.jetbrains.annotations.NonNls;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,30 +12,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface NetworkNode {
 
-  /** The constant TYPE key in configuration DTO. */
-  String TYPE_PROPERTY = "type";
-
-  /** The constant NAME key in configuration DTO. */
-  String NAME_PROPERTY = "name";
-
-  /** The constant ADDRESS key in configuration DTO. */
-  String ADDRESS_PROEPRTY = "address";
-
-  /** The constant DESCRIPTION key in configuration DTO. */
-  String DESCRIPTION_PROPERTY = "description";
-
-  /** The constant CHILD_NODES key in configuration DTO. */
-  String CHILD_NODES_PROPERTY = "children";
-
-  /** The constant SERVICES_PROPERTY key in configuration DTO. */
-  String SERVICES_PROPERTY = "services";
-
-  /** The constant PROPERTIES_PREFIX for custom properties in configuration DTO. */
-  @NonNls String PROPERTIES_PREFIX = "_";
-
-  /** Size of icons in tree view. */
-  int ICON_SIZE = 20;
-
+  /**
+   * Gets node type.
+   *
+   * @return the type
+   */
+  NodeType getType();
   /**
    * Gets name.
    *
@@ -48,13 +25,6 @@ public interface NetworkNode {
    */
   @NotNull
   String getName();
-
-  /**
-   * Sets name of the node.
-   *
-   * @param name new node name (not null)
-   */
-  void setName(@NonNull String name);
 
   /**
    * Gets description.
@@ -65,19 +35,12 @@ public interface NetworkNode {
   String getDescription();
 
   /**
-   * Gets icon.
+   * Gets icon descriptor.
    *
-   * @return the icon
+   * @return the icon descriptor
    */
   @NotNull
-  Icon getIcon();
-
-  /**
-   * Sets icon to be displayed for node.
-   *
-   * @param icon the icon
-   */
-  void setIcon(Icon icon);
+  IconDescriptor getIconDescriptor();
 
   /**
    * True if given node cannot have children.
@@ -89,22 +52,12 @@ public interface NetworkNode {
   }
 
   /**
-   * Gets child nodes.
-   *
-   * @return the child nodes
-   */
-  default @NotNull List<@NotNull NetworkNode> getChildNodes() {
-    return Collections.emptyList();
-  }
-
-  /**
    * Gets network node properties. Null for nodes that di not support custom properties.
    *
    * @return the properties
    */
-  @Nullable
-  default Map<String, String> getProperties() {
-    return null;
+  default @NotNull ImmutableMap<String, String> getProperties() {
+    return ImmutableMap.of();
   }
 
   /**
@@ -117,16 +70,5 @@ public interface NetworkNode {
    * @return the service descriptors
    */
   @NotNull
-  Collection<String> getServiceDescriptors();
-
-  /**
-   * Gets dto properties.
-   *
-   * @return the dto properties
-   */
-  @NotNull
-  Map<String, Object> getDtoProperties();
-
-  /** Gets HTML description of the node. */
-  String toHtml();
+  ImmutableList<String> getServiceDescriptors();
 }
