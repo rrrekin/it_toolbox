@@ -197,7 +197,7 @@ public class IconDescriptor {
    * @return the icon
    */
   public Glyph getIcon() {
-    checkState(appPreferences!=null, "AppPreferencess must not be null");
+    checkState(appPreferences != null, "AppPreferencess must not be null");
     if (gradient) {
       return FONT_AWESOME
           .create(glyph)
@@ -215,34 +215,34 @@ public class IconDescriptor {
    * @param descriptor the descriptor
    * @return the icon descriptor
    */
-  public static @NotNull IconDescriptor of(final @Nullable String descriptor) {
-    final IconDescriptor iconDescriptor;
-    if (descriptor == null) {
-      iconDescriptor = new IconDescriptor(DEFAULT_GLYPH, DEFAULT_COLOR, true);
-    } else {
+  public static @Nullable IconDescriptor of(final @Nullable String descriptor) {
+    IconDescriptor iconDescriptor = null;
+    if (descriptor != null) {
       final String[] components = descriptor.split(":");
-      FontAwesome.Glyph glyph;
-      try {
-        glyph =
-            components.length > 0
-                ? FontAwesome.Glyph.valueOf(components[0].toUpperCase())
-                : DEFAULT_GLYPH;
-      } catch (final RuntimeException e) {
-        glyph = DEFAULT_GLYPH;
-      }
+      if (components.length == 3) {
+        FontAwesome.Glyph glyph;
+        try {
+          glyph =
+              components.length > 0
+                  ? FontAwesome.Glyph.valueOf(components[0].toUpperCase())
+                  : DEFAULT_GLYPH;
+        } catch (final RuntimeException e) {
+          glyph = DEFAULT_GLYPH;
+        }
 
-      Color color;
-      try {
-        color = components.length > 1 ? Color.web(components[1]) : DEFAULT_COLOR;
-      } catch (final RuntimeException e) {
-        color = DEFAULT_COLOR;
-      }
-      if (color == null) {
-        color = DEFAULT_COLOR;
-      }
+        Color color;
+        try {
+          color = components.length > 1 ? Color.web(components[1]) : DEFAULT_COLOR;
+        } catch (final RuntimeException e) {
+          color = DEFAULT_COLOR;
+        }
+        if (color == null) {
+          color = DEFAULT_COLOR;
+        }
 
-      final boolean gradient = components.length <= 2 || Boolean.parseBoolean(components[2]);
-      iconDescriptor = new IconDescriptor(glyph, color, gradient);
+        final boolean gradient = components.length <= 2 || Boolean.parseBoolean(components[2]);
+        iconDescriptor = new IconDescriptor(glyph, color, gradient);
+      }
     }
     return iconDescriptor;
   }
@@ -293,9 +293,9 @@ public class IconDescriptor {
       return false;
     }
     final IconDescriptor that = (IconDescriptor) o;
-    return gradient == that.gradient &&
-      glyph == that.glyph &&
-      color.toString().equals(that.color.toString());
+    return gradient == that.gradient
+        && glyph == that.glyph
+        && color.toString().equals(that.color.toString());
   }
 
   @Override

@@ -66,8 +66,8 @@ public class ConfigurationPersistenceService {
   @NonNls
   private static final Logger log =
       org.slf4j.LoggerFactory.getLogger(ConfigurationPersistenceService.class);
-  @NonNls
-  public static final String ROOT = "root";
+
+  @NonNls public static final String ROOT = "root";
 
   private final @NotNull DumperOptions yamlOptions;
   private final @NotNull ServiceRegistry serviceRegistry;
@@ -81,8 +81,7 @@ public class ConfigurationPersistenceService {
    */
   @Inject
   public ConfigurationPersistenceService(
-      final @NotNull ServiceRegistry serviceRegistry,
-      final @NotNull NodeConverter nodeConverter) {
+      final @NotNull ServiceRegistry serviceRegistry, final @NotNull NodeConverter nodeConverter) {
     log.debug("Initializing ConfigurationPersistenceService");
     yamlOptions = new DumperOptions();
     yamlOptions.setIndent(4);
@@ -133,22 +132,21 @@ public class ConfigurationPersistenceService {
     final Object version = configurationDto.get(VERSION_PROPERTY);
     if (VERSION.equals(version)) {
       final ReadResult result = readConfigV1(configurationDto);
-        result.configuration.setFilePath(configFile.getAbsoluteFile().toPath().normalize());
+      result.configuration.setFilePath(configFile.getAbsoluteFile().toPath().normalize());
       return result;
     } else {
       throw new InvalidConfigurationException("EX_UNKNOWN_VERSION", configFile, version);
     }
   }
 
-  private @NotNull ReadResult readConfigV1(
-      final @NotNull Map<String, ?> configurationDto) throws InvalidConfigurationException {
+  private @NotNull ReadResult readConfigV1(final @NotNull Map<String, ?> configurationDto)
+      throws InvalidConfigurationException {
     final List<String> warnings = newArrayList();
     final TreeItem<NetworkNode> rootNode = readNetworkNodesV1(configurationDto, warnings);
     final Map<String, Map<String, String>> modules = readModulesV1(configurationDto, warnings);
     readServicesV1(configurationDto, warnings);
 
-    return new ReadResult(
-        new Configuration(rootNode, modules), warnings);
+    return new ReadResult(new Configuration(rootNode, modules), warnings);
   }
 
   private @NotNull TreeItem<NetworkNode> readNetworkNodesV1(
@@ -253,12 +251,14 @@ public class ConfigurationPersistenceService {
     final TreeItem<NetworkNode> response = new TreeItem<>(node, node.getIconDescriptor().getIcon());
     if (!node.isLeaf()) {
       final Object children = dto.get(CHILD_NODES_PROPERTY);
-      if (children instanceof List) {
-        response.getChildren().addAll(readServerList((List) children, warnings));
-      } else {
-        warnings.add(
-            localMessage(
-                "CFG_INVALID_OBJECT_ON_DTO_LIST2", CHILD_NODES_PROPERTY, abbreviated(children)));
+      if (children != null) {
+        if (children instanceof List) {
+          response.getChildren().addAll(readServerList((List) children, warnings));
+        } else {
+          warnings.add(
+              localMessage(
+                  "CFG_INVALID_OBJECT_ON_DTO_LIST2", CHILD_NODES_PROPERTY, abbreviated(children)));
+        }
       }
     }
     return response;

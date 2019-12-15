@@ -150,7 +150,7 @@ public class OpenConfigurationsService {
                 openNewWindow(configData.configuration);
               } else {
                 final String errorToPrint =
-                    configData.warnings.size() > 10
+                    configData.warnings.size() <= 10
                         ? join("\n", configData.warnings)
                         : join("\n", configData.warnings.subList(0, 9)) + "\n...";
                 final boolean doOpen =
