@@ -1,0 +1,649 @@
+1. Paste preformatted text from Itellij:
+
+11:37:49.824 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - Paste content: [[UTF8_STRING], [TEXT], [JAVA_DATAFLAVOR:application/x-java-jvm-local-objectref; class=com.intellij.codeInsight.editorActions.FoldingData], [STRING], [text/html;charset=UTF-16LE], [text/html;charset=US-ASCII], [text/plain;charset=US-ASCII], [text/rtf], [text/plain;charset=unicode], [text/plain;charset=UTF-8], [text/plain;charset=UTF-16], [text/plain;charset=ISO-8859-1], [text/html;charset=UTF-16], [text/plain;charset=UTF-16BE], [text/plain], [text/html], [text/html;charset=UTF-16BE], [text/html;charset=ISO-8859-1], [text/plain;charset=UTF-16LE]]
+11:37:49.830 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [UTF8_STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=168 cap=168]
+11:37:49.831 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TEXT] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=168 cap=168]
+11:37:49.837 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [JAVA_DATAFLAVOR:application/x-java-jvm-local-objectref; class=com.intellij.codeInsight.editorActions.FoldingData] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=345 cap=345]
+11:37:49.840 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=168 cap=168]
+11:37:49.850 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html;charset=UTF-16LE] -> class java.lang.String: <
+11:37:49.852 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html;charset=US-ASCII] -> class java.lang.String: <html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><pre style="background-color:#2b2b2b;color:#a9b7c6;font-family:'Fira Code';font-size:7,5pt;"><span style="color:#808080;">//&#32;&#32;&#32;&#32;clipboard.getContentTypes().stream()<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;.forEach(<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;t&#32;-&gt;&#32;{<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;log.info("{}&#32;-&gt;&#32;{}",&#32;t,&#32;clipboard.getContent(t));<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;});<br></span></pre></body></html>
+11:37:49.854 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=US-ASCII] -> class java.lang.String: //    clipboard.getContentTypes().stream()
+//        .forEach(
+//            t -> {
+//              log.info("{} -> {}", t, clipboard.getContent(t));
+//            });
+
+11:37:49.856 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/rtf] -> class java.lang.String: {\rtf1\ansi\deff0{\colortbl;\red169\green183\blue198;\red43\green43\blue43;\red128\green128\blue128;}
+{\fonttbl{\f1 Fira Code;}}
+
+\s0\box\cbpat2\cb2\cf1\fs15
+\cf3
+\f1
+\i0\b0
+
+//    clipboard.getContentTypes().stream()\line
+
+//        .forEach(\line
+
+//            t -> \{\line
+
+//              log.info("\{\} -> \{\}", t, clipboard.getContent(t));\line
+
+//            \});\line
+\par}
+11:37:49.858 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=unicode] -> class java.lang.String: ��
+11:37:49.860 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=UTF-8] -> class java.lang.String: //    clipboard.getContentTypes().stream()
+//        .forEach(
+//            t -> {
+//              log.info("{} -> {}", t, clipboard.getContent(t));
+//            });
+
+11:37:49.862 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=UTF-16] -> class java.lang.String: ��
+11:37:49.864 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=ISO-8859-1] -> class java.lang.String: //    clipboard.getContentTypes().stream()
+//        .forEach(
+//            t -> {
+//              log.info("{} -> {}", t, clipboard.getContent(t));
+//            });
+
+11:37:49.866 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html;charset=UTF-16] -> class java.lang.String: ��
+11:37:49.868 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=UTF-16BE] -> class java.lang.String:
+11:37:49.870 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain] -> class java.lang.String: //    clipboard.getContentTypes().stream()
+//        .forEach(
+//            t -> {
+//              log.info("{} -> {}", t, clipboard.getContent(t));
+//            });
+
+11:37:49.871 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html] -> class java.lang.String: <html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><pre style="background-color:#2b2b2b;color:#a9b7c6;font-family:'Fira Code';font-size:7,5pt;"><span style="color:#808080;">//&#32;&#32;&#32;&#32;clipboard.getContentTypes().stream()<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;.forEach(<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;t&#32;-&gt;&#32;{<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;log.info("{}&#32;-&gt;&#32;{}",&#32;t,&#32;clipboard.getContent(t));<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;});<br></span></pre></body></html>
+11:37:49.875 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html;charset=UTF-16BE] -> class java.lang.String:
+11:37:49.879 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html;charset=ISO-8859-1] -> class java.lang.String: <html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><pre style="background-color:#2b2b2b;color:#a9b7c6;font-family:'Fira Code';font-size:7,5pt;"><span style="color:#808080;">//&#32;&#32;&#32;&#32;clipboard.getContentTypes().stream()<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;.forEach(<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;t&#32;-&gt;&#32;{<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;log.info("{}&#32;-&gt;&#32;{}",&#32;t,&#32;clipboard.getContent(t));<br></span><span style="color:#808080;">//&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;});<br></span></pre></body></html>
+11:37:49.881 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=UTF-16LE] -> class java.lang.String: /
+
+
+
+2. Paste text from terminator:
+
+11:42:51.948 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - Paste content: [[TARGETS], [UTF8_STRING], [TEXT], [STRING], [text/plain], [MULTIPLE], [COMPOUND_TEXT], [text/plain;charset=utf-8], [SAVE_TARGETS], [TIMESTAMP]]
+11:42:51.953 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=80 cap=80]
+11:42:51.954 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [UTF8_STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=1013 cap=1013]
+11:42:51.955 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TEXT] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=1013 cap=1013]
+11:42:51.956 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=1020 cap=1020]
+11:42:51.957 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain] -> class java.lang.String:
+(wrapper-2.0:21108): GLib-GObject-CRITICAL **: 07:54:20.204: g_signal_handlers_destroy: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(wrapper-2.0:21108): GLib-GObject-CRITICAL **: 07:54:20.204: g_object_unref: assertion 'old_ref > 0' failed
+
+(xfce4-panel:21098): libclock-WARNING **: 07:54:38.221: Getting a time preview failed for format specifier %r, so omitting it from the list of default formats.
+
+(wrapper-2.0:21103): Gdk-CRITICAL **: 08:01:48.019: Window 0x55fe1f8f2280 has not been made visible in GdkSeatGrabPrepareFunc
+Otwieram w istniejącej sesji przeglądarki.
+using 4.13
+using 4.13
+
+(wrapper-2.0:23939): Gtk-WARNING **: 08:08:08.321: Negative content width -1 (allocation 1, extents 1x1) while allocating gadget (node button, owner GtkButton)
+
+(wrapper-2.0:23939): Gtk-CRITICAL **: 08:08:10.611: gtk_icon_theme_lookup_by_gicon_for_scale: assertion 'G_IS_ICON (icon)' failed
+
+(wrapper-2.0:23939): Gtk-CRITICAL **: 08:08:10.611: gtk_icon_info_load_icon: assertion 'icon_info != NULL' failed
+
+11:42:51.960 [JavaFX Application Thread] ERROR n.i.r.i.g.MainWindowController - Failed to print content for [MULTIPLE]
+java.lang.NullPointerException: null
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.lambda$onOPaste$8(MainWindowController.java:374)
+	at java.base/java.util.HashMap$KeySpliterator.forEachRemaining(HashMap.java:1603)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.onOPaste(MainWindowController.java:370)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:76)
+	at jdk.internal.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at javafx.base/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:273)
+	at javafx.fxml/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:83)
+	at javafx.fxml/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1782)
+	at javafx.fxml/javafx.fxml.FXMLLoader$ControllerMethodEventHandler.handle(FXMLLoader.java:1670)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:238)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.controls/javafx.scene.control.MenuItem.fire(MenuItem.java:459)
+	at javafx.controls/com.sun.javafx.scene.control.ControlAcceleratorSupport.lambda$doAcceleratorInstall$1(ControlAcceleratorSupport.java:165)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.processAccelerators(KeyboardShortcutsHandler.java:382)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.dispatchBubblingEvent(KeyboardShortcutsHandler.java:162)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Scene$KeyHandler.process(Scene.java:4070)
+	at javafx.graphics/javafx.scene.Scene.processKeyEvent(Scene.java:2121)
+	at javafx.graphics/javafx.scene.Scene$ScenePeerListener.keyEvent(Scene.java:2597)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:217)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:149)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleKeyEvent$1(GlassViewEventHandler.java:248)
+	at javafx.graphics/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:412)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleKeyEvent(GlassViewEventHandler.java:247)
+	at javafx.graphics/com.sun.glass.ui.View.handleKeyEvent(View.java:547)
+	at javafx.graphics/com.sun.glass.ui.View.notifyKey(View.java:971)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication._runLoop(Native Method)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication.lambda$runLoop$11(GtkApplication.java:277)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+11:42:51.963 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [COMPOUND_TEXT] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=1013 cap=1013]
+11:42:51.968 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=utf-8] -> class java.lang.String:
+(wrapper-2.0:21108): GLib-GObject-CRITICAL **: 07:54:20.204: g_signal_handlers_destroy: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(wrapper-2.0:21108): GLib-GObject-CRITICAL **: 07:54:20.204: g_object_unref: assertion 'old_ref > 0' failed
+
+(xfce4-panel:21098): libclock-WARNING **: 07:54:38.221: Getting a time preview failed for format specifier %r, so omitting it from the list of default formats.
+
+(wrapper-2.0:21103): Gdk-CRITICAL **: 08:01:48.019: Window 0x55fe1f8f2280 has not been made visible in GdkSeatGrabPrepareFunc
+Otwieram w istniejącej sesji przeglądarki.
+using 4.13
+using 4.13
+
+(wrapper-2.0:23939): Gtk-WARNING **: 08:08:08.321: Negative content width -1 (allocation 1, extents 1x1) while allocating gadget (node button, owner GtkButton)
+
+(wrapper-2.0:23939): Gtk-CRITICAL **: 08:08:10.611: gtk_icon_theme_lookup_by_gicon_for_scale: assertion 'G_IS_ICON (icon)' failed
+
+(wrapper-2.0:23939): Gtk-CRITICAL **: 08:08:10.611: gtk_icon_info_load_icon: assertion 'icon_info != NULL' failed
+
+11:42:51.969 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [SAVE_TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=0 cap=0]
+11:42:51.970 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TIMESTAMP] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+
+
+
+
+3. paste from chrome
+
+11:44:35.222 [JavaFX Application Thread] TRACE n.i.r.i.g.MainWindowController - Paste: javafx.event.ActionEvent[source=MenuItem@73835940[styleClass=[menu-item]]]
+11:44:35.225 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - Paste content: [[TARGETS], [UTF8_STRING], [TEXT], [STRING], [text/plain], [MULTIPLE], [text/html], [SAVE_TARGETS], [TIMESTAMP]]
+11:44:35.227 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=72 cap=72]
+11:44:35.228 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [UTF8_STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=379 cap=379]
+11:44:35.228 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TEXT] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=379 cap=379]
+11:44:35.229 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=379 cap=379]
+11:44:35.230 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain] -> class java.lang.String: Viewed 5k times
+
+8
+
+
+I use the Generate function in the context menu to create my getter and setter methods. But there seems no way to tell Intellij to place the generated methods after the last method in the file ie at the bottom of the class definition. This is possible in Eclipse. Anybody know how to do it automatically in Intellij?
+
+intellij-idea
+shareimprove this question
+11:44:35.231 [JavaFX Application Thread] ERROR n.i.r.i.g.MainWindowController - Failed to print content for [MULTIPLE]
+java.lang.NullPointerException: null
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.lambda$onOPaste$8(MainWindowController.java:374)
+	at java.base/java.util.HashMap$KeySpliterator.forEachRemaining(HashMap.java:1603)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.onOPaste(MainWindowController.java:370)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:76)
+	at jdk.internal.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at javafx.base/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:273)
+	at javafx.fxml/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:83)
+	at javafx.fxml/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1782)
+	at javafx.fxml/javafx.fxml.FXMLLoader$ControllerMethodEventHandler.handle(FXMLLoader.java:1670)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:238)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.controls/javafx.scene.control.MenuItem.fire(MenuItem.java:459)
+	at javafx.controls/com.sun.javafx.scene.control.ControlAcceleratorSupport.lambda$doAcceleratorInstall$1(ControlAcceleratorSupport.java:165)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.processAccelerators(KeyboardShortcutsHandler.java:382)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.dispatchBubblingEvent(KeyboardShortcutsHandler.java:162)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Scene$KeyHandler.process(Scene.java:4070)
+	at javafx.graphics/javafx.scene.Scene.processKeyEvent(Scene.java:2121)
+	at javafx.graphics/javafx.scene.Scene$ScenePeerListener.keyEvent(Scene.java:2597)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:217)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:149)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleKeyEvent$1(GlassViewEventHandler.java:248)
+	at javafx.graphics/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:412)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleKeyEvent(GlassViewEventHandler.java:247)
+	at javafx.graphics/com.sun.glass.ui.View.handleKeyEvent(View.java:547)
+	at javafx.graphics/com.sun.glass.ui.View.notifyKey(View.java:971)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication._runLoop(Native Method)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication.lambda$runLoop$11(GtkApplication.java:277)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+11:44:35.236 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html] -> class java.lang.String: <meta http-equiv="content-type" content="text/html; charset=utf-8"><div class="grid fw-wrap pb8 mb16 bb bc-black-2" style="margin-top: 0px; margin-right: 0px; margin-bottom: 16px !important; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 8px !important; padding-left: 0px; border-top-width: 0px; border-right-width: 0px; border-bottom-width: 1px !important; border-left-width: 0px; border-top-style: initial; border-right-style: initial; border-bottom-style: solid !important; border-left-style: initial; border-color: var(--black-075)  !important; border-image: initial; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-variant-numeric: inherit; font-variant-east-asian: inherit; font-weight: 400; font-stretch: inherit; line-height: inherit; font-family: Arial, &quot;Helvetica Neue&quot;, Helvetica, sans-serif; font-size: 13px; vertical-align: baseline; box-sizing: inherit; flex-wrap: wrap !important; display: flex; color: rgb(36, 39, 41); letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); text-decoration-style: initial; text-decoration-color: initial;"><div class="grid--cell ws-nowrap mb8" title="Viewed 4,606 times" style="margin-top: 0px; margin-right: 0px; margin-bottom: 8px !important; margin-left: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; white-space: nowrap !important;"><span class="fc-light mr2" style="margin-top: 0px; margin-right: 2px !important; margin-bottom: 0px; margin-left: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; color: var(--fc-light)  !important;">Viewed</span><span> </span>5k times</div></div><div id="mainbar" role="main" aria-label="question and answers" style="margin: 0px; padding: 0px; border: 0px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-variant-numeric: inherit; font-variant-east-asian: inherit; font-weight: 400; font-stretch: inherit; line-height: inherit; font-family: Arial, &quot;Helvetica Neue&quot;, Helvetica, sans-serif; font-size: 13px; vertical-align: baseline; box-sizing: inherit; float: left; width: calc((100% - 300px) - 24px); color: rgb(36, 39, 41); letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); text-decoration-style: initial; text-decoration-color: initial;"><div class="question" data-questionid="22322595" id="question" style="margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; clear: both;"><div class="post-layout" style="margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; display: grid; grid-template-columns: max-content 1fr;"><div class="votecell post-layout--left" style="margin: 0px; padding: 0px 15px 0px 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: top; box-sizing: inherit; grid-column: 1 / auto; width: auto;"><div class="js-voting-container grid fd-column ai-stretch gs4 fc-black-200" data-post-id="22322595" style="margin: -2px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; color: var(--black-200)  !important; flex-direction: column !important; align-items: stretch !important; display: flex;"><button class="js-vote-up-btn grid--cell s-btn s-btn__unset c-pointer" title="This question shows research effort; it is useful and clear" aria-pressed="false" aria-label="up vote" data-selected-classes="fc-theme-primary" style="margin: 2px; box-sizing: inherit; font: unset; cursor: default; position: relative; display: inline-block; padding: 0px; border: none; border-radius: 0px; background: none; outline: none; text-align: center; text-decoration: none; color: unset; box-shadow: none;"><svg aria-hidden="true" class="svg-icon m0 iconArrowUpLg" width="36" height="36" viewBox="0 0 36 36"><path d="M2 26h32L18 10 2 26z"></path></svg></button><div class="js-vote-count grid--cell fc-black-500 fs-title grid fd-column ai-center" itemprop="upvoteCount" data-value="8" style="margin: 2px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 1.61538rem !important; vertical-align: baseline; box-sizing: inherit; color: var(--black-500)  !important; flex-direction: column !important; align-items: center !important; display: flex;">8</div><button class="js-vote-down-btn grid--cell s-btn s-btn__unset c-pointer" title="This question does not show any research effort; it is unclear or not useful" aria-pressed="false" aria-label="down vote" data-selected-classes="fc-theme-primary" style="margin: 2px; box-sizing: inherit; font: unset; cursor: default; position: relative; display: inline-block; padding: 0px; border: none; border-radius: 0px; background: none; outline: none; text-align: center; text-decoration: none; color: unset; box-shadow: none;"><svg aria-hidden="true" class="svg-icon m0 iconArrowDownLg" width="36" height="36" viewBox="0 0 36 36"><path d="M2 10h32L18 26 2 10z"></path></svg></button><button class="js-favorite-btn s-btn s-btn__unset c-pointer py4 js-gps-track" aria-pressed="false" aria-label="favorite" data-selected-classes="fc-yellow-600" data-gps-track="post.click({ item: 1, priv: 0, post_type: 1 })" style="margin: 0px; box-sizing: inherit; font: unset; padding: 0px; cursor: default; position: relative; display: inline-block; border: none; border-radius: 0px; background: none; outline: none; text-align: center; text-decoration: none; color: unset; box-shadow: none;"><svg aria-hidden="true" class="svg-icon iconStar" width="18" height="18" viewBox="0 0 18 18"><path d="M9 12.65l-5.29 3.63 1.82-6.15L.44 6.22l6.42-.17L9 0l2.14 6.05 6.42.17-5.1 3.9 1.83 6.16L9 12.65z"></path></svg></button></div></div><div class="postcell post-layout--right" style="margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: top; box-sizing: inherit; grid-column: 2 / auto; width: auto; min-width: 0px;"><div class="post-text" itemprop="text" style="margin: 0px 0px 5px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 1.3; font-family: Arial, &quot;Helvetica Neue&quot;, Helvetica, sans-serif; font-size: 15px; vertical-align: baseline; box-sizing: inherit; width: 676px; overflow-wrap: break-word;"><p style="margin: 0px 0px 1em; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 15px; vertical-align: baseline; box-sizing: inherit; clear: both;">I use the Generate function in the context menu to create my getter and setter methods. But there seems no way to tell Intellij to place the generated methods after the last method in the file ie at the bottom of the class definition. This is possible in Eclipse. Anybody know how to do it automatically in Intellij?</p></div><div class="post-taglist grid gs4 gsy fd-column" style="margin: -2px 0px 10px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; flex-direction: column !important; display: flex; clear: both;"><div class="grid ps-relative d-block" style="margin: 2px 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; display: block !important; position: relative !important;"><a href="https://stackoverflow.com/questions/tagged/intellij-idea" class="post-tag js-gps-track" title="" rel="tag" style="margin: 2px 2px 2px 0px; padding: 0.4em 0.5em; border: 1px solid rgb(225, 236, 244); font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: 1; font-family: inherit; font-size: 12px; vertical-align: baseline; box-sizing: inherit; text-decoration: none; color: rgb(57, 115, 157); cursor: pointer; display: inline-block; white-space: nowrap; text-align: center; border-radius: 3px; transition: all 0.15s ease-in-out 0s; background-color: rgb(225, 236, 244);">intellij-idea</a></div></div><div class="mb0 " style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px !important; margin-left: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit;"><div class="mt16 grid gs8 gsy fw-wrap jc-end ai-start pt4" style="margin-top: 16px !important; margin-right: 0px; margin-bottom: -4px; margin-left: 0px; padding-top: 4px !important; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; flex-wrap: wrap !important; justify-content: flex-end !important; align-items: flex-start !important; display: flex;"><div class="grid--cell mr16" style="margin: 4px 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; flex: 1 1 100px;"><div class="post-menu" style="margin: 0px; padding: 2px 0px 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit;"><a href="https://stackoverflow.com/q/22322595" itemprop="url" class="js-share-link js-gps-track" title="short permalink to this question" data-gps-track="post.click({ item: 2, priv: 0, post_type: 1 })" data-controller="se-share-sheet s-popover" data-se-share-sheet-title="Share a link to this question" data-se-share-sheet-subtitle="" data-se-share-sheet-post-type="question" data-se-share-sheet-social="facebook twitter devto" data-se-share-sheet-location="1" data-s-popover-placement="bottom-start" aria-controls="se-share-sheet-0" data-action=" s-popover#toggle se-share-sheet#preventNavigation s-popover:show->se-share-sheet#willShow s-popover:shown->se-share-sheet#didShow" style="margin: 0px; padding: 0px 4px 2px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; text-decoration: none; color: rgb(132, 141, 149); cursor: pointer; display: inline-block;">share</a><span class="lsep" style="margin: 0px; padding: 0px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 1px; vertical-align: baseline; box-sizing: inherit; color: rgb(27, 64, 114); visibility: hidden; display: inline-block;"></span><a href="https://stackoverflow.com/posts/22322595/edit" class="suggest-edit-post js-gps-track" data-gps-track="post.click({ item: 6, priv: 0, post_type: 1 })" title="" style="margin: 0px; padding: 0px 4px 2px; border: 0px; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; line-height: inherit; font-family: inherit; font-size: 13px; vertical-align: baseline; box-sizing: inherit; text-decoration: none; color: rgb(132, 141, 149); cursor: pointer; display: inline-block;">improve this question</a></div></div></div></div></div></div></div></div>
+11:44:35.238 [JavaFX Application Thread] ERROR n.i.r.i.g.MainWindowController - Failed to print content for [SAVE_TARGETS]
+java.lang.NullPointerException: null
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.lambda$onOPaste$8(MainWindowController.java:374)
+	at java.base/java.util.HashMap$KeySpliterator.forEachRemaining(HashMap.java:1603)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.onOPaste(MainWindowController.java:370)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:76)
+	at jdk.internal.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at javafx.base/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:273)
+	at javafx.fxml/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:83)
+	at javafx.fxml/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1782)
+	at javafx.fxml/javafx.fxml.FXMLLoader$ControllerMethodEventHandler.handle(FXMLLoader.java:1670)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:238)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.controls/javafx.scene.control.MenuItem.fire(MenuItem.java:459)
+	at javafx.controls/com.sun.javafx.scene.control.ControlAcceleratorSupport.lambda$doAcceleratorInstall$1(ControlAcceleratorSupport.java:165)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.processAccelerators(KeyboardShortcutsHandler.java:382)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.dispatchBubblingEvent(KeyboardShortcutsHandler.java:162)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Scene$KeyHandler.process(Scene.java:4070)
+	at javafx.graphics/javafx.scene.Scene.processKeyEvent(Scene.java:2121)
+	at javafx.graphics/javafx.scene.Scene$ScenePeerListener.keyEvent(Scene.java:2597)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:217)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:149)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleKeyEvent$1(GlassViewEventHandler.java:248)
+	at javafx.graphics/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:412)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleKeyEvent(GlassViewEventHandler.java:247)
+	at javafx.graphics/com.sun.glass.ui.View.handleKeyEvent(View.java:547)
+	at javafx.graphics/com.sun.glass.ui.View.notifyKey(View.java:971)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication._runLoop(Native Method)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication.lambda$runLoop$11(GtkApplication.java:277)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+11:44:35.239 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TIMESTAMP] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+
+
+
+
+
+4. Pate from gedit
+
+11:47:41.794 [JavaFX Application Thread] TRACE n.i.r.i.g.MainWindowController - Paste: javafx.event.ActionEvent[source=MenuItem@73835940[styleClass=[menu-item]]]
+11:47:41.795 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - Paste content: [[TARGETS], [GTK_TEXT_BUFFER_CONTENTS], [UTF8_STRING], [TEXT], [STRING], [application/x-gtk-text-buffer-rich-text], [text/plain], [MULTIPLE], [COMPOUND_TEXT], [text/plain;charset=utf-8], [SAVE_TARGETS], [TIMESTAMP]]
+11:47:41.796 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=96 cap=96]
+11:47:41.797 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [GTK_TEXT_BUFFER_CONTENTS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+11:47:41.798 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [UTF8_STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=617 cap=617]
+11:47:41.799 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TEXT] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=636 cap=636]
+11:47:41.800 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=634 cap=634]
+11:47:41.801 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-gtk-text-buffer-rich-text] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=758 cap=758]
+11:47:41.802 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain] -> class java.lang.String: very ąę good idea, but if you use "rearrange code: option in "reformat file" dialog (ctrl+alt+shift+l) ide will change setter and getter location in code.better idea maybe is using arrangement tab in code style - java in ide settings. – Ashkan R. Aug 15 '17 at 9:05
+1. What shortcut would it be on mac? 2. I can't place the cursor anymore when the getter-setter-popup is displayed. – e a Oct 6 '17 at 11:56
+1. It depends on the keymap. By default it's Command + N. 2. You have to place the cursor there where you want to insert the getter and setter before pressing the shortcut. – rufer7 Oct 6 '17 at 12:46
+11:47:41.802 [JavaFX Application Thread] ERROR n.i.r.i.g.MainWindowController - Failed to print content for [MULTIPLE]
+java.lang.NullPointerException: null
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.lambda$onOPaste$8(MainWindowController.java:374)
+	at java.base/java.util.HashMap$KeySpliterator.forEachRemaining(HashMap.java:1603)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.onOPaste(MainWindowController.java:370)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:76)
+	at jdk.internal.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at javafx.base/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:273)
+	at javafx.fxml/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:83)
+	at javafx.fxml/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1782)
+	at javafx.fxml/javafx.fxml.FXMLLoader$ControllerMethodEventHandler.handle(FXMLLoader.java:1670)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:238)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.controls/javafx.scene.control.MenuItem.fire(MenuItem.java:459)
+	at javafx.controls/com.sun.javafx.scene.control.ControlAcceleratorSupport.lambda$doAcceleratorInstall$1(ControlAcceleratorSupport.java:165)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.processAccelerators(KeyboardShortcutsHandler.java:382)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.dispatchBubblingEvent(KeyboardShortcutsHandler.java:162)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Scene$KeyHandler.process(Scene.java:4070)
+	at javafx.graphics/javafx.scene.Scene.processKeyEvent(Scene.java:2121)
+	at javafx.graphics/javafx.scene.Scene$ScenePeerListener.keyEvent(Scene.java:2597)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:217)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:149)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleKeyEvent$1(GlassViewEventHandler.java:248)
+	at javafx.graphics/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:412)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleKeyEvent(GlassViewEventHandler.java:247)
+	at javafx.graphics/com.sun.glass.ui.View.handleKeyEvent(View.java:547)
+	at javafx.graphics/com.sun.glass.ui.View.notifyKey(View.java:971)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication._runLoop(Native Method)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication.lambda$runLoop$11(GtkApplication.java:277)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+11:47:41.804 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [COMPOUND_TEXT] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=636 cap=636]
+11:47:41.805 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=utf-8] -> class java.lang.String: very ąę good idea, but if you use "rearrange code: option in "reformat file" dialog (ctrl+alt+shift+l) ide will change setter and getter location in code.better idea maybe is using arrangement tab in code style - java in ide settings. – Ashkan R. Aug 15 '17 at 9:05
+1. What shortcut would it be on mac? 2. I can't place the cursor anymore when the getter-setter-popup is displayed. – e a Oct 6 '17 at 11:56
+1. It depends on the keymap. By default it's Command + N. 2. You have to place the cursor there where you want to insert the getter and setter before pressing the shortcut. – rufer7 Oct 6 '17 at 12:46
+11:47:41.806 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [SAVE_TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=0 cap=0]
+11:47:41.807 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TIMESTAMP] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+
+
+
+5. LibreOffice writer:
+
+11:52:17.871 [JavaFX Application Thread] TRACE n.i.r.i.g.MainWindowController - Paste: javafx.event.ActionEvent[source=MenuItem@73835940[styleClass=[menu-item]]]
+11:52:17.873 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - Paste content: [[TARGETS], [application/x-openoffice-embed-source-xml;windows_formatname="Star Embed Source (XML)"], [UTF8_STRING], [application/x-libreoffice-internal-id-13318], [STRING], [text/rtf], [text/plain;charset=utf-16], [text/plain;charset=utf-8], [SAVE_TARGETS], [TIMESTAMP], [text/richtext], [application/x-openoffice-link;windows_formatname="Link"], [text/plain], [MULTIPLE], [text/html], [application/x-openoffice-objectdescriptor-xml;windows_formatname="Star Object Descriptor (XML)";classname="8BC6B165-B1B2-4EDD-aa47-dae2ee689dd6";typename="LibreOffice 6.3 Dokument tekstowy";viewaspect="1";width="16999";height="2995";posx="0";posy="0"]]
+11:52:17.875 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=120 cap=120]
+11:52:17.921 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-embed-source-xml;windows_formatname="Star Embed Source (XML)"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=6283 cap=6283]
+11:52:17.922 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [UTF8_STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=86 cap=86]
+11:52:17.933 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-libreoffice-internal-id-13318] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=6289 cap=6289]
+11:52:17.935 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=86 cap=86]
+11:52:17.961 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/rtf] -> class java.lang.String: {\rtf1\ansi\deff3\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset2 Symbol;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\froman\fprq2\fcharset0 Liberation Serif{\*\falt Times New Roman};}{\f4\fswiss\fprq2\fcharset0 Liberation Sans{\*\falt Arial};}{\f5\fnil\fprq2\fcharset0 Noto Sans CJK SC;}{\f6\fnil\fprq2\fcharset0 Noto Sans Devanagari;}{\f7\fswiss\fprq0\fcharset128 Noto Sans Devanagari;}}
+{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}
+{\stylesheet{\s0\snext0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1 Normal;}
+{\s1\sbasedon23\snext22\dbch\af5\dbch\af6\afs36\ab\ilvl0\outlinelevel0\sb240\sa120\keepn\loch\f4\fs36\b Nag\u322\'3f\u243\'f3wek 1;}
+{\*\cs15\snext15 Znaki przypis\u243\'f3w dolnych;}
+{\*\cs16\snext16 Znaki przypis\u243\'f3w ko\u324\'3fcowych;}
+{\*\cs17\snext17\langfe255\alang255\cf9\lang255\ul\ulc0 \u321\'3f\u261\'3fcze internetowe;}
+{\*\cs18\snext18\langfe255\alang255\cf13\lang255\ul\ulc0 Odwiedzone \u322\'3f\u261\'3fcze internetowe;}
+{\s19\sbasedon0\snext19\dbch\af7\noline Indeks;}
+{\s20\sbasedon0\snext20\dbch\af7\afs24\ai\sb120\sa120\noline\fs24\i Podpis;}
+{\s21\sbasedon22\snext21\dbch\af7\sl276\slmult1\sb0\sa140 Lista;}
+{\s22\sbasedon0\snext22\sl276\slmult1\sb0\sa140 Tre\u347\'3f\u263\'3f tekstu;}
+{\s23\sbasedon0\snext22\dbch\af5\dbch\af6\afs28\sb240\sa120\keepn\loch\f4\fs28 Nag\u322\'3f\u243\'f3wek;}
+{\s24\sbasedon0\snext24\li567\ri0\lin567\rin0\fi0 Zawarto\u347\'3f\u263\'3f listy;}
+}{\*\listtable{\list\listtemplateid1
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}\listid1}
+}{\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}{\*\generator LibreOffice/6.3.3.2$Linux_X86_64 LibreOffice_project/30$Build-2}{\info{\creatim\yr0\mo0\dy0\hr0\min0}{\revtim\yr0\mo0\dy0\hr0\min0}{\printim\yr0\mo0\dy0\hr0\min0}}{\*\userprops}\deftab709
+
+{\*\pgdsctbl
+{\pgdsc0\pgdscuse451\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\pgdscnxt0 Domy\u347\'3flny;}}
+\formshade\paperh16838\paperw11906\margl1134\margr1134\margt1134\margb1134\sectd\sbknone\sectunlocked1\pgndec\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\ftnbj\ftnstart1\ftnrstcont\ftnnar\aenddoc\aftnrstcont\aftnstart1\aftnnrlc
+{\*\ftnsep\chftnsep}\pgndec\pard\plain \s1\dbch\af5\dbch\af6\afs36\ab\ilvl0\outlinelevel0\sb240\sa120\keepn\loch\f4\fs36\b{\listtext\pard\plain \tab}\ls1 \li0\ri0\lin0\rin0\fi0\ql\sb240\sa120\ltrpar{\loch
+W Szczebrzeszynie}
+\par \pard\plain \s0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1\ql\ltrpar{\rtlch\ab \ltrch\b\loch
+chrz\u261\'3fszcz}
+\par \pard\plain \s0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1\ql\ltrpar{\rtlch\ai \ltrch\i\loch
+brzmi}
+\par \pard\plain \s0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1\ql\ltrpar{\loch
+w trzcinie \u260\'3f\u346\'3f\u280\'3f}{\rtlch\ai\ab \ltrch\i\b\loch
+\u379\'3f\u377\'3f\u262\'3f\u323\'3f}{\loch
+\u321\'3f\u211\'d3 \u261\'3f\u347\'3f\u281\'3f\u380\'3f\u378\'3f\u263\'3f\u324\'3f\u322\'3f\u243\'f3!!!}
+}
+11:52:17.962 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=utf-16] -> class java.lang.String: W
+11:52:17.963 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=utf-8] -> class java.lang.String: W Szczebrzeszynie
+chrząszcz
+brzmi
+w trzcinie ĄŚĘŻŹĆŃŁÓ ąśężźćńłó!!!
+11:52:17.966 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [SAVE_TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=0 cap=0]
+11:52:17.969 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TIMESTAMP] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+11:52:17.974 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/richtext] -> class java.lang.String: {\rtf1\ansi\deff3\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset2 Symbol;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\froman\fprq2\fcharset0 Liberation Serif{\*\falt Times New Roman};}{\f4\fswiss\fprq2\fcharset0 Liberation Sans{\*\falt Arial};}{\f5\fnil\fprq2\fcharset0 Noto Sans CJK SC;}{\f6\fnil\fprq2\fcharset0 Noto Sans Devanagari;}{\f7\fswiss\fprq0\fcharset128 Noto Sans Devanagari;}}
+{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}
+{\stylesheet{\s0\snext0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1 Normal;}
+{\s1\sbasedon23\snext22\dbch\af5\dbch\af6\afs36\ab\ilvl0\outlinelevel0\sb240\sa120\keepn\loch\f4\fs36\b Nag\u322\'3f\u243\'f3wek 1;}
+{\*\cs15\snext15 Znaki przypis\u243\'f3w dolnych;}
+{\*\cs16\snext16 Znaki przypis\u243\'f3w ko\u324\'3fcowych;}
+{\*\cs17\snext17\langfe255\alang255\cf9\lang255\ul\ulc0 \u321\'3f\u261\'3fcze internetowe;}
+{\*\cs18\snext18\langfe255\alang255\cf13\lang255\ul\ulc0 Odwiedzone \u322\'3f\u261\'3fcze internetowe;}
+{\s19\sbasedon0\snext19\dbch\af7\noline Indeks;}
+{\s20\sbasedon0\snext20\dbch\af7\afs24\ai\sb120\sa120\noline\fs24\i Podpis;}
+{\s21\sbasedon22\snext21\dbch\af7\sl276\slmult1\sb0\sa140 Lista;}
+{\s22\sbasedon0\snext22\sl276\slmult1\sb0\sa140 Tre\u347\'3f\u263\'3f tekstu;}
+{\s23\sbasedon0\snext22\dbch\af5\dbch\af6\afs28\sb240\sa120\keepn\loch\f4\fs28 Nag\u322\'3f\u243\'f3wek;}
+{\s24\sbasedon0\snext24\li567\ri0\lin567\rin0\fi0 Zawarto\u347\'3f\u263\'3f listy;}
+}{\*\listtable{\list\listtemplateid1
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}
+{\listlevel\levelnfc255\leveljc0\levelstartat1\levelfollow2{\leveltext \'00;}{\levelnumbers;}\fi0\li0}\listid1}
+}{\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}{\*\generator LibreOffice/6.3.3.2$Linux_X86_64 LibreOffice_project/30$Build-2}{\info{\creatim\yr0\mo0\dy0\hr0\min0}{\revtim\yr0\mo0\dy0\hr0\min0}{\printim\yr0\mo0\dy0\hr0\min0}}{\*\userprops}\deftab709
+
+{\*\pgdsctbl
+{\pgdsc0\pgdscuse451\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\pgdscnxt0 Domy\u347\'3flny;}}
+\formshade\paperh16838\paperw11906\margl1134\margr1134\margt1134\margb1134\sectd\sbknone\sectunlocked1\pgndec\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\ftnbj\ftnstart1\ftnrstcont\ftnnar\aenddoc\aftnrstcont\aftnstart1\aftnnrlc
+{\*\ftnsep\chftnsep}\pgndec\pard\plain \s1\dbch\af5\dbch\af6\afs36\ab\ilvl0\outlinelevel0\sb240\sa120\keepn\loch\f4\fs36\b{\listtext\pard\plain \tab}\ls1 \li0\ri0\lin0\rin0\fi0\ql\sb240\sa120\ltrpar{\loch
+W Szczebrzeszynie}
+\par \pard\plain \s0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1\ql\ltrpar{\rtlch\ab \ltrch\b\loch
+chrz\u261\'3fszcz}
+\par \pard\plain \s0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1\ql\ltrpar{\rtlch\ai \ltrch\i\loch
+brzmi}
+\par \pard\plain \s0\hich\af3\dbch\af8\langfe2052\dbch\af6\afs24\alang1081\widctlpar\hyphpar0\ltrpar\cf0\loch\f3\fs24\lang1045\kerning1\ql\ltrpar{\loch
+w trzcinie \u260\'3f\u346\'3f\u280\'3f}{\rtlch\ai\ab \ltrch\i\b\loch
+\u379\'3f\u377\'3f\u262\'3f\u323\'3f}{\loch
+\u321\'3f\u211\'d3 \u261\'3f\u347\'3f\u281\'3f\u380\'3f\u378\'3f\u263\'3f\u324\'3f\u322\'3f\u243\'f3!!!}
+}
+11:52:17.978 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-link;windows_formatname="Link"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=47 cap=47]
+11:52:17.979 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain] -> class java.lang.String: W Szczebrzeszynie
+chrząszcz
+brzmi
+w trzcinie ĄŚĘŻŹĆŃŁÓ ąśężźćńłó!!!
+11:52:17.980 [JavaFX Application Thread] ERROR n.i.r.i.g.MainWindowController - Failed to print content for [MULTIPLE]
+java.lang.NullPointerException: null
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.lambda$onOPaste$8(MainWindowController.java:374)
+	at java.base/java.util.HashMap$KeySpliterator.forEachRemaining(HashMap.java:1603)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at net.in.rrrekin.ittoolbox.gui.MainWindowController.onOPaste(MainWindowController.java:370)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:76)
+	at jdk.internal.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at javafx.base/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:273)
+	at javafx.fxml/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:83)
+	at javafx.fxml/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1782)
+	at javafx.fxml/javafx.fxml.FXMLLoader$ControllerMethodEventHandler.handle(FXMLLoader.java:1670)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:238)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.controls/javafx.scene.control.MenuItem.fire(MenuItem.java:459)
+	at javafx.controls/com.sun.javafx.scene.control.ControlAcceleratorSupport.lambda$doAcceleratorInstall$1(ControlAcceleratorSupport.java:165)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.processAccelerators(KeyboardShortcutsHandler.java:382)
+	at javafx.graphics/com.sun.javafx.scene.KeyboardShortcutsHandler.dispatchBubblingEvent(KeyboardShortcutsHandler.java:162)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Scene$KeyHandler.process(Scene.java:4070)
+	at javafx.graphics/javafx.scene.Scene.processKeyEvent(Scene.java:2121)
+	at javafx.graphics/javafx.scene.Scene$ScenePeerListener.keyEvent(Scene.java:2597)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:217)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$KeyEventNotification.run(GlassViewEventHandler.java:149)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleKeyEvent$1(GlassViewEventHandler.java:248)
+	at javafx.graphics/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:412)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleKeyEvent(GlassViewEventHandler.java:247)
+	at javafx.graphics/com.sun.glass.ui.View.handleKeyEvent(View.java:547)
+	at javafx.graphics/com.sun.glass.ui.View.notifyKey(View.java:971)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication._runLoop(Native Method)
+	at javafx.graphics/com.sun.glass.ui.gtk.GtkApplication.lambda$runLoop$11(GtkApplication.java:277)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+11:52:17.995 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html] -> class java.lang.String: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 6.3.3.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="00:00:00"/>
+	<style type="text/css">
+		@page { size: 21cm 29.7cm; margin: 2cm }
+		h1 { margin-bottom: 0.21cm; background: transparent; page-break-after: avoid }
+		h1.western { font-family: "Liberation Sans", sans-serif; font-size: 18pt; font-weight: bold }
+		h1.cjk { font-family: "Noto Sans CJK SC"; font-size: 18pt; font-weight: bold }
+		h1.ctl { font-family: "Noto Sans Devanagari"; font-size: 18pt; font-weight: bold }
+		p { margin-bottom: 0.25cm; line-height: 115%; background: transparent }
+		a:link { color: #000080; so-language: zxx; text-decoration: underline }
+		a:visited { color: #800000; so-language: zxx; text-decoration: underline }
+	</style>
+</head>
+<body lang="pl-PL" link="#000080" vlink="#800000" dir="ltr"><h1 class="western">
+W Szczebrzeszynie</h1>
+<p style="margin-bottom: 0cm; line-height: 100%"><b>chrząszcz</b></p>
+<p style="margin-bottom: 0cm; line-height: 100%"><i>brzmi</i></p>
+<p style="margin-bottom: 0cm; line-height: 100%">w trzcinie ĄŚĘ<i><b>ŻŹĆŃ</b></i>ŁÓ
+ąśężźćńłó!!!</p>
+</body>
+</html>
+11:52:17.997 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-objectdescriptor-xml;windows_formatname="Star Object Descriptor (XML)";classname="8BC6B165-B1B2-4EDD-aa47-dae2ee689dd6";typename="LibreOffice 6.3 Dokument tekstowy";viewaspect="1";width="16999";height="2995";posx="0";posy="0"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=0 cap=0]
+
+
+6. LibrOffice Calc
+
+11:55:24.930 [JavaFX Application Thread] TRACE n.i.r.i.g.MainWindowController - Paste: javafx.event.ActionEvent[source=MenuItem@73835940[styleClass=[menu-item]]]
+11:55:24.934 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - Paste content: [[application/x-openoffice-embed-source-xml;windows_formatname="Star Embed Source (XML)"], [UTF8_STRING], [application/x-libreoffice-internal-id-13318], [STRING], [text/rtf], [SAVE_TARGETS], [application/x-openoffice-wmf;windows_formatname="Image WMF"], [application/x-openoffice-sylk;windows_formatname="Sylk"], [text/richtext], [application/x-java-rawimage], [application/x-openoffice-objectdescriptor-xml;windows_formatname="Star Object Descriptor (XML)";classname="47BBB4CB-CE4C-4E80-a591-42d9ae74950f";typename="LibreOffice 6.3 - Arkusz kalkulacyjny";viewaspect="1";width="11289";height="1355";posx="0";posy="0"], [application/x-openoffice-bitmap;windows_formatname="Bitmap"], [text/html], [image/png], [TARGETS], [application/x-openoffice-gdimetafile;windows_formatname="GDIMetaFile"], [text/plain;charset=utf-16], [text/plain;charset=utf-8], [application/x-openoffice-emf;windows_formatname="Image EMF"], [TIMESTAMP], [application/x-libreoffice-tsvc], [application/x-openoffice-link;windows_formatname="Link"], [text/plain], [MULTIPLE], [application/x-openoffice-dif;windows_formatname="DIF"], [image/bmp]]
+11:55:24.974 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-embed-source-xml;windows_formatname="Star Embed Source (XML)"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=5067 cap=5067]
+11:55:24.975 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [UTF8_STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=38 cap=38]
+11:55:24.993 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-libreoffice-internal-id-13318] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=5067 cap=5067]
+11:55:24.994 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [STRING] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=38 cap=38]
+11:55:24.995 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/rtf] -> class java.lang.String: {\rtf\ansi
+{
+\trowd\trgaph30\trleft-30\trrh256\clvertalb\cellx1280\clvertalb\cellx2560\clvertalb\cellx3840\clvertalb\cellx5120\clvertalb\cellx6400\pard\plain\intbl
+\ql hjljh\cell\qr 33\cell\qr 33\cell\ql fasdf\cell\ql \cell\row
+\trowd\trgaph30\trleft-30\trrh256\clvertalb\cellx1280\clvertalb\cellx2560\clvertalb\cellx3840\clvertalb\cellx5120\clvertalb\cellx6400\pard\plain\intbl
+\ql asdfd\cell\ql\b\i dfgh\cell\plain\qr\b 700,00%\cell\plain\ql \cell\ql \cell\row
+\trowd\trgaph30\trleft-30\trrh256\clvertalb\cellx1280\clvertalb\cellx2560\clvertalb\cellx3840\clvertalb\cellx5120\clvertalb\cellx6400\pard\plain\intbl
+\ql \cell\ql \cell\ql \cell\ql \cell\ql \cell\row
+}
+}
+
+11:55:24.995 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [SAVE_TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=0 cap=0]
+11:55:25.002 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-wmf;windows_formatname="Image WMF"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=4746 cap=4746]
+11:55:25.004 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-sylk;windows_formatname="Sylk"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=118 cap=118]
+11:55:25.006 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/richtext] -> class java.lang.String: {\rtf\ansi
+{
+\trowd\trgaph30\trleft-30\trrh256\clvertalb\cellx1280\clvertalb\cellx2560\clvertalb\cellx3840\clvertalb\cellx5120\clvertalb\cellx6400\pard\plain\intbl
+\ql hjljh\cell\qr 33\cell\qr 33\cell\ql fasdf\cell\ql \cell\row
+\trowd\trgaph30\trleft-30\trrh256\clvertalb\cellx1280\clvertalb\cellx2560\clvertalb\cellx3840\clvertalb\cellx5120\clvertalb\cellx6400\pard\plain\intbl
+\ql asdfd\cell\ql\b\i dfgh\cell\plain\qr\b 700,00%\cell\plain\ql \cell\ql \cell\row
+\trowd\trgaph30\trleft-30\trrh256\clvertalb\cellx1280\clvertalb\cellx2560\clvertalb\cellx3840\clvertalb\cellx5120\clvertalb\cellx6400\pard\plain\intbl
+\ql \cell\ql \cell\ql \cell\ql \cell\ql \cell\row
+}
+}
+
+11:55:25.018 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-java-rawimage] -> class javafx.scene.image.Image: javafx.scene.image.Image@720776e
+11:55:25.019 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-objectdescriptor-xml;windows_formatname="Star Object Descriptor (XML)";classname="47BBB4CB-CE4C-4E80-a591-42d9ae74950f";typename="LibreOffice 6.3 - Arkusz kalkulacyjny";viewaspect="1";width="11289";height="1355";posx="0";posy="0"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=0 cap=0]
+11:55:25.022 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-bitmap;windows_formatname="Bitmap"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=65538 cap=65538]
+11:55:25.023 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/html] -> class java.lang.String: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 6.3.3.2 (Linux)"/>
+	<style type="text/css">
+		body,div,table,thead,tbody,tfoot,tr,th,td,p { font-family:"Liberation Sans"; font-size:x-small }
+		a.comment-indicator:hover + comment { background:#ffd; position:absolute; display:block; border:1px solid black; padding:0.5em;  }
+		a.comment-indicator { background:red; display:inline-block; border:1px solid black; width:0.5em; height:0.5em;  }
+		comment { display:none;  }
+	</style>
+
+</head>
+
+<body>
+<table cellspacing="0" border="0">
+	<colgroup span="5" width="85"></colgroup>
+	<tr>
+		<td height="17" align="left">hjljh</td>
+		<td align="right" sdval="33" sdnum="1045;">33</td>
+		<td align="right" sdval="33" sdnum="1045;">33</td>
+		<td align="left">fasdf</td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="left">asdfd</td>
+		<td align="left"><b><i>dfgh</i></b></td>
+		<td align="right" sdval="7" sdnum="1045;0;0,00%"><b>700,00%</b></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+	</tr>
+	<tr>
+		<td height="17" align="left"><br></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+		<td align="left"><br></td>
+	</tr>
+</table>
+</body>
+
+</html>
+
+11:55:25.027 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [image/png] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=3681 cap=3681]
+11:55:25.028 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TARGETS] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=192 cap=192]
+11:55:25.030 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-gdimetafile;windows_formatname="GDIMetaFile"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=1159 cap=1159]
+11:55:25.031 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=utf-16] -> class java.lang.String: h
+11:55:25.032 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain;charset=utf-8] -> class java.lang.String: hjljh	33	33	fasdf
+asdfd	dfgh	700,00%
+
+11:55:25.035 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-emf;windows_formatname="Image EMF"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=3976 cap=3976]
+11:55:25.035 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [TIMESTAMP] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=8 cap=8]
+11:55:25.036 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-libreoffice-tsvc] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=76 cap=76]
+11:55:25.037 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-link;windows_formatname="Link"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=49 cap=49]
+11:55:25.038 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [text/plain] -> class java.lang.String: hjljh	33	33	fasdf
+asdfd	dfgh	700,00%
+
+11:55:25.052 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [application/x-openoffice-dif;windows_formatname="DIF"] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=223 cap=223]
+11:55:25.063 [JavaFX Application Thread] INFO  n.i.r.i.g.MainWindowController - [image/bmp] -> class java.nio.HeapByteBuffer: java.nio.HeapByteBuffer[pos=0 lim=65538 cap=65538]

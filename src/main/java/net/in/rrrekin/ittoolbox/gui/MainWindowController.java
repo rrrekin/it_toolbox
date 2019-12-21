@@ -5,16 +5,26 @@ import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.inject.Inject;
 import java.io.File;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Objects;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.input.Clipboard;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -30,6 +40,7 @@ import net.in.rrrekin.ittoolbox.configuration.OpenConfigurationsService;
 import net.in.rrrekin.ittoolbox.configuration.nodes.GroupingNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeConverter;
+import net.in.rrrekin.ittoolbox.gui.commands.OperationCommand;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferences;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
@@ -58,9 +69,30 @@ public class MainWindowController {
   @FXML private SplitPane splitter;
   @FXML private TextFlow nodePreview;
 
+  // Menu items
+  @FXML private MenuItem menuFileSave;
+  @FXML private MenuItem menuEditEditNode;
+  @FXML private MenuItem menuEditUndo;
+  @FXML private MenuItem menuEditRedo;
+  @FXML private MenuItem menuEditCut;
+  @FXML private MenuItem menuEditCopy;
+  @FXML private MenuItem menuEditDuplicate;
+  @FXML private MenuItem menuEditDelete;
+
+  // Buttons
+  @FXML Button nodeDeleteButton;
+  @FXML Button nodeEditButton;
+
+  private final @NotNull BooleanProperty needSave = new SimpleBooleanProperty(true);
+  private final @NotNull BooleanProperty noNodeSelected = new SimpleBooleanProperty(true);
+  private final @NotNull BooleanProperty canUndo = new SimpleBooleanProperty(false);
+  private final @NotNull BooleanProperty canRedo = new SimpleBooleanProperty(false);
   private Configuration configuration;
+  private final @NotNull Deque<OperationCommand> undoStack = new ArrayDeque<>();
+  private final @NotNull Deque<OperationCommand> redoStack = new ArrayDeque<>();
+  private final @NotNull IntegerProperty stateSerialNumber = new SimpleIntegerProperty(0);
   private @NotNull UserPreferences preferences;
-  private @NotNull UserPreferences genericPreferences;
+  private final @NotNull UserPreferences genericPreferences;
 
   private final @NotNull CommonResources commonResources;
   private final @NotNull OpenConfigurationsService openConfigurationsService;
@@ -96,6 +128,11 @@ public class MainWindowController {
 
   public void initialize() {
     log.info("Initializing MainWindowController");
+    setupNodeTree();
+    setupBindings();
+  }
+
+  private void setupNodeTree() {
     nodeTree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     nodeTree.setCellFactory(
         treeView ->
@@ -123,6 +160,22 @@ public class MainWindowController {
             });
   }
 
+  private void setupBindings() {
+    noNodeSelected.bind(Bindings.isEmpty(nodeTree.getSelectionModel().getSelectedItems()));
+
+    menuFileSave.disableProperty().bind(needSave);
+    menuEditEditNode.disableProperty().bind(noNodeSelected);
+    menuEditUndo.disableProperty().bind(canUndo.not());
+    menuEditRedo.disableProperty().bind(canRedo.not());
+    menuEditCut.disableProperty().bind(noNodeSelected);
+    menuEditCopy.disableProperty().bind(noNodeSelected);
+    menuEditDuplicate.disableProperty().bind(noNodeSelected);
+    menuEditDelete.disableProperty().bind(noNodeSelected);
+
+    nodeEditButton.disableProperty().bind(noNodeSelected);
+    nodeDeleteButton.disableProperty().bind(noNodeSelected);
+  }
+
   public void setConfig(final @Nullable Configuration configuration) {
     this.configuration =
         Objects.requireNonNullElseGet(
@@ -131,6 +184,11 @@ public class MainWindowController {
                 new Configuration(
                     new TreeItem<>(new GroupingNode(ConfigurationPersistenceService.ROOT)),
                     newHashMap()));
+    undoStack.clear();
+    redoStack.clear();
+    stateSerialNumber.setValue(0);
+    canRedo.set(false);
+    canUndo.set(false);
     if (this.configuration.getFilePath() != null) {
       preferences =
           userPreferencesFactory.create(this.getClass(), this.configuration.getFilePath());
@@ -255,20 +313,84 @@ public class MainWindowController {
     }
   }
 
-  public void onNewFile(ActionEvent actionEvent) {
+  public void onNewFile(final ActionEvent actionEvent) {
     openConfigurationsService.openNewWindow(null);
   }
 
-  public void onQuit(ActionEvent actionEvent) {
-    log.info("Request to quit application");
+  public void onQuit(final ActionEvent actionEvent) {
+    log.trace("Request to quit application");
     Platform.exit();
   }
 
-  public void onNodeEdit(ActionEvent actionEvent) {
-    log.info("Node edit: {}", actionEvent);
+  public void onNodeEdit(final ActionEvent actionEvent) {
+    log.trace("Node edit: {}", actionEvent);
   }
 
-  public void onNodeDelete(ActionEvent actionEvent) {
-    log.info("Node delete: {}", actionEvent);
+  public void onNodeDelete(final ActionEvent actionEvent) {
+    log.trace("Node delete: {}", actionEvent);
+  }
+
+  public void onCloseFile(final ActionEvent actionEvent) {
+    log.trace("Close file: {}", actionEvent);
+  }
+
+  public void onSaveFile(final ActionEvent actionEvent) {
+    log.trace("Save file: {}", actionEvent);
+  }
+
+  public void onSaveFileAs(final ActionEvent actionEvent) {
+    log.trace("Save file as: {}", actionEvent);
+  }
+
+  public void onPreferences(final ActionEvent actionEvent) {
+    log.trace("Preferences: {}", actionEvent);
+  }
+
+  public void onUndo(final ActionEvent actionEvent) {
+    log.trace("Undo: {}", actionEvent);
+  }
+
+  public void onRedo(final ActionEvent actionEvent) {
+    log.trace("Redo: {}", actionEvent);
+  }
+
+  public void onCut(final ActionEvent actionEvent) {
+    log.trace("Cut: {}", actionEvent);
+  }
+
+  public void onCopy(final ActionEvent actionEvent) {
+    log.trace("Copy: {}", actionEvent);
+  }
+
+  public void onOPaste(final ActionEvent actionEvent) {
+    log.trace("Paste: {}", actionEvent);
+    final Clipboard clipboard = Clipboard.getSystemClipboard();
+    log.info("Paste content: {}", clipboard.getContentTypes());
+    clipboard.getContentTypes().stream()
+        .forEach(
+            t -> {
+              try {
+              log.info(
+                  "{} -> {}: {}", t, clipboard.getContent(t).getClass(), clipboard.getContent(t));
+              } catch (final RuntimeException e) {
+                log.error("Failed to print content for {}", t, e);
+              }
+            });
+  }
+
+  public void onNodeDuplicate(ActionEvent actionEvent) {
+    log.trace("Duplicate: {}", actionEvent);
+  }
+
+  public void onSelectAll(final ActionEvent actionEvent) {
+    log.trace("Select all: {}", actionEvent);
+  }
+
+  public void onUnSelectAll(final ActionEvent actionEvent) {
+    log.trace("UnselectAll: {}", actionEvent);
+  }
+
+  public void onAbout(final ActionEvent actionEvent) {
+    log.trace("About: {}", actionEvent);
   }
 }
