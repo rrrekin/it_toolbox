@@ -68,6 +68,11 @@ public class Server implements NetworkNode {
   }
 
   @Override
+  public String getLocalNodeTypeName() {
+    return localMessage("NODE_SERVER");
+  }
+
+  @Override
   public @NotNull String getName() {
     return name;
   }
@@ -129,35 +134,4 @@ public class Server implements NetworkNode {
   public int hashCode() {
     return Objects.hash(name, address, description, iconDescriptor, properties, serviceDescriptors);
   }
-
-  //  /**
-  //   * Instantiates a new Server.
-  //   *
-  //   * @param dto the dto
-  //   */
-  //  public Server(final @NonNull Map<String, Object> dto) {
-  //    final String type = toStringOrEmpty(dto.get(TYPE_PROPERTY));
-  //    checkArgument(
-  //        NodeType.SERVER.getTypeName().equalsIgnoreCase(type),
-  //        enMessage("NODE_CONSTRUCTOR_TYPE_MISMATCH"),
-  //        type);
-  //    name = toStringOrEmpty(dto.get(NAME_PROPERTY));
-  //    address = toStringOrEmpty(dto.get(ADDRESS_PROEPRTY));
-  //    description = toStringOrEmpty(dto.get(DESCRIPTION_PROPERTY));
-  //    properties = Maps.newHashMap();
-  //    serviceDescriptors = Lists.newArrayList();
-  //    if (dto.get(SERVICES_PROPERTY) instanceof List) {
-  //      ((List<?>) dto.get(SERVICES_PROPERTY))
-  //          .forEach(it -> serviceDescriptors.add(toStringOrEmpty(it)));
-  //    }
-  //    for (final Map.Entry<String, Object> entry : dto.entrySet()) {
-  //      final String property = entry.getKey();
-  //      final Object value = entry.getValue();
-  //      if (property != null && property.startsWith(PROPERTIES_PREFIX)) {
-  //        final String propertyName = property.substring(PROPERTIES_PREFIX.length());
-  //        properties.put(propertyName, toStringOrEmpty(value));
-  //      }
-  //    }
-  //  }
-
 }

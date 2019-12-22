@@ -6,6 +6,10 @@ import static net.in.rrrekin.ittoolbox.gui.services.CommonResources.FONT_AWESOME
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import javafx.scene.paint.Color;
@@ -20,15 +24,15 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author michal.rudewicz @gmail.com
  */
-public class IconDescriptor {
+public class IconDescriptor implements Serializable {
 
   private static final @NotNull FontAwesome.Glyph DEFAULT_GLYPH = FontAwesome.Glyph.QUESTION_CIRCLE;
   private static final @NotNull Color DEFAULT_COLOR = Color.BLUE;
   @Inject private static AppPreferences appPreferences;
 
-  private final @NotNull FontAwesome.Glyph glyph;
-  private final @NotNull Color color;
-  private final boolean gradient;
+  private @NotNull FontAwesome.Glyph glyph;
+  private @NotNull Color color;
+  private boolean gradient;
 
   private static final @NotNull Map<String, String> colorNameMapping = buildReverseColorMapping();
 
@@ -301,5 +305,16 @@ public class IconDescriptor {
   @Override
   public int hashCode() {
     return Objects.hash(glyph, color.toString(), gradient);
+  }
+
+  private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+    final IconDescriptor newIconDescriptor = of(stream.readUTF());
+    glyph = newIconDescriptor.glyph;
+    color = newIconDescriptor.color;
+    gradient = newIconDescriptor.gradient;
+  }
+
+  private void writeObject(ObjectOutputStream stream) throws IOException {
+    stream.writeUTF(toString());
   }
 }

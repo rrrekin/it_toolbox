@@ -14,7 +14,7 @@ public class AppPreferences {
 
   private int iconSize = 20;
   private int maxRecentFiles = 20;
-  private @NotNull String fontFamily = "Noto Sans CJK HK";
+  private @NotNull String fontFamily = "DejaVu Sans";
   private int fontSize = 11;
 
   /**

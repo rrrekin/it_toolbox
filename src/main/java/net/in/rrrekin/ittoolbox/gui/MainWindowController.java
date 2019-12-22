@@ -1,6 +1,7 @@
 package net.in.rrrekin.ittoolbox.gui;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static net.in.rrrekin.ittoolbox.ItToolboxApplication.APPLICATION_NAME;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.inject.Inject;
@@ -14,6 +15,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
@@ -25,6 +27,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -32,7 +36,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.StringConverter;
-import net.in.rrrekin.ittoolbox.ItToolboxApplication;
 import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
 import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.ConfigurationPersistenceService;
@@ -41,6 +44,8 @@ import net.in.rrrekin.ittoolbox.configuration.nodes.GroupingNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeConverter;
 import net.in.rrrekin.ittoolbox.gui.commands.OperationCommand;
+import net.in.rrrekin.ittoolbox.gui.model.NodeForest;
+import net.in.rrrekin.ittoolbox.gui.model.NodeForestConverter;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferences;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
@@ -62,6 +67,7 @@ public class MainWindowController {
   private static final String X_PREF = "x";
   private static final String Y_PREF = "y";
   private static final String SPLIT_PREF = "s";
+  public static final DataFormat IT_TOOLBOX_DATA = new DataFormat(APPLICATION_NAME);
 
   private Stage stage;
 
@@ -100,6 +106,7 @@ public class MainWindowController {
   private final @NotNull AppPreferences appPreferences;
   private final @NotNull GuiInvokeService guiInvokeService;
   private final @NotNull NodeConverter nodeConverter;
+  private final @NotNull NodeForestConverter nodeForestConverter;
 
   @Inject
   public MainWindowController(
@@ -108,7 +115,8 @@ public class MainWindowController {
       final @NotNull UserPreferencesFactory userPreferencesFactory,
       final @NotNull AppPreferences appPreferences,
       final @NotNull GuiInvokeService guiInvokeService,
-      final @NotNull NodeConverter nodeConverter) {
+      final @NotNull NodeConverter nodeConverter,
+      final @NotNull NodeForestConverter nodeForestConverter) {
     log.info("Creating MainWindowController");
     this.commonResources =
         Objects.requireNonNull(commonResources, "CommonResources must not be null");
@@ -121,6 +129,8 @@ public class MainWindowController {
     this.guiInvokeService =
         Objects.requireNonNull(guiInvokeService, "GuiInvokeService must not be null");
     this.nodeConverter = Objects.requireNonNull(nodeConverter, "NodeConverter must not be null");
+    this.nodeForestConverter =
+        Objects.requireNonNull(nodeForestConverter, "nodeForestConverter must not be null");
 
     genericPreferences = userPreferencesFactory.create(this.getClass());
     preferences = genericPreferences;
@@ -197,10 +207,8 @@ public class MainWindowController {
     }
     final String title =
         this.configuration.getFilePath() == null
-            ? ItToolboxApplication.APPLICATION_NAME
-            : ItToolboxApplication.APPLICATION_NAME
-                + ": "
-                + this.configuration.getFilePath().getFileName();
+            ? APPLICATION_NAME
+            : APPLICATION_NAME + ": " + this.configuration.getFilePath().getFileName();
     setTitle(title);
     guiInvokeService.runInGui(
         () -> {
@@ -360,6 +368,28 @@ public class MainWindowController {
 
   public void onCopy(final ActionEvent actionEvent) {
     log.trace("Copy: {}", actionEvent);
+    putSeletionToClipboard();
+  }
+
+  private void putSeletionToClipboard() {
+    ObservableList<TreeItem<NetworkNode>> selected =
+        nodeTree.getSelectionModel().getSelectedItems();
+    if (selected == null) {
+      log.trace("Nothing selected");
+    } else {
+      final NodeForest selection = new NodeForest(selected);
+      log.debug("SELECTED:\n{}", selection);
+
+      final Clipboard clipboard = Clipboard.getSystemClipboard();
+      final ClipboardContent content = new ClipboardContent();
+      content.put(IT_TOOLBOX_DATA, selection);
+      content.putString(nodeForestConverter.toPlainText(selection));
+      content.putHtml(nodeForestConverter.toHtml(selection));
+      //    content.putRtf("Rich text");
+      //    content.putFilesByPath(Lists.newArrayList("/bin","/usr/bin"));
+      //    content.putUrl("https://stackoverflow.com/");
+      clipboard.setContent(content);
+    }
   }
 
   public void onOPaste(final ActionEvent actionEvent) {
@@ -370,8 +400,8 @@ public class MainWindowController {
         .forEach(
             t -> {
               try {
-              log.info(
-                  "{} -> {}: {}", t, clipboard.getContent(t).getClass(), clipboard.getContent(t));
+                log.info(
+                    "{} -> {}: {}", t, clipboard.getContent(t).getClass(), clipboard.getContent(t));
               } catch (final RuntimeException e) {
                 log.error("Failed to print content for {}", t, e);
               }
@@ -384,10 +414,12 @@ public class MainWindowController {
 
   public void onSelectAll(final ActionEvent actionEvent) {
     log.trace("Select all: {}", actionEvent);
+    nodeTree.getSelectionModel().selectAll();
   }
 
   public void onUnSelectAll(final ActionEvent actionEvent) {
     log.trace("UnselectAll: {}", actionEvent);
+    nodeTree.getSelectionModel().clearSelection();
   }
 
   public void onAbout(final ActionEvent actionEvent) {

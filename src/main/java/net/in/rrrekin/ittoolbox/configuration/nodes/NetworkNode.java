@@ -2,6 +2,7 @@ package net.in.rrrekin.ittoolbox.configuration.nodes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.io.Serializable;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author michal.rudewicz @gmail.com
  */
-public interface NetworkNode {
+public interface NetworkNode extends Serializable {
 
   /**
    * Gets node type.
@@ -18,6 +19,11 @@ public interface NetworkNode {
    * @return the type
    */
   NodeType getType();
+
+  /**
+   * @return local name of given node type
+   */
+  String getLocalNodeTypeName();
   /**
    * Gets name.
    *

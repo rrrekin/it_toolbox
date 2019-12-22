@@ -213,7 +213,7 @@ public class NodeConverter {
       final @NotNull NetworkNode node = item.getValue();
       response.add(node.getIconDescriptor().getIcon().size(appPreferences.getFontSize() * 5.0));
       response.add(createText(fontHeader, "\n", " ", node.getName(), "\n"));
-      response.add(createText(fontNote, localMessage("NODE_SERVER"), "\n"));
+      response.add(createText(fontNote, node.getLocalNodeTypeName(), "\n"));
       if (node instanceof Server) {
         response.add(createText(fontLabel, "\n", localMessage("NODE_LABEL_ADDRESS"), " "));
         response.add(createText(fontValue, ((Server) node).getAddress(), "\n"));

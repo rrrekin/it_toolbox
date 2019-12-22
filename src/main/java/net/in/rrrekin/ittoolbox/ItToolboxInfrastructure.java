@@ -14,6 +14,7 @@ import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
 import net.in.rrrekin.ittoolbox.configuration.OpenConfigurationsService;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeConverter;
 import net.in.rrrekin.ittoolbox.gui.GuiInvokeService;
+import net.in.rrrekin.ittoolbox.gui.model.NodeForestConverter;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
 import net.in.rrrekin.ittoolbox.infrastructure.UnhandledMessagesLogger;
@@ -58,6 +59,7 @@ public class ItToolboxInfrastructure extends AbstractModule {
     bind(OpenConfigurationsService.class).asEagerSingleton();
     bind(ConfigurationPersistenceService.class).asEagerSingleton();
     bind(CommonResources.class).asEagerSingleton();
+    bind(NodeForestConverter.class).asEagerSingleton();
     requestStaticInjection(IconDescriptor.class);
   }
 

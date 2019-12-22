@@ -1,23 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.TextFlow?>
-<VBox prefHeight="400.0" prefWidth="640.0"
-  style="-fx-font-family: 'Noto Sans CJK HK','Noto Sans',Ubuntu,Verdana,Arial,sans-serif;"
-  xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="net.in.rrrekin.ittoolbox.gui.MainWindowController">
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" style="-fx-font-family: 'Noto Sans CJK HK','Noto Sans',Ubuntu,Verdana,Arial,sans-serif;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.in.rrrekin.ittoolbox.gui.MainWindowController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -25,48 +14,41 @@
           <items>
             <MenuItem onAction="#onNewFile" text="%MM_FILE_NEW">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem onAction="#onOpenFile" text="%MM_FILE_OPEN">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
-            <Menu text="%MM_FILE_OPEN_RECENT"/>
-            <SeparatorMenuItem mnemonicParsing="false"/>
+            <Menu text="%MM_FILE_OPEN_RECENT" />
+            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem onAction="#onCloseFile" text="%MM_FILE_CLOSE">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem fx:id="menuFileSave" onAction="#onSaveFile" text="%MM_FILE_SAVE">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem onAction="#onSaveFileAs" text="%MM_FILE_SAVE_AS">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
               </accelerator>
             </MenuItem>
-            <SeparatorMenuItem mnemonicParsing="false"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem onAction="#onPreferences" text="%MM_FILE_PREFERENCES">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
-            <SeparatorMenuItem mnemonicParsing="false"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem onAction="#onQuit" text="%MM_FILE_QUIT">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
           </items>
@@ -75,106 +57,93 @@
           <items>
             <MenuItem fx:id="menuEditEditNode" onAction="#onNodeEdit" text="%MM_EDIT_EDIT">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
-            <SeparatorMenuItem mnemonicParsing="false"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="menuEditUndo" onAction="#onUndo" text="%MM_EDIT_UNDO">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem fx:id="menuEditRedo" onAction="#onRedo" text="%MM_EDIT_REDO">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="DOWN"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
               </accelerator>
             </MenuItem>
-            <SeparatorMenuItem mnemonicParsing="false"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="menuEditCut" onAction="#onCut" text="%MM_EDIT_CUT">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem fx:id="menuEditCopy" onAction="#onCopy" text="%MM_EDIT_COPY">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem onAction="#onOPaste" text="%MM_EDIT_PASTE">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem fx:id="menuEditDuplicate" onAction="#onNodeDuplicate" text="%MM_EDIT_DUPLICATE">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem fx:id="menuEditDelete" onAction="#onNodeDelete" text="%MM_EDIT_DELETE">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="DELETE" control="UP" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="DELETE" control="UP" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
-            <SeparatorMenuItem mnemonicParsing="false"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem onAction="#onSelectAll" text="%MM_EDIT_SELECT_ALL">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
               </accelerator>
             </MenuItem>
             <MenuItem onAction="#onUnSelectAll" text="%MM_EDIT_UNSELECT_ALL">
               <accelerator>
-                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="DOWN"
-                  shortcut="UP"/>
+                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
               </accelerator>
             </MenuItem>
           </items>
         </Menu>
         <Menu text="%MM_HELP">
           <items>
-            <MenuItem onAction="#onAbout" text="%MM_HELP_ABOUT"/>
+            <MenuItem onAction="#onAbout" text="%MM_HELP_ABOUT" />
           </items>
         </Menu>
       </menus>
     </MenuBar>
-    <SplitPane fx:id="splitter" dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0"
-      VBox.vgrow="ALWAYS">
+    <SplitPane fx:id="splitter" dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
       <items>
-        <TreeView fx:id="nodeTree" prefHeight="369.0" prefWidth="196.0" showRoot="false"/>
+        <TreeView fx:id="nodeTree" prefHeight="369.0" prefWidth="196.0" showRoot="false" SplitPane.resizableWithParent="false" />
         <BorderPane>
           <bottom>
             <ButtonBar>
               <buttons>
-                <Button fx:id="nodeDeleteButton" mnemonicParsing="false" onAction="#onNodeDelete"
-                  text="%MW_DELETE_BUTTON"/>
-                <Button fx:id="nodeEditButton" mnemonicParsing="false" onAction="#onNodeEdit"
-                  text="%MW_EDIT_BUTTON"/>
+                <Button fx:id="nodeDeleteButton" mnemonicParsing="false" onAction="#onNodeDelete" text="%MW_DELETE_BUTTON" />
+                <Button fx:id="nodeEditButton" mnemonicParsing="false" onAction="#onNodeEdit" text="%MW_EDIT_BUTTON" />
               </buttons>
               <padding>
-                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
               </padding>
             </ButtonBar>
           </bottom>
           <center>
             <ScrollPane fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER">
               <content>
-                <TextFlow fx:id="nodePreview"/>
+                <TextFlow fx:id="nodePreview" />
               </content>
               <padding>
-                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
               </padding>
             </ScrollPane>
           </center>
           <opaqueInsets>
-            <Insets/>
+            <Insets />
           </opaqueInsets>
         </BorderPane>
       </items>

@@ -62,6 +62,12 @@ public class GroupingNode implements NetworkNode {
   }
 
   @Override
+  public String getLocalNodeTypeName() {
+    return localMessage("NODE_GROUP");
+
+  }
+
+  @Override
   public @NotNull String getName() {
     return name;
   }

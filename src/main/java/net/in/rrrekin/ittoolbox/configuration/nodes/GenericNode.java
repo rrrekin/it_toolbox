@@ -79,6 +79,12 @@ public class GenericNode implements NetworkNode {
   }
 
   @Override
+  public String getLocalNodeTypeName() {
+    return localMessage("NODE_GENERIC");
+
+  }
+
+  @Override
   public @NotNull String getName() {
     return name;
   }
