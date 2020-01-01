@@ -780,3 +780,18 @@ a sdf a\par
 
 
 
+Server{name=s3, address=a3, description=d3, iconDescriptor=SERVER:blue:true, properties={}, serviceDescriptors=[ssh, telnet, ftp, http, https, actuator]}
+GroupingNode{name=g4, description=za\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 ja\u017A\u0144, iconDescriptor=FOLDER:red:false, serviceDescriptors=[exec:report ${name}, docker-compose:/path/to/dir]}
+  GroupingNode{name=g8, description=d8, iconDescriptor=FOLDER:red:false, serviceDescriptors=[]}
+    Server{name=s9, address=a9, description=d9, iconDescriptor=SERVER:blue:true, properties={}, serviceDescriptors=[https]}
+
+127.0.0.1 192.168.1.1,192.168.1.2|192.168.1.3
+
+
+127.0.0.1 Localhost
+192.168.1.1
+192.168.1.2
+192.168.1.3
+
+-Dupa nie wpis
+onet.pl Onet

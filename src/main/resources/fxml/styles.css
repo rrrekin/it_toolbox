@@ -1,0 +1,39 @@
+.root {
+  -fx-font-family: 'Noto Sans CJK HK','Noto Sans',Ubuntu,Verdana,Arial,sans-serif;
+  -fx-font-size: 10pt;
+}
+
+#iconControlsPane {
+  -fx-spacing: 5;
+}
+
+/*.button {*/
+/*  -fx-padding: 3;*/
+/*}*/
+
+.mini_button {
+  -fx-pref-height: 20pt;
+  -fx-pref-width: 20pt;
+  -fx-text-fill: transparent;
+  -fx-background-color: transparent;
+  -fx-content-display: CENTER;
+  -fx-border-color: -fx-box-border;
+  -fx-border-radius: 0;
+  -fx-padding: 1;
+  -fx-border-insets: 1;
+}
+
+.mini_button:focused {
+  /*-fx-color: -fx-focused-base;*/
+  -fx-border-color: -fx-outer-border;
+  /*-fx-background-color: -fx-mark-color;*/
+  /*-fx-background-color: -fx-focus-color;*/
+  /*-fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;*/
+  /*-fx-background-insets: -1.4, 0, 1, 2;*/
+  /*-fx-background-radius:  6.4, 5, 4, 3;*/
+}
+
+.mini_button:armed {
+  /*-fx-color: -fx-pressed-base;*/
+  -fx-background-color: -fx-pressed-base;
+}

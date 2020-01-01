@@ -6,13 +6,21 @@ import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.net.InetAddresses;
 import com.google.inject.Inject;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
+import net.in.rrrekin.ittoolbox.configuration.ConfigurationPersistenceService;
+import net.in.rrrekin.ittoolbox.configuration.nodes.GenericNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.Server;
 import net.in.rrrekin.ittoolbox.gui.model.NodeForest.Node;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.translate.AggregateTranslator;
 import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.EntityArrays;
@@ -21,9 +29,13 @@ import org.apache.commons.text.translate.LookupTranslator;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author michal.rudewicz@gmail.com */
 public class NodeForestConverter {
+
+  private static final Logger log = LoggerFactory.getLogger(NodeForestConverter.class);
 
   private static final Map<CharSequence, CharSequence> LINE_END_UNIFYING_MAPPING =
       ImmutableMap.<CharSequence, CharSequence>builder()
@@ -35,11 +47,16 @@ public class NodeForestConverter {
           .put("\r", "\\n")
           .build();
 
+  private static final Pattern SINGLE_LINE_SPLITTER = Pattern.compile("[,;|]|\\s");
+  private static final Pattern MULTI_LINE_SPLITTER = Pattern.compile("\\r?\\n");
+
   private static final CharSequenceTranslator SINGLE_LINE_ESCAPER =
       new AggregateTranslator(
           new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE), JavaUnicodeEscaper.below(32));
 
   private final @NotNull AppPreferences appPreferences;
+  private final @NotNull ConfigurationPersistenceService configurationPersistenceService;
+
   // HTML conversion semi-constants regenerated on each toHtml call
   private String font;
   private int fontSize;
@@ -49,8 +66,13 @@ public class NodeForestConverter {
   private String sub;
 
   @Inject
-  public NodeForestConverter(final @NotNull AppPreferences appPreferences) {
+  public NodeForestConverter(
+      final @NotNull AppPreferences appPreferences,
+      final @NotNull ConfigurationPersistenceService configurationPersistenceService) {
     this.appPreferences = requireNonNull(appPreferences, "appPreferences must not be null");
+    this.configurationPersistenceService =
+        requireNonNull(
+            configurationPersistenceService, "configurationPersistenceService must not be null");
   }
 
   public @NotNull String toPlainText(final @NotNull NodeForest selection) {
@@ -68,7 +90,7 @@ public class NodeForestConverter {
     final String descriptionHeadPrefix = prefix + "    ";
     final String descriptionPrefix = prefix + "      ";
     final StringBuilder builder = new StringBuilder(512);
-    final NetworkNode networkNode = node.value;
+    final NetworkNode networkNode = node.getValue();
     builder
         .append(prefix)
         .append(networkNode.getLocalNodeTypeName())
@@ -128,7 +150,7 @@ public class NodeForestConverter {
       builder
           .append("\n")
           .append(
-              node.getChildren().stream()
+              node.getOrCreateChildren().stream()
                   .map(child -> toPlainText(child, depth + 1))
                   .collect(Collectors.joining("\n")));
     }
@@ -190,8 +212,8 @@ public class NodeForestConverter {
 
   private CharSequence toHtml(final Node node) {
     final StringBuilder builder = new StringBuilder(512);
-    final NetworkNode networkNode = node.value;
-// TODO: add icon
+    final NetworkNode networkNode = node.getValue();
+    // TODO: add icon
     builder
         .append("<div ")
         .append(name)
@@ -244,10 +266,7 @@ public class NodeForestConverter {
     }
 
     if (!networkNode.getServiceDescriptors().isEmpty()) {
-      builder
-          .append("<div><b>")
-          .append(localMessage("NODE_LABEL_SERVICES"))
-          .append("</b></div>");
+      builder.append("<div><b>").append(localMessage("NODE_LABEL_SERVICES")).append("</b></div>");
       builder.append(
           networkNode.getServiceDescriptors().stream()
               .sorted()
@@ -257,7 +276,7 @@ public class NodeForestConverter {
 
     if (node.hasChildren()) {
       builder.append("<ul>");
-      node.getChildren()
+      node.getOrCreateChildren()
           .forEach(
               child -> {
                 builder.append("<li>");
@@ -267,5 +286,84 @@ public class NodeForestConverter {
       builder.append("</ul>");
     }
     return builder;
+  }
+
+  /**
+   * Generate NodeForest form pasted text data.
+   *
+   * @param text to be converted
+   * @return the node forest
+   */
+  public @NotNull NodeForest fromText(final @NotNull String text) {
+
+    // 1. Detect single line and process specifically. Assume that single line is max 10k characters
+    if (text.length() < 10000) {
+      final String trimmed = text.strip();
+      log.debug("Analyzing text: '{}'", trimmed.contains("\n"));
+      if (!trimmed.contains("\n")) {
+        return singleLineToForest(trimmed);
+      }
+    }
+    // 2. Attempt to read YAML
+    try {
+      final NodeForest nodeForest =
+          new NodeForest(configurationPersistenceService.treeFromYaml(text).getChildren());
+      log.debug("Pasting yaml text");
+      return nodeForest;
+    } catch (final Exception e) {
+      log.debug("Unable to interpret clipboard data as yaml node list representation");
+    }
+    // 3. Flat read multiline
+    return multilineToForest(text);
+  }
+
+  private @NotNull NodeForest singleLineToForest(final @NotNull String text) {
+    log.debug("Pasting singleline text");
+    final NodeForest response = new NodeForest(List.of());
+    SINGLE_LINE_SPLITTER
+        .splitAsStream(text)
+        .map(String::strip)
+        .forEach(
+            node -> {
+              if (isPossibleServer(node)) {
+                response.addRootNode(new Server(node, node, "", null, null, null));
+              } else {
+                response.addRootNode(new GenericNode(node, "", null, null, null));
+              }
+            });
+    return response;
+  }
+
+  private @NotNull NodeForest multilineToForest(final @NotNull String text) {
+    log.debug("Pasting multiline text");
+    final NodeForest response = new NodeForest(List.of());
+    MULTI_LINE_SPLITTER
+        .splitAsStream(text)
+        .map(String::strip)
+        .filter(StringUtils::isNotEmpty)
+        .forEach(
+            line -> {
+              final String node = line.replaceAll("\\s.*", "");
+              if (isPossibleServer(node)) {
+                response.addRootNode(new Server(node, node, line, null, null, null));
+              } else {
+                response.addRootNode(new GenericNode(node, line, null, null, null));
+              }
+            });
+    return response;
+  }
+
+  private static boolean isPossibleServer(final String node) {
+    if (InetAddresses.isInetAddress(node)) {
+      return true;
+    }
+    try {
+      if (InetAddress.getByName(node) != null) {
+        return true;
+      }
+    } catch (final UnknownHostException ignored) {
+      // ignore
+    }
+    return false;
   }
 }

@@ -1,5 +1,6 @@
 package net.in.rrrekin.ittoolbox.configuration;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.join;
 import static java.util.Objects.requireNonNull;
@@ -26,6 +27,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.in.rrrekin.ittoolbox.configuration.ConfigurationPersistenceService.ReadResult;
+import net.in.rrrekin.ittoolbox.configuration.exceptions.FailedConfigurationSaveException;
 import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationException;
 import net.in.rrrekin.ittoolbox.configuration.exceptions.MissingConfigurationException;
 import net.in.rrrekin.ittoolbox.gui.GuiInvokeService;
@@ -247,6 +249,21 @@ public class OpenConfigurationsService {
       return null;
     }
     return null;
+  }
+
+  public void saveFile(final @NotNull Configuration configuration)
+      throws FailedConfigurationSaveException {
+    checkState(configuration.getFilePath() != null, "file not defined for save");
+    persistenceService.save(configuration.getFilePath().toFile(), configuration);
+  }
+
+  public void saveFileAs(final @NotNull Configuration configuration, final @NotNull Path path)
+      throws FailedConfigurationSaveException {
+    persistenceService.save(path.toFile(), configuration);
+    removeOpenFile(configuration.getFilePath());
+    addRecentFile(configuration.getFilePath());
+    addOpenFile(path);
+    configuration.setFilePath(path);
   }
 
   /**

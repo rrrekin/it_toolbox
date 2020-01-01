@@ -3,13 +3,13 @@ package net.in.rrrekin.ittoolbox.gui.model;
 import com.google.common.base.Strings;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.scene.control.TreeItem;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * NodeTree selection representation for copy/paste.
@@ -38,6 +38,10 @@ public class NodeForest implements Serializable {
     }
   }
 
+  public void addRootNode(final @NotNull NetworkNode node) {
+    roots.add(new Node(node));
+  }
+
   private Node findOrAddRoot(final @NotNull NetworkNode root) {
     for (final Node node : roots) {
       if (root.equals(node.value)) {
@@ -58,8 +62,8 @@ public class NodeForest implements Serializable {
     return roots.stream().map(Node::toString).collect(Collectors.joining("\n"));
   }
 
-  static class Node implements Serializable {
-    @NotNull NetworkNode value;
+  public static class Node implements Serializable {
+    @NotNull private NetworkNode value;
     private List<Node> children = null;
 
     Node(final @NotNull NetworkNode value) {
@@ -67,16 +71,21 @@ public class NodeForest implements Serializable {
     }
 
     @NotNull
-    List<Node> getChildren() {
+    public List<Node> getOrCreateChildren() {
       if (children == null) {
         children = new ArrayList<>();
       }
       return children;
     }
 
+    @Nullable
+    public List<Node> getChildren() {
+      return children;
+    }
+
     @NotNull
     Node findOrAddChild(final @NotNull NetworkNode child) {
-      final List<Node> children = getChildren();
+      final List<Node> children = getOrCreateChildren();
       for (final Node node : children) {
         if (child.equals(node.value)) {
           return node;
@@ -110,70 +119,9 @@ public class NodeForest implements Serializable {
     boolean hasChildren() {
       return children != null && !children.isEmpty();
     }
-  }
 
-  static class NodePath {
-    private final LinkedList<NetworkNode> path = new LinkedList<>();
-
-    NodePath(final @NotNull TreeItem<NetworkNode> node) {
-      for (TreeItem<NetworkNode> n = node; n != null; n = n.getParent()) {
-        path.addFirst(n.getValue());
-      }
-    }
-
-    @Override
-    public String toString() {
-      return path.stream().map(NetworkNode::getName).collect(Collectors.joining("/"));
-    }
-
-    NetworkNode getTopParent() {
-      return path.size() > 0 ? path.get(0) : null;
-    }
-
-    private void cutParents() {
-      var node = path.getLast();
-      path.clear();
-      path.addFirst(node);
-    }
-
-    private void cutTopParent() {
-      path.removeFirst();
-    }
-
-    int len() {
-      return path.size();
-    }
-
-    NetworkNode getAt(final int i) {
-      return path.get(i);
-    }
-
-    static void removeCommonParents(final @NotNull List<NodePath> paths) {
-      if (!paths.isEmpty()) {
-        if (paths.size() == 1) {
-          paths.get(0).cutParents();
-        } else {
-          boolean change;
-          int minPathLen;
-          do {
-            change = true;
-            final var firstPath = paths.get(0);
-            minPathLen = firstPath.len();
-            final var root = firstPath.getTopParent();
-            for (final NodePath path : paths) {
-              if (root != path.getTopParent()) {
-                change = false;
-                break;
-              }
-            }
-            if (change) {
-              for (final NodePath path : paths) {
-                path.cutTopParent();
-              }
-            }
-          } while (change && minPathLen > 1);
-        }
-      }
+    public @NotNull NetworkNode getValue() {
+      return value;
     }
   }
 }

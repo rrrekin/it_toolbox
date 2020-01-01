@@ -62,6 +62,13 @@ public class Server implements NetworkNode {
     iconDescriptor = DEFAULT_ICON_DESCRIPTOR;
   }
 
+  /**
+   * Instantiates a new Server.
+   */
+  public Server() {
+    this(null);
+  }
+
   @Override
   public NodeType getType() {
     return NodeType.SERVER;

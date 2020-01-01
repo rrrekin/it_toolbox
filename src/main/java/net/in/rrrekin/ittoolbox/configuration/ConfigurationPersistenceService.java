@@ -41,6 +41,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.DumperOptions.NonPrintableStyle;
@@ -64,8 +65,7 @@ public class ConfigurationPersistenceService {
   private static final int MAX_OBJECT_DESCRIPTION_WIDTH = 40;
 
   @NonNls
-  private static final Logger log =
-      org.slf4j.LoggerFactory.getLogger(ConfigurationPersistenceService.class);
+  private static final Logger log = LoggerFactory.getLogger(ConfigurationPersistenceService.class);
 
   @NonNls public static final String ROOT = "root";
 
@@ -137,6 +137,34 @@ public class ConfigurationPersistenceService {
     } else {
       throw new InvalidConfigurationException("EX_UNKNOWN_VERSION", configFile, version);
     }
+  }
+
+  public @NotNull TreeItem<NetworkNode> treeFromYaml(final @NotNull String yamlData)
+      throws InvalidConfigurationException {
+    requireNonNull(yamlData, "yamlData must not be null");
+    final Yaml yaml = new Yaml(yamlOptions);
+    final Object deserialized = yaml.load(yamlData);
+    log.debug("Deserialized content: {}", deserialized);
+    if (deserialized instanceof Map) {
+      // Attempting to interpret as a whole configuration entry
+      final List<String> warnings = newArrayList();
+      final TreeItem<NetworkNode> rootNode =
+          readNetworkNodesV1((Map<String, ?>) deserialized, warnings);
+      if (warnings.isEmpty()) {
+        return rootNode;
+      }
+    } else if (deserialized instanceof List) {
+      final List<String> warnings = newArrayList();
+      final @NotNull List<TreeItem<NetworkNode>> servers =
+          readServerList((List) deserialized, warnings);
+      if (warnings.isEmpty()) {
+        final TreeItem<NetworkNode> treeItem = new TreeItem<>(new GroupingNode("paste-root"));
+        treeItem.getChildren().addAll(servers);
+        return treeItem;
+      }
+    }
+    throw new IllegalArgumentException(
+        "Text cannot be correctly interpretted as a configuration YAML");
   }
 
   private @NotNull ReadResult readConfigV1(final @NotNull Map<String, ?> configurationDto)
