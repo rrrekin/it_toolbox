@@ -4,12 +4,14 @@ import static com.google.common.collect.Maps.newHashMap;
 import static net.in.rrrekin.ittoolbox.ItToolboxApplication.APPLICATION_NAME;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
@@ -27,8 +29,10 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -36,6 +40,7 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
@@ -64,6 +69,9 @@ import net.in.rrrekin.ittoolbox.gui.model.NodeForestConverter;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferences;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
+import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
+import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
+import net.in.rrrekin.ittoolbox.services.ServiceRegistry;
 import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -101,6 +109,9 @@ public class MainWindowController {
   @FXML private MenuItem menuEditDuplicate;
   @FXML private MenuItem menuEditDelete;
 
+  // Context menu
+  @FXML public ContextMenu nodeContextMenu;
+
   // Buttons
   @FXML Button nodeDeleteButton;
   @FXML Button nodeEditButton;
@@ -123,6 +134,7 @@ public class MainWindowController {
   private final @NotNull GuiInvokeService guiInvokeService;
   private final @NotNull NodeConverter nodeConverter;
   private final @NotNull NodeForestConverter nodeForestConverter;
+  private final @NotNull ServiceRegistry serviceRegistry;
   private final @NotNull Injector injector;
 
   @Inject
@@ -134,6 +146,7 @@ public class MainWindowController {
       final @NotNull GuiInvokeService guiInvokeService,
       final @NotNull NodeConverter nodeConverter,
       final @NotNull NodeForestConverter nodeForestConverter,
+      final @NotNull ServiceRegistry serviceRegistry,
       final @NotNull Injector injector) {
     log.info("Creating MainWindowController");
     this.commonResources =
@@ -149,6 +162,8 @@ public class MainWindowController {
     this.nodeConverter = Objects.requireNonNull(nodeConverter, "NodeConverter must not be null");
     this.nodeForestConverter =
         Objects.requireNonNull(nodeForestConverter, "nodeForestConverter must not be null");
+    this.serviceRegistry =
+        Objects.requireNonNull(serviceRegistry, "serviceRegistry must not be null");
     this.injector = Objects.requireNonNull(injector, "injector must not be null");
 
     genericPreferences = userPreferencesFactory.create(this.getClass());
@@ -187,7 +202,18 @@ public class MainWindowController {
               nodePreview.getChildren().clear();
               nodePreview.getChildren().addAll(nodeConverter.toGui(newVal));
             });
+
+    nodeTree
+        .getSelectionModel()
+        .selectedItemProperty()
+        .addListener(
+          (observable, oldValue, newValue) -> {
+            populateNodeMenus(newValue);
+          });
   }
+
+
+
 
   private void setupBindings() {
     noNodeSelected.bind(Bindings.isEmpty(nodeTree.getSelectionModel().getSelectedItems()));
@@ -227,7 +253,7 @@ public class MainWindowController {
   private void updateTitleAndPreferences() {
     if (this.configuration.getFilePath() != null) {
       preferences =
-        userPreferencesFactory.create(this.getClass(), this.configuration.getFilePath());
+          userPreferencesFactory.create(this.getClass(), this.configuration.getFilePath());
     } else {
       preferences = genericPreferences;
     }
@@ -612,7 +638,7 @@ public class MainWindowController {
         return;
       }
       try {
-        openConfigurationsService.saveFileAs(configuration,selectedFile.toPath());
+        openConfigurationsService.saveFileAs(configuration, selectedFile.toPath());
         needSave.set(false);
         updateTitleAndPreferences();
       } catch (final Exception e) {
@@ -733,16 +759,58 @@ public class MainWindowController {
   }
 
   public void onDescriptionClick(final MouseEvent mouseEvent) {
-    if (mouseEvent.getClickCount() > 1) {
+    if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() > 1) {
       log.trace("Description clicked: {}", mouseEvent);
       onNodeEdit(null);
     }
   }
 
   public void onTreeClicked(final MouseEvent mouseEvent) {
-    if (mouseEvent.getClickCount() > 1) {
+    if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() > 1) {
       log.trace("Tree clicked: {}", mouseEvent);
       onNodeEdit(null);
+    }
+  }
+
+  public void populateNodeMenus(final TreeItem<NetworkNode> selectedItem) {
+    log.trace("Building menus for: {}", selectedItem);
+    final ObservableList<MenuItem> menuItems = nodeContextMenu.getItems();
+    menuItems.clear();
+    if (selectedItem != null && selectedItem.getValue() != null) {
+      final NetworkNode node = selectedItem.getValue();
+      final @NotNull List<ServiceDefinition> defaultServices =
+          serviceRegistry.getDefaultServicesFor(node.getType());
+      final @NotNull List<ServiceDefinition> definedServices =
+          serviceRegistry.getDefinedServicesFor(node.getType());
+      log.trace("Default services: {}",defaultServices);
+      log.trace("Defined services: {}",definedServices);
+      final ImmutableList<ServiceDescriptor> serviceDescriptors = node.getServiceDescriptors();
+      if (!defaultServices.isEmpty() || !serviceDescriptors.isEmpty()) {
+        defaultServices.forEach(
+            s -> {
+              final ServiceDescriptor defaultDescriptor = s.getDefaultDescriptor();
+              final MenuItem serviceMenuItem = new MenuItem(s.getName(defaultDescriptor));
+              serviceMenuItem.setOnAction(
+                  event -> {
+                    s.getExecutor(defaultDescriptor, configuration).execute(stage, node);
+                  });
+              menuItems.add(serviceMenuItem);
+            });
+        if (!defaultServices.isEmpty() && !serviceDescriptors.isEmpty()) {
+          menuItems.add(new SeparatorMenuItem());
+        }
+        serviceDescriptors.stream()
+            .sorted(Comparator.comparing(o -> o.getType().name()))
+            .forEach(
+                sd -> {
+                  final MenuItem serviceMenuItem = new MenuItem(serviceRegistry.getNameFor(sd));
+                  serviceMenuItem.setOnAction(
+                      event -> {
+                        serviceRegistry.getExecutorFor(sd, configuration).execute(stage, node);
+                      });
+                  menuItems.add(serviceMenuItem);
+                });
+      }
     }
   }
 }

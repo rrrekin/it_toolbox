@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import javafx.scene.paint.Color;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
+import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +30,7 @@ public class GenericNode implements NetworkNode {
   private final @NotNull String description;
   private final @NotNull IconDescriptor iconDescriptor;
   private final @NotNull ImmutableMap<String, String> properties;
-  private final @NotNull ImmutableList<String> serviceDescriptors;
+  private final @NotNull ImmutableList<ServiceDescriptor> serviceDescriptors;
 
   /**
    * Instantiates a new Generic node.
@@ -45,7 +46,7 @@ public class GenericNode implements NetworkNode {
       final @Nullable String description,
       final @Nullable IconDescriptor iconDescriptor,
       final @Nullable Map<String, String> properties,
-      final @Nullable List<String> serviceDescriptors) {
+      final @Nullable List<ServiceDescriptor> serviceDescriptors) {
 
     this.name = requireNonNullElse(name, localMessage("NODE_GENERIC_NODE_DEFAULT_NAME"));
     this.description = requireNonNullElse(description, this.name);
@@ -73,6 +74,7 @@ public class GenericNode implements NetworkNode {
     this(null);
   }
 
+  @NotNull
   @Override
   public NodeType getType() {
     return NodeType.GENERIC_NODE;
@@ -100,7 +102,7 @@ public class GenericNode implements NetworkNode {
   }
 
   @Override
-  public @NotNull ImmutableList<String> getServiceDescriptors() {
+  public @NotNull ImmutableList<ServiceDescriptor> getServiceDescriptors() {
     return serviceDescriptors;
   }
 

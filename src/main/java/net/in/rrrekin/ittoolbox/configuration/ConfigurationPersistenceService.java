@@ -97,9 +97,6 @@ public class ConfigurationPersistenceService {
     this.nodeConverter = requireNonNull(nodeConverter, "NodeConverter must not be null");
   }
 
-  // TODO: Add user notifications on minor configuration read errors during initial load.
-  // TODO: Introduce exceptions to reject reload of invalid configuration.
-
   /**
    * Creates a new Configuration object based on a configuration YAML file.
    *
@@ -340,10 +337,12 @@ public class ConfigurationPersistenceService {
         config.getNetworkNodes().getChildren().stream()
             .map(this::getDto)
             .collect(Collectors.toList());
-    final Map<String, String> services =
+    final Map<String, ?> services =
         serviceRegistry.stream()
             .collect(
-                Collectors.toMap(ServiceDefinition::getId, ServiceDefinition::getConfiguration));
+                Collectors.toMap(
+                    serviceDefinition -> serviceDefinition.getType().toString(),
+                    ServiceDefinition::getConfiguration));
 
     final Builder<String, Object> responseBuilder = ImmutableMap.builder();
     responseBuilder.put(VERSION_PROPERTY, VERSION);

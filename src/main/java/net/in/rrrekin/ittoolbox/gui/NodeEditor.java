@@ -36,6 +36,7 @@ import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.Server;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferences;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
+import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import org.controlsfx.control.SearchableComboBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
@@ -159,7 +160,12 @@ public class NodeEditor {
             node.getProperties().entrySet().stream()
                 .map(e -> e.getKey() + ": " + e.getValue())
                 .collect(Collectors.toList()));
-    services.getItems().addAll(node.getServiceDescriptors());
+    services
+        .getItems()
+        .addAll(
+            node.getServiceDescriptors().stream()
+                .map(ServiceDescriptor::toString)
+                .collect(Collectors.toList()));
     final @NotNull IconDescriptor iconDescriptor = node.getIconDescriptor();
     iconSelector.setValue(iconDescriptor.getGlyph());
     iconColor.setValue(iconDescriptor.getColor());
@@ -228,7 +234,7 @@ public class NodeEditor {
         new IconDescriptor(selectedIcon, iconColor.getValue(), useIconGradient.isSelected());
     // TODO: implement
     final @NotNull Map<String, String> newProperties = node.getProperties();
-    final @NotNull ImmutableList<String> newServices = node.getServiceDescriptors();
+    final @NotNull ImmutableList<ServiceDescriptor> newServices = node.getServiceDescriptors();
 
     if (node instanceof Server) {
       newNode =

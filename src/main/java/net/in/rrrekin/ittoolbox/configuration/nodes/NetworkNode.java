@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.Serializable;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
+import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,7 +19,7 @@ public interface NetworkNode extends Serializable {
    *
    * @return the type
    */
-  NodeType getType();
+  @NotNull NodeType getType();
 
   /**
    * @return local name of given node type
@@ -76,5 +77,5 @@ public interface NetworkNode extends Serializable {
    * @return the service descriptors
    */
   @NotNull
-  ImmutableList<String> getServiceDescriptors();
+  ImmutableList<ServiceDescriptor> getServiceDescriptors();
 }

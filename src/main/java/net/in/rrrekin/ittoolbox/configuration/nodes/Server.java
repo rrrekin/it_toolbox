@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import javafx.scene.paint.Color;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
+import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,7 @@ public class Server implements NetworkNode {
   private final @NotNull String description;
   private final @NotNull IconDescriptor iconDescriptor;
   private final @NotNull ImmutableMap<String, String> properties;
-  private final @NotNull ImmutableList<String> serviceDescriptors;
+  private final @NotNull ImmutableList<ServiceDescriptor> serviceDescriptors;
 
   public Server(
       @Nullable final String name,
@@ -38,7 +39,7 @@ public class Server implements NetworkNode {
       @Nullable final String description,
       @Nullable final IconDescriptor iconDescriptor,
       @Nullable final Map<String, String> properties,
-      @Nullable final List<String> serviceDescriptors) {
+      @Nullable final List<ServiceDescriptor> serviceDescriptors) {
     this.name = requireNonNullElse(name, localMessage("NODE_SERVER_DEFAULT_NAME"));
     this.address = requireNonNullElse(address, this.name);
     this.description = requireNonNullElse(description, this.name);
@@ -69,6 +70,7 @@ public class Server implements NetworkNode {
     this(null);
   }
 
+  @NotNull
   @Override
   public NodeType getType() {
     return NodeType.SERVER;
@@ -95,7 +97,7 @@ public class Server implements NetworkNode {
   }
 
   @Override
-  public @NotNull ImmutableList<String> getServiceDescriptors() {
+  public @NotNull ImmutableList<ServiceDescriptor> getServiceDescriptors() {
     return serviceDescriptors;
   }
 

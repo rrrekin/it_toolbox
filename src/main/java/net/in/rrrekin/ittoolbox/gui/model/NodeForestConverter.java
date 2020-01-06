@@ -142,7 +142,7 @@ public class NodeForestConverter {
       builder.append(
           networkNode.getServiceDescriptors().stream()
               .sorted()
-              .map(service -> descriptionPrefix + singleLine(service))
+              .map(service -> descriptionPrefix + singleLine(service.toString()))
               .collect(Collectors.joining("\n")));
     }
 
@@ -270,7 +270,7 @@ public class NodeForestConverter {
       builder.append(
           networkNode.getServiceDescriptors().stream()
               .sorted()
-              .map(service -> "<div>" + escapeHtml4(singleLine(service)) + "</div>")
+              .map(service -> "<div>" + escapeHtml4(singleLine(service.toString())) + "</div>")
               .collect(Collectors.joining()));
     }
 

@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import javafx.scene.text.Text;
 import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
 import net.in.rrrekin.ittoolbox.configuration.exceptions.InvalidConfigurationException;
+import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -117,14 +119,18 @@ public class NodeConverter {
     final IconDescriptor iconDescriptor =
         convertToIconDescriptor(String.valueOf(dto.get(ICON_PROPERTY)));
     final HashMap<String, String> properties = Maps.newHashMap();
-    final List<String> serviceDescriptors = newArrayList();
+    final List<ServiceDescriptor> serviceDescriptors = newArrayList();
     if (dto.get(SERVICES_PROPERTY) instanceof List) {
       ((List<?>) dto.get(SERVICES_PROPERTY))
           .forEach(
               it -> {
-                final String service = toStringOrEmpty(it);
-                if (!service.trim().isEmpty()) {
-                  serviceDescriptors.add(service);
+                if (it instanceof String) {
+                  try {
+                    final ServiceDescriptor service = new ServiceDescriptor((String) it);
+                    serviceDescriptors.add(service);
+                  } catch (final Exception e) {
+                    log.warn("Invalid service descriptor", e);
+                  }
                 }
               });
     }
@@ -146,14 +152,18 @@ public class NodeConverter {
     final IconDescriptor iconDescriptor =
         convertToIconDescriptor(String.valueOf(dto.get(ICON_PROPERTY)));
     final HashMap<String, String> properties = Maps.newHashMap();
-    final List<String> serviceDescriptors = newArrayList();
+    final List<ServiceDescriptor> serviceDescriptors = newArrayList();
     if (dto.get(SERVICES_PROPERTY) instanceof List) {
       ((List<?>) dto.get(SERVICES_PROPERTY))
           .forEach(
               it -> {
-                final String service = toStringOrEmpty(it);
-                if (!service.trim().isEmpty()) {
-                  serviceDescriptors.add(service);
+                if (it instanceof String) {
+                  try {
+                    final ServiceDescriptor service = new ServiceDescriptor((String) it);
+                    serviceDescriptors.add(service);
+                  } catch (final Exception e) {
+                    log.warn("Invalid service descriptor", e);
+                  }
                 }
               });
     }
@@ -174,14 +184,18 @@ public class NodeConverter {
     final String description = String.valueOf(dto.get(DESCRIPTION_PROPERTY));
     final IconDescriptor iconDescriptor =
         convertToIconDescriptor(String.valueOf(dto.get(ICON_PROPERTY)));
-    final List<String> serviceDescriptors = newArrayList();
+    final List<ServiceDescriptor> serviceDescriptors = newArrayList();
     if (dto.get(SERVICES_PROPERTY) instanceof List) {
       ((List<?>) dto.get(SERVICES_PROPERTY))
           .forEach(
               it -> {
-                final String service = toStringOrEmpty(it);
-                if (!service.trim().isEmpty()) {
-                  serviceDescriptors.add(service);
+                if (it instanceof String) {
+                  try {
+                    final ServiceDescriptor service = new ServiceDescriptor((String) it);
+                    serviceDescriptors.add(service);
+                  } catch (final Exception e) {
+                    log.warn("Invalid service descriptor", e);
+                  }
                 }
               });
     }
@@ -233,10 +247,10 @@ public class NodeConverter {
       if (!node.getServiceDescriptors().isEmpty()) {
         response.add(createText(fontSubHeader, "\n", localMessage("NODE_LABEL_SERVICES"), "\n"));
         node.getServiceDescriptors().stream()
-            .sorted()
+            .sorted(Comparator.comparing(o -> o.getType().name()))
             .forEach(
                 service -> {
-                  response.add(createText(fontValue, service, "\n"));
+                  response.add(createText(fontValue, service.getType().toString(), "\n"));
                 });
       }
     }

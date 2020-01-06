@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import javafx.scene.paint.Color;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
+import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,13 +27,13 @@ public class GroupingNode implements NetworkNode {
   private final @NotNull String name;
   private final @NotNull String description;
   private final @NotNull IconDescriptor iconDescriptor;
-  private final @NotNull ImmutableList<String> serviceDescriptors;
+  private final @NotNull ImmutableList<ServiceDescriptor> serviceDescriptors;
 
   public GroupingNode(
       final @Nullable String name,
       final @Nullable String description,
       final @Nullable IconDescriptor iconDescriptor,
-      final @Nullable List<String> serviceDescriptors) {
+      final @Nullable List<ServiceDescriptor> serviceDescriptors) {
     this.name = requireNonNullElse(name, localMessage("NODE_GROUPING_NODE_DEFAULT_NAME"));
     this.description = requireNonNullElse(description, this.name);
     this.iconDescriptor = requireNonNullElse(iconDescriptor, DEFAULT_ICON_DESCRIPTOR);
@@ -56,6 +57,7 @@ public class GroupingNode implements NetworkNode {
     this(null);
   }
 
+  @NotNull
   @Override
   public NodeType getType() {
     return NodeType.GROUP;
@@ -83,7 +85,7 @@ public class GroupingNode implements NetworkNode {
   }
 
   @Override
-  public @NotNull ImmutableList<String> getServiceDescriptors() {
+  public @NotNull ImmutableList<ServiceDescriptor> getServiceDescriptors() {
     return serviceDescriptors;
   }
 

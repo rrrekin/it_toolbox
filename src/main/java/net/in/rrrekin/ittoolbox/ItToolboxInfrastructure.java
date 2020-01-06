@@ -21,6 +21,7 @@ import net.in.rrrekin.ittoolbox.infrastructure.UnhandledMessagesLogger;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
 import net.in.rrrekin.ittoolbox.os.OsServices;
 import net.in.rrrekin.ittoolbox.os.OsServicesFactory;
+import net.in.rrrekin.ittoolbox.services.ServiceRegistry;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ public class ItToolboxInfrastructure extends AbstractModule {
     bind(ConfigurationPersistenceService.class).asEagerSingleton();
     bind(CommonResources.class).asEagerSingleton();
     bind(NodeForestConverter.class).asEagerSingleton();
+    bind(ServiceRegistry.class).asEagerSingleton();
     requestStaticInjection(IconDescriptor.class);
   }
 
