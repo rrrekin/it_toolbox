@@ -14,6 +14,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface NetworkNode extends Serializable {
 
+  String ENV_VAR_NAME = "NODE_NAME";
+  String ENV_VAR_ADDRESS = "NODE_ADDRESS";
+  String ENV_VAR_DESCRIPTION = "NODE_DESCRIPTION";
+  String ENV_VAR_PROPERTY_PREFIX = "NODE_PROP_";
+
   /**
    * Gets node type.
    *
@@ -78,4 +83,8 @@ public interface NetworkNode extends Serializable {
    */
   @NotNull
   ImmutableList<ServiceDescriptor> getServiceDescriptors();
+
+  /** Get main node parameters and properties ans environment variables. */
+  @NotNull
+  ImmutableMap<String, String> getEnv();
 }

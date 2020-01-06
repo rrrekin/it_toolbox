@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
+import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
+import net.in.rrrekin.ittoolbox.os.OsServices;
 import net.in.rrrekin.ittoolbox.services.definitions.ExecuteService;
 import net.in.rrrekin.ittoolbox.services.definitions.NetcatService;
 import net.in.rrrekin.ittoolbox.services.definitions.NmapService;
@@ -41,14 +43,22 @@ public class ServiceRegistry {
   private final @NotNull List<ServiceDefinition> groupDefinedServices;
 
   private final @NotNull CommonResources commonResources;
+  private final @NotNull OsServices osServices;
+  private final @NotNull UserPreferencesFactory userPreferencesFactory;
 
   @Inject
-  public ServiceRegistry(@NotNull final CommonResources commonResources) {
+  public ServiceRegistry(
+      @NotNull final CommonResources commonResources,
+      final @NotNull OsServices osServices,
+      final @NotNull UserPreferencesFactory userPreferencesFactory) {
     log.debug("Creating ServiceRegistry.");
     this.commonResources = requireNonNull(commonResources, "commonResources must not be null");
+    this.osServices = requireNonNull(osServices, "osServices must not be null");
+    this.userPreferencesFactory =
+        requireNonNull(userPreferencesFactory, "userPreferencesFactory must not be null");
     final List<ServiceDefinition> services =
         List.of(
-            new PingService(commonResources),
+            new PingService(osServices, userPreferencesFactory),
             new TracerouteService(commonResources),
             new ExecuteService(commonResources),
             new SshService(commonResources),
@@ -165,7 +175,8 @@ public class ServiceRegistry {
     }
   }
 
-  public @NotNull ServiceExecutor getExecutorFor(@NotNull final ServiceDescriptor sd, final @NotNull Configuration configuration) {
+  public @NotNull ServiceExecutor getExecutorFor(
+      @NotNull final ServiceDescriptor sd, final @NotNull Configuration configuration) {
     final ServiceDefinition service = serviceMap.get(sd.getType());
     return service.getExecutor(sd, configuration);
   }

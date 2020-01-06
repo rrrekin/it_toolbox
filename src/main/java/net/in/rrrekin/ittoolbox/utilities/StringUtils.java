@@ -2,7 +2,9 @@ package net.in.rrrekin.ittoolbox.utilities;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Strings;
 import groovy.text.SimpleTemplateEngine;
+import java.util.HashMap;
 import java.util.Map;
 import net.in.rrrekin.ittoolbox.utilities.exceptions.TemplateException;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +56,7 @@ public final class StringUtils {
    * @param variables the variables
    * @return the string
    */
-  public static String applyTemplate(
+  public static @NotNull String applyTemplate(
       final @NotNull String template, final @NotNull Map<String, Object> variables)
       throws TemplateException {
     requireNonNull(template, "Template must not be null");
@@ -62,7 +64,8 @@ public final class StringUtils {
     log.trace("Evaluating template '{}' with variables {}", template, variables);
     final SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
     try {
-      return templateEngine.createTemplate(template).make(variables).toString();
+      return Strings.nullToEmpty(
+          templateEngine.createTemplate(template).make(new HashMap(variables)).toString());
     } catch (final Exception e) {
       log.warn("Failed to evaluate template '{}' with variables {}", template, variables);
       throw new TemplateException(template, e);

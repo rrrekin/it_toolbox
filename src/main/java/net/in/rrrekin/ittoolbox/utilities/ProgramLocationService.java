@@ -3,15 +3,17 @@ package net.in.rrrekin.ittoolbox.utilities;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Program location service - enables checking if given program is present on this computer.
@@ -19,6 +21,9 @@ import org.jetbrains.annotations.Nullable;
  * @author michal.rudewicz @gmail.com
  */
 public class ProgramLocationService {
+
+  @NonNls
+  private static final Logger log = LoggerFactory.getLogger(ProgramLocationService.class);
 
   private final List<Path> paths;
 
@@ -28,8 +33,8 @@ public class ProgramLocationService {
    * @param path the path as provided by System.getenv("PATH"). If null, the search paths list will
    *     be empty.
    */
-  @Inject
   public ProgramLocationService(final @Nullable String path) {
+    log.info("Creating ProgramLocationService with paths: {}", path);
     if (path == null) {
       paths = ImmutableList.of();
     } else {
@@ -49,13 +54,15 @@ public class ProgramLocationService {
    */
   public @Nullable File getProgramBinary(final @NotNull String name) {
     requireNonNull(name, "Name must not be null");
+    log.debug("Looking for {} command in {}", name, paths);
     for (final Path path : paths) {
       final Path binary = path.resolve(name);
       if (binary.toFile().isFile() && binary.toFile().canExecute()) {
+        log.debug("Command {} found at {}", name, binary);
         return binary.toFile();
       }
     }
-
+    log.debug("Command {} not found", name);
     return null;
   }
 

@@ -5,12 +5,15 @@ import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javafx.scene.paint.Color;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
-import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class GroupingNode implements NetworkNode {
 
   private static final @NotNull IconDescriptor DEFAULT_ICON_DESCRIPTOR =
-      new IconDescriptor(FontAwesome.Glyph.FOLDER_OPEN, Color.BLUE, true);
+      new IconDescriptor(Glyph.FOLDER_OPEN, Color.BLUE, true);
 
   private final @NotNull String name;
   private final @NotNull String description;
@@ -87,6 +90,14 @@ public class GroupingNode implements NetworkNode {
   @Override
   public @NotNull ImmutableList<ServiceDescriptor> getServiceDescriptors() {
     return serviceDescriptors;
+  }
+
+  @Override
+  public @NotNull ImmutableMap<String, String> getEnv() {
+    final Builder<String, String> builder = ImmutableMap.builder();
+    builder.put(ENV_VAR_NAME, name);
+    builder.put(ENV_VAR_DESCRIPTION, description);
+    return builder.build();
   }
 
   @Override

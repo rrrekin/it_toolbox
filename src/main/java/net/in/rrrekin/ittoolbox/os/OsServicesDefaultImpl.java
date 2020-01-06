@@ -2,7 +2,6 @@ package net.in.rrrekin.ittoolbox.os;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 
 import com.google.common.collect.ImmutableList;
@@ -16,8 +15,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
+import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
-import org.apache.commons.lang3.StringUtils;
+import net.in.rrrekin.ittoolbox.utilities.StringUtils;
+import net.in.rrrekin.ittoolbox.utilities.exceptions.TemplateException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -36,7 +37,10 @@ public class OsServicesDefaultImpl implements OsServices {
   private static final String ADDRESS_PLACEHOLDER = " ${server.address}";
   private static final String PORT_SEMICOLON_PLACEHOLDER = "${port>0?':'+port:''}";
   private static final Pattern COMMENT_PATTERN = Pattern.compile("#.*");
+
+  @NonNls
   private static final Logger log = org.slf4j.LoggerFactory.getLogger(OsServicesDefaultImpl.class);
+
   private final @NotNull SystemWrapper system;
   @NonNls private final @NotNull ProgramLocationService locationService;
 
@@ -74,6 +78,7 @@ public class OsServicesDefaultImpl implements OsServices {
     if (response.isEmpty()) {
       response.add("xterm -hold -e $command");
     }
+    log.debug("Possible terminal commands: {}", response);
     return response;
   }
 
@@ -112,6 +117,7 @@ public class OsServicesDefaultImpl implements OsServices {
     if (response.isEmpty()) {
       response.add("traceroute" + OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER);
     }
+    log.debug("Possible traceroute commands: {}", response);
     return response;
   }
 
@@ -129,6 +135,7 @@ public class OsServicesDefaultImpl implements OsServices {
     if (response.isEmpty()) {
       response.add("nslookup" + OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER);
     }
+    log.debug("Possible nslookup commands: {}", response);
     return response;
   }
 
@@ -176,6 +183,7 @@ public class OsServicesDefaultImpl implements OsServices {
               + ADDRESS_PLACEHOLDER
               + PORT_SEMICOLON_PLACEHOLDER);
     }
+    log.debug("Possible rdp commands: {}", response);
     return response;
   }
 
@@ -193,14 +201,14 @@ public class OsServicesDefaultImpl implements OsServices {
   @NonNls
   @Override
   public @NotNull String getDefaultShellCommand() {
-    return "/bin/sh${options.trim()?' '+options:''}";
+    return "/bin/sh" + OPTIONS_PLACEHOLDER;
   }
 
   @Override
   public @NotNull List<String> getPossibleShellCommands() {
     final String shellFromEnv = system.getenv(SHELL_ENV_VAR);
     @NonNls final List<String> response = newArrayList();
-    if (!StringUtils.isBlank(shellFromEnv)) {
+    if (!org.apache.commons.lang3.StringUtils.isBlank(shellFromEnv)) {
       log.info("Detected default shell: {}", shellFromEnv);
       response.add(shellFromEnv);
     } else {
@@ -209,8 +217,8 @@ public class OsServicesDefaultImpl implements OsServices {
     try (final Stream<String> lines = Files.lines(Paths.get(SHELL_LIST_FILE))) {
       final List<String> otherShells =
           lines
-              .map(line -> COMMENT_PATTERN.matcher(line).replaceAll(EMPTY))
-              .filter(StringUtils::isNotBlank)
+              .map(line -> COMMENT_PATTERN.matcher(line).replaceAll(""))
+              .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
               .filter(shell -> !shell.equals(shellFromEnv))
               .collect(Collectors.toList());
       log.info("Other shells from {}: {}", SHELL_LIST_FILE, String.join(", ", otherShells));
@@ -221,14 +229,55 @@ public class OsServicesDefaultImpl implements OsServices {
     if (response.isEmpty()) {
       response.add("/bin/sh");
     }
-    return response.stream().map(shell -> shell + OPTIONS_PLACEHOLDER).collect(Collectors.toList());
+    final List<String> commands =
+        response.stream().map(shell -> shell + OPTIONS_PLACEHOLDER).collect(Collectors.toList());
+    log.debug("Possible shell commands: {}", commands);
+    return commands;
+  }
+
+  public @NotNull String getShellCommand() {
+    // TODO: implement preferences usage
+    return "/bin/sh";
   }
 
   @Override
   public void executeCommand(
       final @NotNull String command,
       @NotNull final Map<String, String> env,
-      final boolean inTerminal) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      final boolean inTerminal)
+      throws ServiceExecutionException {
+    log.info(
+        "Executing command '{}' {} terminal with environment {}",
+        command,
+        inTerminal ? "in" : "without",
+        env);
+
+    final @NotNull String commandToExecute;
+    if (inTerminal) {
+      @NotNull final String commandToExecuteTemplate = getDefaultTerminalCommand();
+      log.info("Terminal command template: {}", commandToExecuteTemplate);
+      final Map<String, Object> variables = Map.of("command", command);
+      try {
+        commandToExecute = StringUtils.applyTemplate(commandToExecuteTemplate, variables);
+      } catch (final TemplateException e) {
+        log.error(
+            "Failed to evaluate terminal command template '{}' with  variables '{}'.",
+            commandToExecuteTemplate,
+            variables,
+            e);
+        throw new ServiceExecutionException(
+            "ERR_CANNOT_APPLY_TEMPLATE", e, commandToExecuteTemplate, variables);
+      }
+    } else {
+      commandToExecute = command;
+    }
+    try {
+      new ProcessBuilder().command(getShellCommand(), "-c", commandToExecute).inheritIO().start();
+    } catch (final IOException e) {
+      log.error("Failed to execute command '{}': {}", commandToExecute, e.getLocalizedMessage(), e);
+      throw new ServiceExecutionException(
+          "ERR_FAILED_TO_EXECUTE_COMMAND", e, commandToExecute, e.getLocalizedMessage());
+    }
+    log.info("Command to execute: {}", commandToExecute);
   }
 }

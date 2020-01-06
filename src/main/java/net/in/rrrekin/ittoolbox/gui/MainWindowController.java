@@ -72,6 +72,7 @@ import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceRegistry;
+import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
 import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -207,13 +208,10 @@ public class MainWindowController {
         .getSelectionModel()
         .selectedItemProperty()
         .addListener(
-          (observable, oldValue, newValue) -> {
-            populateNodeMenus(newValue);
-          });
+            (observable, oldValue, newValue) -> {
+              populateNodeMenus(newValue);
+            });
   }
-
-
-
 
   private void setupBindings() {
     noNodeSelected.bind(Bindings.isEmpty(nodeTree.getSelectionModel().getSelectedItems()));
@@ -364,7 +362,7 @@ public class MainWindowController {
 
   // === action handling ===
 
-  public void onNewGroup(ActionEvent actionEvent) {
+  public void onNewGroup(final ActionEvent actionEvent) {
     log.trace("New group: {}", actionEvent);
     final InsertLocation insertionPoint = getInsertionPoint();
     final OperationCommand command =
@@ -375,7 +373,7 @@ public class MainWindowController {
     }
   }
 
-  public void onNewServer(ActionEvent actionEvent) {
+  public void onNewServer(final ActionEvent actionEvent) {
     log.trace("New server: {}", actionEvent);
     final InsertLocation insertionPoint = getInsertionPoint();
     final OperationCommand command =
@@ -386,7 +384,7 @@ public class MainWindowController {
     }
   }
 
-  public void onNewGeneric(ActionEvent actionEvent) {
+  public void onNewGeneric(final ActionEvent actionEvent) {
     log.trace("new generic node: {}", actionEvent);
     final InsertLocation insertionPoint = getInsertionPoint();
     final OperationCommand command =
@@ -578,7 +576,7 @@ public class MainWindowController {
   }
 
   private void deleteSelection() {
-    ObservableList<TreeItem<NetworkNode>> selected =
+    final ObservableList<TreeItem<NetworkNode>> selected =
         nodeTree.getSelectionModel().getSelectedItems();
     if (selected != null) {
       final NodeForest selection = new NodeForest(selected);
@@ -609,7 +607,7 @@ public class MainWindowController {
 
   public void onSaveFileAs(final ActionEvent actionEvent) throws InterruptedException {
     log.trace("Save file as: {}", actionEvent);
-    FileChooser fileChooser = new FileChooser();
+    final FileChooser fileChooser = new FileChooser();
     final File initialDirectory = openConfigurationsService.getLastOpenLocation().toFile();
     log.debug("Will try to open dialog in '{}' directory.", initialDirectory);
 
@@ -680,7 +678,7 @@ public class MainWindowController {
   }
 
   private void putSeletionToClipboard() {
-    ObservableList<TreeItem<NetworkNode>> selected =
+    final ObservableList<TreeItem<NetworkNode>> selected =
         nodeTree.getSelectionModel().getSelectedItems();
     if (selected == null) {
       log.trace("Nothing selected");
@@ -727,9 +725,9 @@ public class MainWindowController {
     }
   }
 
-  public void onNodeDuplicate(ActionEvent actionEvent) {
+  public void onNodeDuplicate(final ActionEvent actionEvent) {
     log.trace("Duplicate: {}", actionEvent);
-    ObservableList<TreeItem<NetworkNode>> selected =
+    final ObservableList<TreeItem<NetworkNode>> selected =
         nodeTree.getSelectionModel().getSelectedItems();
     if (selected == null) {
       log.trace("Nothing selected");
@@ -782,17 +780,22 @@ public class MainWindowController {
           serviceRegistry.getDefaultServicesFor(node.getType());
       final @NotNull List<ServiceDefinition> definedServices =
           serviceRegistry.getDefinedServicesFor(node.getType());
-      log.trace("Default services: {}",defaultServices);
-      log.trace("Defined services: {}",definedServices);
+      log.trace("Default services: {}", defaultServices);
+      log.trace("Defined services: {}", definedServices);
       final ImmutableList<ServiceDescriptor> serviceDescriptors = node.getServiceDescriptors();
       if (!defaultServices.isEmpty() || !serviceDescriptors.isEmpty()) {
         defaultServices.forEach(
-            s -> {
-              final ServiceDescriptor defaultDescriptor = s.getDefaultDescriptor();
-              final MenuItem serviceMenuItem = new MenuItem(s.getName(defaultDescriptor));
+            service -> {
+              final ServiceDescriptor defaultDescriptor = service.getDefaultDescriptor();
+              final MenuItem serviceMenuItem = new MenuItem(service.getName(defaultDescriptor));
               serviceMenuItem.setOnAction(
                   event -> {
-                    s.getExecutor(defaultDescriptor, configuration).execute(stage, node);
+                    try {
+                      service.getExecutor(defaultDescriptor, configuration).execute(stage, node);
+                    } catch (final ServiceExecutionException e) {
+                      commonResources.errorDialog(
+                          stage, localMessage("ERR_SERVICE_FAILURE"), e.getLocalizedMessage());
+                    }
                   });
               menuItems.add(serviceMenuItem);
             });
@@ -802,11 +805,19 @@ public class MainWindowController {
         serviceDescriptors.stream()
             .sorted(Comparator.comparing(o -> o.getType().name()))
             .forEach(
-                sd -> {
-                  final MenuItem serviceMenuItem = new MenuItem(serviceRegistry.getNameFor(sd));
+                serviceDescriptor -> {
+                  final MenuItem serviceMenuItem =
+                      new MenuItem(serviceRegistry.getNameFor(serviceDescriptor));
                   serviceMenuItem.setOnAction(
                       event -> {
-                        serviceRegistry.getExecutorFor(sd, configuration).execute(stage, node);
+                        try {
+                          serviceRegistry
+                              .getExecutorFor(serviceDescriptor, configuration)
+                              .execute(stage, node);
+                        } catch (final ServiceExecutionException e) {
+                          commonResources.errorDialog(
+                              stage, localMessage("ERR_SERVICE_FAILURE"), e.getLocalizedMessage());
+                        }
                       });
                   menuItems.add(serviceMenuItem);
                 });

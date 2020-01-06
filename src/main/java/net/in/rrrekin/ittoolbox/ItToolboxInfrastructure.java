@@ -7,6 +7,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import java.io.File;
 import net.in.rrrekin.ittoolbox.configuration.ConfigurationPersistenceService;
@@ -33,8 +34,8 @@ import org.slf4j.Logger;
  */
 public class ItToolboxInfrastructure extends AbstractModule {
 
-  private static final Logger log = org.slf4j.LoggerFactory
-    .getLogger(ItToolboxInfrastructure.class);
+  private static final Logger log =
+      org.slf4j.LoggerFactory.getLogger(ItToolboxInfrastructure.class);
   private final @NotNull File appDirectory;
 
   public ItToolboxInfrastructure(final @NotNull File appDirectory) {
@@ -49,12 +50,12 @@ public class ItToolboxInfrastructure extends AbstractModule {
     final EventBus eventBus = new EventBus(MAIN_EVENT_BUS_NAME);
     bind(EventBus.class).toInstance(eventBus);
     bind(File.class).annotatedWith(Names.named(APP_DIRECTORY)).toInstance(appDirectory);
-//    bind(ConfigurationManager.class).asEagerSingleton();
+    //    bind(ConfigurationManager.class).asEagerSingleton();
     bind(NodeConverter.class).asEagerSingleton();
     bind(UnhandledMessagesLogger.class).asEagerSingleton();
-//    bind(BlockingApplicationEventsHandler.class).asEagerSingleton();
-//    bind(NetworkNodesTreeModelFacade.class).asEagerSingleton();
-//    bind(MainWindow.class).asEagerSingleton();
+    //    bind(BlockingApplicationEventsHandler.class).asEagerSingleton();
+    //    bind(NetworkNodesTreeModelFacade.class).asEagerSingleton();
+    //    bind(MainWindow.class).asEagerSingleton();
     bind(GuiInvokeService.class).asEagerSingleton();
     bind(UserPreferencesFactory.class).asEagerSingleton();
     bind(OpenConfigurationsService.class).asEagerSingleton();
@@ -62,6 +63,8 @@ public class ItToolboxInfrastructure extends AbstractModule {
     bind(CommonResources.class).asEagerSingleton();
     bind(NodeForestConverter.class).asEagerSingleton();
     bind(ServiceRegistry.class).asEagerSingleton();
+    bind(ProgramLocationService.class)
+        .toInstance(new ProgramLocationService(System.getenv("PATH")));
     requestStaticInjection(IconDescriptor.class);
   }
 
@@ -72,8 +75,10 @@ public class ItToolboxInfrastructure extends AbstractModule {
    * @return the os services
    */
   @Provides
+  @Singleton
   @Inject
-  OsServices getOsServices(final @NotNull ProgramLocationService locationService, final @NotNull SystemWrapper system) {
+  OsServices getOsServices(
+      final @NotNull ProgramLocationService locationService, final @NotNull SystemWrapper system) {
     return new OsServicesFactory(locationService, system).create();
   }
 }

@@ -24,13 +24,16 @@ public final class OsServicesFactory {
 
   /** The constant for determination od MacOS. */
   public static final String MAC = "mac";
+
   private static final Logger log = org.slf4j.LoggerFactory.getLogger(OsServicesFactory.class);
 
   private final @NotNull ProgramLocationService locationService;
   private final @NotNull SystemWrapper system;
 
   @Inject
-  public OsServicesFactory(final @NotNull ProgramLocationService locationService, final @NotNull SystemWrapper system) {
+  public OsServicesFactory(
+      final @NotNull ProgramLocationService locationService, final @NotNull SystemWrapper system) {
+    log.info("Creating OsServicesFactory");
     this.locationService = requireNonNull(locationService, "LocationService must not be null");
     this.system = requireNonNull(system, "System must not be null");
   }
@@ -42,6 +45,7 @@ public final class OsServicesFactory {
    * @return the os services
    */
   public OsServices create(final @NotNull String osName) {
+    log.info("Creating OsServices for {}", osName);
     requireNonNull(osName, "OsName must not be null");
     if (osName.toLowerCase(Locale.ENGLISH).startsWith(LINUX)) {
       return new OsServicesLinuxImpl(system, locationService);

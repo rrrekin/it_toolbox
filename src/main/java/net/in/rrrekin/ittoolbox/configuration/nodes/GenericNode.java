@@ -6,13 +6,14 @@ import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javafx.scene.paint.Color;
 import net.in.rrrekin.ittoolbox.configuration.IconDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
-import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class GenericNode implements NetworkNode {
 
   private static final @NotNull IconDescriptor DEFAULT_ICON_DESCRIPTOR =
-      new IconDescriptor(FontAwesome.Glyph.CUBES, Color.BLUE, true);
+      new IconDescriptor(Glyph.CUBES, Color.BLUE, true);
 
   private final @NotNull String name;
   private final @NotNull String description;
@@ -83,7 +84,6 @@ public class GenericNode implements NetworkNode {
   @Override
   public String getLocalNodeTypeName() {
     return localMessage("NODE_GENERIC");
-
   }
 
   @Override
@@ -107,6 +107,17 @@ public class GenericNode implements NetworkNode {
   }
 
   @Override
+  public @NotNull ImmutableMap<String, String> getEnv() {
+    final Builder<String, String> builder = ImmutableMap.builder();
+    builder.put(ENV_VAR_NAME, name);
+    builder.put(ENV_VAR_DESCRIPTION, description);
+    properties.forEach(
+        (propName, propValue) ->
+            builder.put(ENV_VAR_PROPERTY_PREFIX + propName.toUpperCase(), propValue));
+    return builder.build();
+  }
+
+  @Override
   public @NotNull ImmutableMap<String, String> getProperties() {
     return properties;
   }
@@ -114,12 +125,12 @@ public class GenericNode implements NetworkNode {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-      .add("name", name)
-      .add("description", description)
-      .add("iconDescriptor", iconDescriptor)
-      .add("properties", properties)
-      .add("serviceDescriptors", serviceDescriptors)
-      .toString();
+        .add("name", name)
+        .add("description", description)
+        .add("iconDescriptor", iconDescriptor)
+        .add("properties", properties)
+        .add("serviceDescriptors", serviceDescriptors)
+        .toString();
   }
 
   @Override
@@ -131,11 +142,11 @@ public class GenericNode implements NetworkNode {
       return false;
     }
     final GenericNode that = (GenericNode) o;
-    return name.equals(that.name) &&
-      description.equals(that.description) &&
-      iconDescriptor.equals(that.iconDescriptor) &&
-      properties.equals(that.properties) &&
-      serviceDescriptors.equals(that.serviceDescriptors);
+    return name.equals(that.name)
+        && description.equals(that.description)
+        && iconDescriptor.equals(that.iconDescriptor)
+        && properties.equals(that.properties)
+        && serviceDescriptors.equals(that.serviceDescriptors);
   }
 
   @Override
