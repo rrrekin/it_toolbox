@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import net.in.rrrekin.ittoolbox.ItToolboxApplication;
 import net.in.rrrekin.ittoolbox.gui.GuiInvokeService;
 import org.controlsfx.dialog.ExceptionDialog;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author michal.rudewicz @gmail.com
  */
+@Singleton
 public class CommonResources {
 
   /** The constant ICON_SIZE. */

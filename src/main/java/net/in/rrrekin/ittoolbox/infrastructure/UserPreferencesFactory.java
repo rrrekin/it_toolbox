@@ -1,5 +1,6 @@
 package net.in.rrrekin.ittoolbox.infrastructure;
 
+import com.google.inject.Singleton;
 import java.nio.file.Path;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author michal.rudewicz @gmail.com
  */
+@Singleton
 public class UserPreferencesFactory {
 
   @NonNls

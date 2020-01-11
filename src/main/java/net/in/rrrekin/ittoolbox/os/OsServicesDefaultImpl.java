@@ -10,15 +10,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.in.rrrekin.ittoolbox.infrastructure.SystemWrapper;
-import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
 import net.in.rrrekin.ittoolbox.utilities.ProgramLocationService;
-import net.in.rrrekin.ittoolbox.utilities.StringUtils;
-import net.in.rrrekin.ittoolbox.utilities.exceptions.TemplateException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -201,7 +197,12 @@ public class OsServicesDefaultImpl implements OsServices {
   @NonNls
   @Override
   public @NotNull String getDefaultShellCommand() {
-    return "/bin/sh" + OPTIONS_PLACEHOLDER;
+    final @NotNull List<String> shellCommands = getPossibleShellCommands();
+    if (shellCommands.isEmpty()) {
+      return "/bin/sh";
+    } else {
+      return shellCommands.get(0);
+    }
   }
 
   @Override
@@ -229,55 +230,12 @@ public class OsServicesDefaultImpl implements OsServices {
     if (response.isEmpty()) {
       response.add("/bin/sh");
     }
-    final List<String> commands =
-        response.stream().map(shell -> shell + OPTIONS_PLACEHOLDER).collect(Collectors.toList());
-    log.debug("Possible shell commands: {}", commands);
-    return commands;
-  }
-
-  public @NotNull String getShellCommand() {
-    // TODO: implement preferences usage
-    return "/bin/sh";
+    log.debug("Possible shell commands: {}", response);
+    return response;
   }
 
   @Override
-  public void executeCommand(
-      final @NotNull String command,
-      @NotNull final Map<String, String> env,
-      final boolean inTerminal)
-      throws ServiceExecutionException {
-    log.info(
-        "Executing command '{}' {} terminal with environment {}",
-        command,
-        inTerminal ? "in" : "without",
-        env);
-
-    final @NotNull String commandToExecute;
-    if (inTerminal) {
-      @NotNull final String commandToExecuteTemplate = getDefaultTerminalCommand();
-      log.info("Terminal command template: {}", commandToExecuteTemplate);
-      final Map<String, Object> variables = Map.of("command", command);
-      try {
-        commandToExecute = StringUtils.applyTemplate(commandToExecuteTemplate, variables);
-      } catch (final TemplateException e) {
-        log.error(
-            "Failed to evaluate terminal command template '{}' with  variables '{}'.",
-            commandToExecuteTemplate,
-            variables,
-            e);
-        throw new ServiceExecutionException(
-            "ERR_CANNOT_APPLY_TEMPLATE", e, commandToExecuteTemplate, variables);
-      }
-    } else {
-      commandToExecute = command;
-    }
-    try {
-      new ProcessBuilder().command(getShellCommand(), "-c", commandToExecute).inheritIO().start();
-    } catch (final IOException e) {
-      log.error("Failed to execute command '{}': {}", commandToExecute, e.getLocalizedMessage(), e);
-      throw new ServiceExecutionException(
-          "ERR_FAILED_TO_EXECUTE_COMMAND", e, commandToExecute, e.getLocalizedMessage());
-    }
-    log.info("Command to execute: {}", commandToExecute);
+  public @NotNull List<String> getDefaultShellOptions() {
+    return List.of("-c");
   }
 }

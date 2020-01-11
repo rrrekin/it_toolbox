@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.InetAddresses;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** @author michal.rudewicz@gmail.com */
+@Singleton
 public class NodeForestConverter {
 
   private static final Logger log = LoggerFactory.getLogger(NodeForestConverter.class);

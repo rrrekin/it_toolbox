@@ -787,12 +787,14 @@ public class MainWindowController {
         defaultServices.forEach(
             service -> {
               final ServiceDescriptor defaultDescriptor = service.getDefaultDescriptor();
-              final MenuItem serviceMenuItem = new MenuItem(service.getName(defaultDescriptor));
+              final String serviceName = service.getName(defaultDescriptor);
+              final MenuItem serviceMenuItem = new MenuItem(serviceName);
               serviceMenuItem.setOnAction(
                   event -> {
                     try {
                       service.getExecutor(defaultDescriptor, configuration).execute(stage, node);
                     } catch (final ServiceExecutionException e) {
+                      log.error("Failed to execute service {}: {}", serviceName, e.getMessage(), e);
                       commonResources.errorDialog(
                           stage, localMessage("ERR_SERVICE_FAILURE"), e.getLocalizedMessage());
                     }
@@ -806,8 +808,8 @@ public class MainWindowController {
             .sorted(Comparator.comparing(o -> o.getType().name()))
             .forEach(
                 serviceDescriptor -> {
-                  final MenuItem serviceMenuItem =
-                      new MenuItem(serviceRegistry.getNameFor(serviceDescriptor));
+                  final String serviceName = serviceRegistry.getNameFor(serviceDescriptor);
+                  final MenuItem serviceMenuItem = new MenuItem(serviceName);
                   serviceMenuItem.setOnAction(
                       event -> {
                         try {
@@ -815,6 +817,8 @@ public class MainWindowController {
                               .getExecutorFor(serviceDescriptor, configuration)
                               .execute(stage, node);
                         } catch (final ServiceExecutionException e) {
+                          log.error(
+                              "Failed to execute service {}: {}", serviceName, e.getMessage(), e);
                           commonResources.errorDialog(
                               stage, localMessage("ERR_SERVICE_FAILURE"), e.getLocalizedMessage());
                         }

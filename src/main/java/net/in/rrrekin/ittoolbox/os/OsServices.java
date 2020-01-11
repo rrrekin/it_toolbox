@@ -1,8 +1,6 @@
 package net.in.rrrekin.ittoolbox.os;
 
 import java.util.List;
-import java.util.Map;
-import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +25,6 @@ public interface OsServices {
 
   /** Java property key for use name (user.name). */
   String USER_NAME_ENV_VAR = "user.name";
-
 
   /** Log OS configuration data. */
   void logOsConfiguration();
@@ -177,13 +174,11 @@ public interface OsServices {
   List<String> getPossibleShellCommands();
 
   /**
-   * Execute command.
+   * Gets default shell options to execute string as a command line.
    *
-   * @param command the command
-   * @param env the environment for executed command
-   * @param inTerminal if true, the command will be executed in a terminal window
+   * @return the default shell options
    */
-  void executeCommand(
-      @NotNull String command, @NotNull Map<String, String> env, boolean inTerminal)
-    throws ServiceExecutionException;
+  @NonNls
+  @NotNull
+  List<String> getDefaultShellOptions();
 }

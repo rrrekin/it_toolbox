@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -11,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
 import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
-import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
-import net.in.rrrekin.ittoolbox.os.OsServices;
+import net.in.rrrekin.ittoolbox.os.OsCommandExecutor;
 import net.in.rrrekin.ittoolbox.services.definitions.ExecuteService;
 import net.in.rrrekin.ittoolbox.services.definitions.NetcatService;
 import net.in.rrrekin.ittoolbox.services.definitions.NmapService;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** @author michal.rudewicz@gmail.com */
+@Singleton
 public class ServiceRegistry {
 
   @NonNls private static final Logger log = LoggerFactory.getLogger(ServiceRegistry.class);
@@ -42,23 +44,18 @@ public class ServiceRegistry {
   private final @NotNull List<ServiceDefinition> groupDefaultServices;
   private final @NotNull List<ServiceDefinition> groupDefinedServices;
 
-  private final @NotNull CommonResources commonResources;
-  private final @NotNull OsServices osServices;
-  private final @NotNull UserPreferencesFactory userPreferencesFactory;
-
   @Inject
   public ServiceRegistry(
       @NotNull final CommonResources commonResources,
-      final @NotNull OsServices osServices,
-      final @NotNull UserPreferencesFactory userPreferencesFactory) {
+      final @NotNull AppPreferences appPreferences,
+      final @NotNull OsCommandExecutor osCommandExecutor) {
     log.debug("Creating ServiceRegistry.");
-    this.commonResources = requireNonNull(commonResources, "commonResources must not be null");
-    this.osServices = requireNonNull(osServices, "osServices must not be null");
-    this.userPreferencesFactory =
-        requireNonNull(userPreferencesFactory, "userPreferencesFactory must not be null");
+    requireNonNull(commonResources, "commonResources must not be null");
+    requireNonNull(appPreferences, "appPreferences must not be null");
+    requireNonNull(osCommandExecutor, "osCommandExecutor must not be null");
     final List<ServiceDefinition> services =
         List.of(
-            new PingService(osServices, userPreferencesFactory),
+            new PingService(osCommandExecutor, appPreferences),
             new TracerouteService(commonResources),
             new ExecuteService(commonResources),
             new SshService(commonResources),

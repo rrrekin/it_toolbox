@@ -1,5 +1,6 @@
 package net.in.rrrekin.ittoolbox.gui;
 
+import com.google.inject.Singleton;
 import javafx.application.Platform;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author michal.rudewicz @gmail.com
  */
+@Singleton
 public class GuiInvokeService {
 
   /**

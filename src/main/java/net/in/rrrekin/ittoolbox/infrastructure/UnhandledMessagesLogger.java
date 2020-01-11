@@ -4,6 +4,7 @@ import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.Objects;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
  *
  * @author michal.rudewicz@gmail.com
  */
+@Singleton
 public class UnhandledMessagesLogger {
 
   @NonNls

@@ -8,12 +8,14 @@ import static net.in.rrrekin.ittoolbox.utilities.StringUtils.toStringOrEmpty;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.text.Font;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author michal.rudewicz @gmail.com
  */
 @SuppressWarnings("MethodMayBeStatic")
+@Singleton
 public class NodeConverter {
 
   /** The constant TYPE key in configuration DTO. */
@@ -105,7 +108,11 @@ public class NodeConverter {
     response.put(ICON_PROPERTY, node.getIconDescriptor().toString());
     response.put(DESCRIPTION_PROPERTY, node.getDescription());
     if (!node.getServiceDescriptors().isEmpty()) {
-      response.put(SERVICES_PROPERTY, node.getServiceDescriptors());
+      response.put(
+          SERVICES_PROPERTY,
+          node.getServiceDescriptors().stream()
+              .map(ServiceDescriptor::toString)
+              .collect(Collectors.toList()));
     }
     node.getProperties()
         .forEach((property, value) -> response.put(PROPERTIES_PREFIX + property, value));

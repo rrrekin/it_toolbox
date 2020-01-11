@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,6 +55,7 @@ import org.yaml.snakeyaml.error.YAMLException;
  *
  * @author michal.rudewicz @gmail.com
  */
+@Singleton
 public class ConfigurationPersistenceService {
 
   private static final String VERSION = "1.0";
@@ -320,6 +322,12 @@ public class ConfigurationPersistenceService {
       throws FailedConfigurationSaveException {
     requireNonNull(configFile, "ConfigFile must not be null");
     requireNonNull(config, "Config must not be null");
+    if (configFile.isFile()) {
+      final File backupFile = new File(configFile.getParent(), "." + configFile.getName() + "~");
+      log.debug("Creating backup file '{}' for '{}'", backupFile, configFile);
+      backupFile.delete();
+      configFile.renameTo(backupFile);
+    }
     final Yaml yaml = new Yaml(yamlOptions);
     try (final BufferedWriter output =
         new BufferedWriter(

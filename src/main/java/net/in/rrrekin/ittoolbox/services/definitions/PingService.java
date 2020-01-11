@@ -4,10 +4,10 @@ import static java.util.Objects.requireNonNull;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.base.MoreObjects;
+import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
 import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
-import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
-import net.in.rrrekin.ittoolbox.os.OsServices;
+import net.in.rrrekin.ittoolbox.os.OsCommandExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceEditor;
@@ -19,15 +19,13 @@ import org.jetbrains.annotations.NotNull;
 /** @author michal.rudewicz@gmail.com */
 public class PingService implements ServiceDefinition {
 
-  private final @NotNull OsServices osServices;
-  private final @NotNull UserPreferencesFactory userPreferencesFactory;
+  private final @NotNull OsCommandExecutor osCommandExecutor;
+  private final @NotNull AppPreferences appPreferences;
 
   public PingService(
-      final @NotNull OsServices osServices,
-      final @NotNull UserPreferencesFactory userPreferencesFactory) {
-    this.osServices = requireNonNull(osServices, "osServices must be not null");
-    this.userPreferencesFactory =
-        requireNonNull(userPreferencesFactory, "userPreferencesFactory must be not null");
+      final @NotNull OsCommandExecutor osCommandExecutor, final @NotNull AppPreferences appPreferences) {
+    this.osCommandExecutor = requireNonNull(osCommandExecutor, "osCommandExecutor must be not null");
+    this.appPreferences = requireNonNull(appPreferences, "appPreferences must be not null");
   }
 
   @NotNull
@@ -50,7 +48,7 @@ public class PingService implements ServiceDefinition {
   @Override
   public ServiceExecutor getExecutor(
       @NotNull final ServiceDescriptor descriptor, final @NotNull Configuration configuration) {
-    return new PingExecutor(osServices, userPreferencesFactory);
+    return new PingExecutor(osCommandExecutor, appPreferences);
   }
 
   @Override

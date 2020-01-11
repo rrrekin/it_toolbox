@@ -9,6 +9,7 @@ import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author michal.rudewicz @gmail.com
  */
+@Singleton
 public class OpenConfigurationsService {
 
   private static final String OPEN_ON_EXIT_FILES = "open-on-exit-files";
