@@ -1,6 +1,7 @@
 package net.in.rrrekin.ittoolbox.services;
 
 import javafx.stage.Stage;
+import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ServiceExecutor {
 
-  void execute(@Nullable Stage stage, @NotNull NetworkNode node) throws ServiceExecutionException;
+  void execute(@Nullable Stage stage, @NotNull final Configuration configuration, @NotNull NetworkNode node) throws ServiceExecutionException;
 
 }

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
 import net.in.rrrekin.ittoolbox.os.OsCommandExecutor;
@@ -56,12 +55,12 @@ public class ServiceRegistry {
     final List<ServiceDefinition> services =
         List.of(
             new PingService(osCommandExecutor, appPreferences),
-            new TracerouteService(commonResources),
+            new TracerouteService(osCommandExecutor, appPreferences),
             new ExecuteService(commonResources),
             new SshService(commonResources),
             new TelnetService(commonResources),
             new NetcatService(commonResources),
-            new NmapService(commonResources));
+            new NmapService(commonResources, osCommandExecutor, appPreferences));
 
     for (final ServiceDefinition service : services) {
       checkState(
@@ -173,8 +172,8 @@ public class ServiceRegistry {
   }
 
   public @NotNull ServiceExecutor getExecutorFor(
-      @NotNull final ServiceDescriptor sd, final @NotNull Configuration configuration) {
+      @NotNull final ServiceDescriptor sd) {
     final ServiceDefinition service = serviceMap.get(sd.getType());
-    return service.getExecutor(sd, configuration);
+    return service.getExecutor(sd);
   }
 }

@@ -4,15 +4,15 @@ import static java.util.Objects.requireNonNull;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.base.MoreObjects;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
+import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
-import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
+import net.in.rrrekin.ittoolbox.os.OsCommandExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceEditor;
 import net.in.rrrekin.ittoolbox.services.ServiceExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceType;
-import net.in.rrrekin.ittoolbox.services.executors.NoOpExecutor;
+import net.in.rrrekin.ittoolbox.services.executors.TracerouteExecutor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,10 +20,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TracerouteService implements ServiceDefinition {
 
-  private final @NotNull CommonResources commonResources;
+  private final @NotNull OsCommandExecutor osCommandExecutor;
+  private final @NotNull AppPreferences appPreferences;
 
-  public TracerouteService(final @NotNull CommonResources commonResources) {
-    this.commonResources = requireNonNull(commonResources, "commonResources must be not null");
+  public TracerouteService(
+    final @NotNull OsCommandExecutor osCommandExecutor, final @NotNull AppPreferences appPreferences) {
+    this.osCommandExecutor = requireNonNull(osCommandExecutor, "osCommandExecutor must be not null");
+    this.appPreferences = requireNonNull(appPreferences, "appPreferences must be not null");
   }
 
   @NotNull
@@ -44,8 +47,8 @@ public class TracerouteService implements ServiceDefinition {
 
   @NotNull
   @Override
-  public ServiceExecutor getExecutor(@NotNull final ServiceDescriptor descriptor, final @NotNull Configuration configuration) {
-    return new NoOpExecutor(commonResources);
+  public ServiceExecutor getExecutor(@NotNull final ServiceDescriptor descriptor) {
+    return new TracerouteExecutor(osCommandExecutor, appPreferences);
   }
 
   @Override

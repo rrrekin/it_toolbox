@@ -139,9 +139,15 @@ public class OsServicesDefaultImpl implements OsServices {
   @Override
   public @NotNull String getDefaultSshCommand() {
     return "ssh"
-        + ADDRESS_PLACEHOLDER
-        + "${user.trim()?' -l \"'+user+'\"':''}${port>0?' -p '+port:''}"
-        + OPTIONS_PLACEHOLDER;
+      + ADDRESS_PLACEHOLDER
+      + "${user.trim()?' -l \"'+user+'\"':''}${port>0?' -p '+port:''}"
+      + OPTIONS_PLACEHOLDER;
+  }
+
+  @NonNls
+  @Override
+  public @NotNull String getDefaultNmapCommand() {
+    return "nmap" + OPTIONS_PLACEHOLDER + ADDRESS_PLACEHOLDER;
   }
 
   @Override

@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.base.MoreObjects;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
@@ -49,7 +48,7 @@ public class NetcatService implements ServiceDefinition {
 
   @Override
   public @NotNull ServiceExecutor getExecutor(
-    final @NotNull ServiceDescriptor descriptor, final @NotNull Configuration configuration) {
+    final @NotNull ServiceDescriptor descriptor) {
     return new NoOpExecutor(commonResources);
   }
 

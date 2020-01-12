@@ -38,6 +38,10 @@ public class AppPreferences {
   // Commands config
   private String pingCommand = "";
   private String pingOptions = "";
+  private String tracerouteCommand = "";
+  private String tracerouteOptions = "";
+  private String nmapCommand = "";
+  private String nmapOptions = "";
 
   /**
    * Instantiates a new AppPreferences. @param osServices the OsServices instance to use @param
@@ -224,5 +228,63 @@ public class AppPreferences {
    */
   public void setPingOptions(String pingOptions) {
     this.pingOptions = pingOptions;
+  }
+
+  /**
+   * Gets traceroute command.
+   *
+   * @return the traceroute command
+   */
+  public String getTracerouteCommand() {
+    if (tracerouteCommand == null || tracerouteCommand.trim().isEmpty()) {
+      tracerouteCommand = osServices.getDefaultTracerouteCommand();
+    }
+    return tracerouteCommand;
+  }
+
+  /**
+   * Sets traceroute command.
+   *
+   * @param tracerouteCommand the traceroute command
+   */
+  public void setTracerouteCommand(final String tracerouteCommand) {
+    this.tracerouteCommand = tracerouteCommand;
+  }
+
+  /**
+   * Gets traceroute options.
+   *
+   * @return the traceroute options
+   */
+  public String getTracerouteOptions() {
+    return Strings.nullToEmpty(tracerouteOptions);
+  }
+
+  /**
+   * Sets traceroute options.
+   *
+   * @param tracerouteOptions the traceroute options
+   */
+  public void setTracerouteOptions(final String tracerouteOptions) {
+    this.tracerouteOptions = tracerouteOptions;
+  }
+
+  public String getNmapCommand() {
+    if (nmapCommand == null || nmapCommand.trim().isEmpty()) {
+      nmapCommand = osServices.getDefaultNmapCommand();
+    }
+    return nmapCommand;
+  }
+
+  public void setNmapCommand(final String nmapCommand) {
+    this.nmapCommand = nmapCommand;
+  }
+
+  public String getNmapOptions() {
+    return Strings.nullToEmpty(nmapOptions);
+  }
+
+  public void setNmapOptions(final String nmapOptions) {
+    this.nmapOptions = nmapOptions;
   }
 }

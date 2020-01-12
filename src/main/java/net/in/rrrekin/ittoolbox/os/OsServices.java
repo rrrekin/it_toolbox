@@ -111,6 +111,15 @@ public interface OsServices {
   String getDefaultSshCommand();
 
   /**
+   * Gets default nmap command.
+   *
+   * @return the default nmap command
+   */
+  @NonNls
+  @NotNull
+  String getDefaultNmapCommand();
+
+  /**
    * Gets possible ssh commands.
    *
    * @return the possible ssh commands

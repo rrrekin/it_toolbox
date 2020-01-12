@@ -5,7 +5,6 @@ import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.base.MoreObjects;
 import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import net.in.rrrekin.ittoolbox.os.OsCommandExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
@@ -23,8 +22,10 @@ public class PingService implements ServiceDefinition {
   private final @NotNull AppPreferences appPreferences;
 
   public PingService(
-      final @NotNull OsCommandExecutor osCommandExecutor, final @NotNull AppPreferences appPreferences) {
-    this.osCommandExecutor = requireNonNull(osCommandExecutor, "osCommandExecutor must be not null");
+      final @NotNull OsCommandExecutor osCommandExecutor,
+      final @NotNull AppPreferences appPreferences) {
+    this.osCommandExecutor =
+        requireNonNull(osCommandExecutor, "osCommandExecutor must be not null");
     this.appPreferences = requireNonNull(appPreferences, "appPreferences must be not null");
   }
 
@@ -47,7 +48,7 @@ public class PingService implements ServiceDefinition {
   @NotNull
   @Override
   public ServiceExecutor getExecutor(
-      @NotNull final ServiceDescriptor descriptor, final @NotNull Configuration configuration) {
+      @NotNull final ServiceDescriptor descriptor) {
     return new PingExecutor(osCommandExecutor, appPreferences);
   }
 

@@ -1,7 +1,6 @@
 package net.in.rrrekin.ittoolbox.services;
 
 import java.util.Map;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +27,7 @@ public interface ServiceDefinition {
 
   @NotNull
   ServiceExecutor getExecutor(
-      @NotNull ServiceDescriptor descriptor, @NotNull Configuration configuration);
+      @NotNull ServiceDescriptor descriptor);
 
   boolean hasEditor();
 

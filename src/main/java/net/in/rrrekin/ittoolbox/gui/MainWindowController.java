@@ -83,6 +83,9 @@ import org.slf4j.LoggerFactory;
 /** @author michal.rudewicz@gmail.com */
 public class MainWindowController {
 
+  // TODO: Copy - when group is selected, all its content should be put into clipboard - for
+  // symmetry with delete operation, especially in the context of cut/paste
+
   @NonNls static final @NotNull Logger log = LoggerFactory.getLogger(MainWindowController.class);
 
   private static final String[] OWN_EXTENSIONS = {"*.itt", "*.yml", "*.yaml"};
@@ -792,7 +795,9 @@ public class MainWindowController {
               serviceMenuItem.setOnAction(
                   event -> {
                     try {
-                      service.getExecutor(defaultDescriptor, configuration).execute(stage, node);
+                      service
+                          .getExecutor(defaultDescriptor)
+                          .execute(stage, configuration, node);
                     } catch (final ServiceExecutionException e) {
                       log.error("Failed to execute service {}: {}", serviceName, e.getMessage(), e);
                       commonResources.errorDialog(
@@ -814,8 +819,8 @@ public class MainWindowController {
                       event -> {
                         try {
                           serviceRegistry
-                              .getExecutorFor(serviceDescriptor, configuration)
-                              .execute(stage, node);
+                              .getExecutorFor(serviceDescriptor)
+                              .execute(stage, configuration, node);
                         } catch (final ServiceExecutionException e) {
                           log.error(
                               "Failed to execute service {}: {}", serviceName, e.getMessage(), e);

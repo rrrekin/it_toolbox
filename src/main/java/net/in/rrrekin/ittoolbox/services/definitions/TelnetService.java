@@ -5,15 +5,14 @@ import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.base.MoreObjects;
 import java.util.List;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
+import net.in.rrrekin.ittoolbox.services.PropertyType;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceEditor;
 import net.in.rrrekin.ittoolbox.services.ServiceExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceProperty;
-import net.in.rrrekin.ittoolbox.services.PropertyType;
 import net.in.rrrekin.ittoolbox.services.ServiceType;
 import net.in.rrrekin.ittoolbox.services.editors.EditorPlaceholder;
 import net.in.rrrekin.ittoolbox.services.executors.NoOpExecutor;
@@ -53,7 +52,7 @@ public class TelnetService implements ServiceDefinition {
 
   @Override
   public @NotNull ServiceExecutor getExecutor(
-      final @NotNull ServiceDescriptor descriptor, final @NotNull Configuration configuration) {
+      final @NotNull ServiceDescriptor descriptor) {
     return new NoOpExecutor(commonResources);
   }
 

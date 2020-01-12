@@ -5,26 +5,36 @@ import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
 import com.google.common.base.MoreObjects;
 import java.util.List;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
+import net.in.rrrekin.ittoolbox.configuration.AppPreferences;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NodeType;
 import net.in.rrrekin.ittoolbox.gui.services.CommonResources;
+import net.in.rrrekin.ittoolbox.os.OsCommandExecutor;
+import net.in.rrrekin.ittoolbox.services.PropertyType;
 import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceEditor;
 import net.in.rrrekin.ittoolbox.services.ServiceExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceProperty;
-import net.in.rrrekin.ittoolbox.services.PropertyType;
 import net.in.rrrekin.ittoolbox.services.ServiceType;
 import net.in.rrrekin.ittoolbox.services.editors.EditorPlaceholder;
-import net.in.rrrekin.ittoolbox.services.executors.NoOpExecutor;
+import net.in.rrrekin.ittoolbox.services.executors.NmapExecutor;
 import org.jetbrains.annotations.NotNull;
 
 /** @author michal.rudewicz@gmail.com */
 public class NmapService implements ServiceDefinition {
-  private final @NotNull CommonResources commonResources;
 
-  public NmapService(final @NotNull CommonResources commonResources) {
+  private final @NotNull CommonResources commonResources;
+  private final @NotNull OsCommandExecutor osCommandExecutor;
+  private final @NotNull AppPreferences appPreferences;
+
+  public NmapService(
+      final @NotNull CommonResources commonResources,
+      final @NotNull OsCommandExecutor osCommandExecutor,
+      final @NotNull AppPreferences appPreferences) {
     this.commonResources = requireNonNull(commonResources, "commonResources must be not null");
+    this.osCommandExecutor =
+        requireNonNull(osCommandExecutor, "osCommandExecutor must be not null");
+    this.appPreferences = requireNonNull(appPreferences, "appPreferences must be not null");
   }
 
   @Override
@@ -45,14 +55,14 @@ public class NmapService implements ServiceDefinition {
     return new ServiceDescriptor(
         ServiceType.NMAP,
         List.of(
-          new ServiceProperty("name", "", false, PropertyType.STRING),
-          new ServiceProperty("options", "", false, PropertyType.STRING)));
+            new ServiceProperty("name", "", false, PropertyType.STRING),
+            new ServiceProperty("options", "", false, PropertyType.STRING)));
   }
 
   @Override
   public @NotNull ServiceExecutor getExecutor(
-      final @NotNull ServiceDescriptor descriptor, final @NotNull Configuration configuration) {
-    return new NoOpExecutor(commonResources);
+      final @NotNull ServiceDescriptor descriptor) {
+    return new NmapExecutor(descriptor, osCommandExecutor, appPreferences);
   }
 
   @Override
@@ -77,7 +87,6 @@ public class NmapService implements ServiceDefinition {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-      .toString();
+    return MoreObjects.toStringHelper(this).toString();
   }
 }
