@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox fx:id="sceneContent" maxHeight="-Infinity" spacing="3.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.in.rrrekin.ittoolbox.services.editors.NmapServiceEditorController">
+   <children>
+    <GridPane maxHeight="-Infinity">
+      <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+      </columnConstraints>
+      <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+      </rowConstraints>
+      <Label text="%SERVICE_NAME_LABEL" />
+      <Label text="%SERVICE_OPTIONS_LABEL" GridPane.rowIndex="1" />
+      <TextField fx:id="name" GridPane.columnIndex="1" />
+      <TextField fx:id="options" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <CheckBox fx:id="evaluateOptions" mnemonicParsing="false" text="%SERVICE_EVALUATE_OPTIONS_LABEL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    </GridPane>
+    <ButtonBar prefHeight="40.0" prefWidth="200.0">
+      <buttons>
+        <Button mnemonicParsing="false" onAction="#onHelp" text="%HELP_BUTTON" ButtonBar.buttonData="HELP" />
+        <Button mnemonicParsing="false" onAction="#onCancel" text="%CANCEL_BUTTON" ButtonBar.buttonData="CANCEL_CLOSE" />
+        <Button defaultButton="true" mnemonicParsing="false" onAction="#onOk" text="%OK_BUTTON" ButtonBar.buttonData="OK_DONE" />
+      </buttons>
+    </ButtonBar>
+   </children>
+   <padding>
+      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+   </padding>
+</VBox>

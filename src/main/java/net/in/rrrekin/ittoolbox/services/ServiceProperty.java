@@ -2,7 +2,6 @@ package net.in.rrrekin.ittoolbox.services;
 
 import com.google.common.base.MoreObjects;
 import java.util.Map;
-import net.in.rrrekin.ittoolbox.configuration.Configuration;
 import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
 import net.in.rrrekin.ittoolbox.utilities.StringUtils;
@@ -69,14 +68,12 @@ public class ServiceProperty {
     this.type = type;
   }
 
-  public @NotNull Object getValueFor(
-      final @NotNull Configuration configuration, final @NotNull NetworkNode node)
+  public @NotNull Object getValueFor(final @NotNull NetworkNode node)
       throws ServiceExecutionException {
 
     final String stringValue;
     if (evaluate) {
-      final Map<String, Object> variables =
-          Map.of("configuration", configuration, "server", node, "node", node);
+      final Map<String, Object> variables = Map.of("server", node, "node", node);
       log.debug(
           "Evaluating property '{}', templatee: {}, variables: {}", name, rawValue, variables);
 

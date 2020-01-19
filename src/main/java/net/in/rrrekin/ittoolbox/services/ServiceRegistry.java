@@ -25,6 +25,7 @@ import net.in.rrrekin.ittoolbox.services.definitions.TelnetService;
 import net.in.rrrekin.ittoolbox.services.definitions.TracerouteService;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,9 +172,13 @@ public class ServiceRegistry {
     }
   }
 
-  public @NotNull ServiceExecutor getExecutorFor(
-      @NotNull final ServiceDescriptor sd) {
+  public @NotNull ServiceExecutor getExecutorFor(@NotNull final ServiceDescriptor sd) {
     final ServiceDefinition service = serviceMap.get(sd.getType());
     return service.getExecutor(sd);
+  }
+
+  @Nullable
+  public ServiceDefinition getServiceDefinitionFor(final ServiceType type) {
+    return serviceMap.get(type);
   }
 }

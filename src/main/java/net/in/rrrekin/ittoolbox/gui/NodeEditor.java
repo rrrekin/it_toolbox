@@ -9,11 +9,14 @@ import com.google.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -22,6 +25,8 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -36,7 +41,11 @@ import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.configuration.nodes.Server;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferences;
 import net.in.rrrekin.ittoolbox.infrastructure.UserPreferencesFactory;
+import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
+import net.in.rrrekin.ittoolbox.services.ServiceEditor;
+import net.in.rrrekin.ittoolbox.services.ServiceGuiWrapper;
+import net.in.rrrekin.ittoolbox.services.ServiceRegistry;
 import org.controlsfx.control.SearchableComboBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
@@ -54,11 +63,12 @@ import org.slf4j.LoggerFactory;
 public class NodeEditor {
 
   @NonNls private static final @NotNull Logger log = LoggerFactory.getLogger(NodeEditor.class);
-  public static final String WIDTH_PREF = "w";
-  public static final String HEIGHT_PREF = "h";
-  public static final String SPLIT_PREF = "s";
+  private static final String WIDTH_PREF = "w";
+  private static final String HEIGHT_PREF = "h";
+  private static final String SPLIT_PREF = "s";
 
   private final @NotNull UserPreferencesFactory userPreferencesFactory;
+  private final @NotNull ServiceRegistry serviceRegistry;
   private @Nullable UserPreferences preferences;
   private MainWindowController mainWindowController;
 
@@ -71,7 +81,7 @@ public class NodeEditor {
   @FXML private ListView<String> properties;
   @FXML private Button editPropertyButton;
   @FXML private Button removePropertyButton;
-  @FXML private ListView<String> services;
+  @FXML private ListView<ServiceDescriptor> services;
   @FXML private Button editServiceButton;
   @FXML private Button removeServiceButton;
   @FXML private CheckBox useIconGradient;
@@ -87,11 +97,14 @@ public class NodeEditor {
   private TreeItem<NetworkNode> item;
 
   @Inject
-  public NodeEditor(final @NotNull UserPreferencesFactory userPreferencesFactory) {
+  public NodeEditor(
+      final @NotNull UserPreferencesFactory userPreferencesFactory,
+      final @NotNull ServiceRegistry serviceRegistry) {
     log.debug("Creating ServerEditor");
 
     this.userPreferencesFactory =
         requireNonNull(userPreferencesFactory, "userPreferencesFactory must be not null");
+    this.serviceRegistry = requireNonNull(serviceRegistry, "serviceRegistry must be not null");
   }
 
   public void initialize() {
@@ -117,6 +130,26 @@ public class NodeEditor {
           }
         });
     iconSelector.setEditable(false);
+    services.setCellFactory(
+        new Callback<>() {
+          @Override
+          public ListCell<ServiceDescriptor> call(final ListView<ServiceDescriptor> lv) {
+            return new ListCell<>() {
+              @Override
+              public void updateItem(final ServiceDescriptor serviceDescriptor, boolean empty) {
+                super.updateItem(serviceDescriptor, empty);
+                if (serviceDescriptor == null || empty) {
+                  setText(null);
+                  setGraphic(null);
+                } else {
+                  setText(serviceRegistry.getNameFor(serviceDescriptor));
+                  Node icon = serviceDescriptor.getType().getIcon();
+                  setGraphic(icon);
+                }
+              }
+            };
+          }
+        });
   }
 
   public void setUpDialog(
@@ -160,12 +193,7 @@ public class NodeEditor {
             node.getProperties().entrySet().stream()
                 .map(e -> e.getKey() + ": " + e.getValue())
                 .collect(Collectors.toList()));
-    services
-        .getItems()
-        .addAll(
-            node.getServiceDescriptors().stream()
-                .map(ServiceDescriptor::toString)
-                .collect(Collectors.toList()));
+    services.getItems().addAll(node.getServiceDescriptors());
     final @NotNull IconDescriptor iconDescriptor = node.getIconDescriptor();
     iconSelector.setValue(iconDescriptor.getGlyph());
     iconColor.setValue(iconDescriptor.getColor());
@@ -198,7 +226,7 @@ public class NodeEditor {
     stage.addEventHandler(
         WindowEvent.WINDOW_HIDING,
         event -> {
-          log.debug("Hiding server editorwindow: {}", event);
+          log.debug("Hiding server editor window: {}", event);
           if (preferences != null) {
             preferences.putDouble(WIDTH_PREF, stage.getWidth());
             preferences.putDouble(HEIGHT_PREF, stage.getHeight());
@@ -232,9 +260,10 @@ public class NodeEditor {
     }
     final IconDescriptor newIcon =
         new IconDescriptor(selectedIcon, iconColor.getValue(), useIconGradient.isSelected());
+    final @NotNull ImmutableList<ServiceDescriptor> newServices =
+        ImmutableList.copyOf(services.getItems());
     // TODO: implement
     final @NotNull Map<String, String> newProperties = node.getProperties();
-    final @NotNull ImmutableList<ServiceDescriptor> newServices = node.getServiceDescriptors();
 
     if (node instanceof Server) {
       newNode =
@@ -286,18 +315,67 @@ public class NodeEditor {
 
   public void onEditService(final ActionEvent actionEvent) {
     log.trace("Edit service: {}", actionEvent);
+    final int serviceIndex = services.getSelectionModel().getSelectedIndex();
+    if (serviceIndex >= 0 && serviceIndex < services.getItems().size()) {
+      final ServiceDescriptor existingServiceDescriptor = services.getItems().get(serviceIndex);
+      if (existingServiceDescriptor != null) {
+        final ServiceDefinition serviceDefinition =
+            serviceRegistry.getServiceDefinitionFor(existingServiceDescriptor.getType());
+        if (serviceDefinition != null && serviceDefinition.hasEditor()) {
+          final @NotNull ServiceEditor editor = serviceDefinition.getEditor();
+          editor
+              .openEditorAndGetDefinition(stage, existingServiceDescriptor, node)
+              .ifPresent(sd -> services.getItems().set(serviceIndex, sd));
+        }
+      }
+    }
   }
 
   public void onAddService(final ActionEvent actionEvent) {
     log.trace("Add service: {}", actionEvent);
+    final List<ServiceGuiWrapper> choices =
+        serviceRegistry.getDefinedServicesFor(node.getType()).stream()
+            .map(ServiceGuiWrapper::new)
+            .collect(Collectors.toUnmodifiableList());
+
+    final ChoiceDialog<ServiceGuiWrapper> dialog = new ChoiceDialog<>(choices.get(0), choices);
+    dialog.setTitle(localMessage("NODE_ADD_SERVICE"));
+    dialog.setHeaderText(localMessage("NODE_ADD_SERVICE_TYPE"));
+    dialog.setContentText(localMessage("NODE_ADD_AVAILABLE_SERVICES"));
+    final Optional<ServiceDefinition> optionalServiceDefinition =
+        dialog.showAndWait().map(ServiceGuiWrapper::getServiceDefinition);
+    if (optionalServiceDefinition.isPresent()) {
+      log.debug("Selected: {}", optionalServiceDefinition.get().getType());
+      final ServiceDefinition serviceDefinition = optionalServiceDefinition.get();
+      final Optional<ServiceDescriptor> serviceDescriptor;
+      if (serviceDefinition.hasEditor()) {
+        final @NotNull ServiceEditor editor = serviceDefinition.getEditor();
+        serviceDescriptor =
+            editor.openEditorAndGetDefinition(
+                stage, serviceDefinition.getDefaultDescriptor(), node);
+      } else {
+        serviceDescriptor = Optional.of(serviceDefinition.getDefaultDescriptor());
+      }
+      // add service to the list
+      serviceDescriptor.ifPresent(sd -> services.getItems().add(sd));
+    } else {
+      log.debug("No service type selected");
+    }
   }
 
   public void onRemoveService(final ActionEvent actionEvent) {
     log.trace("Remove service: {}", actionEvent);
+    final int serviceIndex = services.getSelectionModel().getSelectedIndex();
+    if (serviceIndex >= 0 && serviceIndex < services.getItems().size()) {
+      services.getItems().remove(serviceIndex);
+    }
+
   }
 
   public void onFormReset(final ActionEvent actionEvent) {
     log.trace("Reset form: {}", actionEvent);
+    services.getItems().clear();
+    properties.getItems().clear();
     populateForm();
   }
 
@@ -320,5 +398,10 @@ public class NodeEditor {
   public void onIconChange(final ActionEvent actionEvent) {
     log.trace("Icon change: {}", actionEvent);
     generateIcon();
+  }
+
+  public void onServiceClicked(final MouseEvent mouseEvent) {
+    if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2)
+      onEditService(null);
   }
 }

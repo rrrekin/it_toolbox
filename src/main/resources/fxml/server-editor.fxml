@@ -48,7 +48,7 @@
                 </HBox>
                </bottom>
                <center>
-                <ListView fx:id="services" minHeight="50.0" prefHeight="120.0" BorderPane.alignment="CENTER" />
+                <ListView fx:id="services" minHeight="50.0" onMouseClicked="#onServiceClicked" prefHeight="120.0" BorderPane.alignment="CENTER" />
                </center>
                <top>
                 <Label text="%NODE_LABEL_SERVICES" BorderPane.alignment="CENTER_LEFT" />

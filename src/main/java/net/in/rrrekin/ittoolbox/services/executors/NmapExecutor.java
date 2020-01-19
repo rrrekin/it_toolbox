@@ -27,6 +27,7 @@ import net.in.rrrekin.ittoolbox.configuration.nodes.NetworkNode;
 import net.in.rrrekin.ittoolbox.os.OsCommandExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceExecutor;
+import net.in.rrrekin.ittoolbox.services.definitions.NmapService;
 import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
 import net.in.rrrekin.ittoolbox.utilities.StringUtils;
 import net.in.rrrekin.ittoolbox.utilities.exceptions.TemplateException;
@@ -69,7 +70,7 @@ public class NmapExecutor implements ServiceExecutor {
     final @NotNull String nmapCommandTemplate = appPreferences.getNmapCommand();
     final @NotNull String defaultOptions = appPreferences.getNmapOptions();
     final Object nodeOptionsObj =
-        descriptor.getProperty("options").getValueFor(configuration, node);
+        descriptor.getProperty(NmapService.OPTIONS).getValueFor(node);
     final @NotNull String nodeOptions =
         nodeOptionsObj instanceof String ? (String) nodeOptionsObj : "";
     final @NotNull String options = nodeOptions.isBlank() ? defaultOptions : nodeOptions;
@@ -80,7 +81,7 @@ public class NmapExecutor implements ServiceExecutor {
             "defaultOptions", defaultOptions,
             "nodeOptions", nodeOptions);
     log.debug(
-        "Ping command template '{}', node: {}, variables: {}",
+        "Namp command template '{}', node: {}, variables: {}",
         nmapCommandTemplate,
         node,
         variables);

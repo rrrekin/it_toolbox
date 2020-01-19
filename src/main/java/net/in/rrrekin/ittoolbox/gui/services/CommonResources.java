@@ -1,13 +1,16 @@
 package net.in.rrrekin.ittoolbox.gui.services;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 import static net.in.rrrekin.ittoolbox.utilities.LocaleUtil.localMessage;
 
+import com.google.inject.Injector;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -20,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import net.in.rrrekin.ittoolbox.ItToolboxApplication;
 import net.in.rrrekin.ittoolbox.gui.GuiInvokeService;
+import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
 import org.controlsfx.dialog.ExceptionDialog;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
@@ -49,12 +53,14 @@ public class CommonResources {
   @NonNls private static final @NotNull Logger log = LoggerFactory.getLogger(CommonResources.class);
 
   private final @NotNull GuiInvokeService guiInvokeService;
-
+  private final @Nullable Injector injector;
 
   @Inject
-  public CommonResources(final @NotNull GuiInvokeService guiInvokeService) {
+  public CommonResources(
+      final @NotNull GuiInvokeService guiInvokeService, final @Nullable Injector injector) {
     log.debug("Creating CommonResources");
     this.guiInvokeService = requireNonNull(guiInvokeService, "GuiInvokeService must not be null");
+    this.injector = injector;
   }
 
   /**
@@ -234,8 +240,12 @@ public class CommonResources {
         });
   }
 
-  public boolean yesNoDialog(final @Nullable Stage owner, final @NotNull String title, final @NotNull String question, final @NotNull String context)
-    throws InterruptedException {
+  public boolean yesNoDialog(
+      final @Nullable Stage owner,
+      final @NotNull String title,
+      final @NotNull String question,
+      final @NotNull String context)
+      throws InterruptedException {
     final boolean[] response = new boolean[1];
     final Semaphore semaphore = new Semaphore(0);
     guiInvokeService.runInGui(
@@ -255,5 +265,14 @@ public class CommonResources {
         });
     semaphore.acquire();
     return response[0];
+  }
+
+  public @NotNull FXMLLoader loadFxml(final @NotNull String resourceName) {
+    checkState(injector != null, "This instance is not configured to load resources.");
+    final @NotNull FXMLLoader fxmlLoader = new FXMLLoader();
+    fxmlLoader.setControllerFactory(injector::getInstance);
+    fxmlLoader.setLocation(getClass().getResource(resourceName));
+    fxmlLoader.setResources(LocaleUtil.getMessages());
+    return fxmlLoader;
   }
 }

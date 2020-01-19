@@ -16,17 +16,34 @@ import net.in.rrrekin.ittoolbox.services.ServiceEditor;
 import net.in.rrrekin.ittoolbox.services.ServiceExecutor;
 import net.in.rrrekin.ittoolbox.services.ServiceProperty;
 import net.in.rrrekin.ittoolbox.services.ServiceType;
-import net.in.rrrekin.ittoolbox.services.editors.EditorPlaceholder;
+import net.in.rrrekin.ittoolbox.services.editors.NmapServiceEditor;
 import net.in.rrrekin.ittoolbox.services.executors.NmapExecutor;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-/** @author michal.rudewicz@gmail.com */
+/**
+ * Service for nmap scanning.
+ *
+ * @author michal.rudewicz @gmail.com
+ */
 public class NmapService implements ServiceDefinition {
+
+  /** The constant OPTIONS. */
+  public static final String OPTIONS = "options";
+  /** The constant NAME. */
+  public static final String NAME = "name";
 
   private final @NotNull CommonResources commonResources;
   private final @NotNull OsCommandExecutor osCommandExecutor;
   private final @NotNull AppPreferences appPreferences;
 
+  /**
+   * Instantiates a new NmapService.
+   *
+   * @param commonResources the CommonResources instance to use
+   * @param osCommandExecutor the OsCommandExecutor instance to use
+   * @param appPreferences the AppPreferences instance to use
+   */
   public NmapService(
       final @NotNull CommonResources commonResources,
       final @NotNull OsCommandExecutor osCommandExecutor,
@@ -37,12 +54,18 @@ public class NmapService implements ServiceDefinition {
     this.appPreferences = requireNonNull(appPreferences, "appPreferences must be not null");
   }
 
+  @NonNls
   @Override
   public @NotNull String getName(final @NotNull ServiceDescriptor descriptor) {
-    final ServiceProperty name = descriptor.getProperty("name");
-    return name == null || name.getRawValue().trim().isEmpty()
-        ? localMessage("SERVICE_NMAP")
-        : name.getRawValue();
+    final ServiceProperty name = descriptor.getProperty(NAME);
+    final ServiceProperty options = descriptor.getProperty(OPTIONS);
+    if (name == null || name.getRawValue().trim().isEmpty()) {
+      return localMessage("SERVICE_NMAP");
+    }
+    return name.getRawValue()
+        + (options != null && !options.getRawValue().isBlank()
+            ? " (" + options.getRawValue() + ")"
+            : "");
   }
 
   @Override
@@ -55,13 +78,12 @@ public class NmapService implements ServiceDefinition {
     return new ServiceDescriptor(
         ServiceType.NMAP,
         List.of(
-            new ServiceProperty("name", "", false, PropertyType.STRING),
-            new ServiceProperty("options", "", false, PropertyType.STRING)));
+            new ServiceProperty(NAME, "", false, PropertyType.STRING),
+            new ServiceProperty(OPTIONS, "", false, PropertyType.STRING)));
   }
 
   @Override
-  public @NotNull ServiceExecutor getExecutor(
-      final @NotNull ServiceDescriptor descriptor) {
+  public @NotNull ServiceExecutor getExecutor(final @NotNull ServiceDescriptor descriptor) {
     return new NmapExecutor(descriptor, osCommandExecutor, appPreferences);
   }
 
@@ -72,7 +94,7 @@ public class NmapService implements ServiceDefinition {
 
   @Override
   public @NotNull ServiceEditor getEditor() {
-    return new EditorPlaceholder(commonResources);
+    return new NmapServiceEditor(commonResources);
   }
 
   @Override

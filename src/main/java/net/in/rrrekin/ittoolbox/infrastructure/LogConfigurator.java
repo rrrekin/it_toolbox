@@ -30,14 +30,14 @@ public class LogConfigurator {
     appDir.mkdirs(); // NOSONAR
     appDir.setWritable(true); // NOSONAR
     if (!appDir.isDirectory() || !appDir.canWrite()) {
-      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_APP_DIR", appDir));
+      new CommonResources(new GuiInvokeService(), null).fatalError(localMessage("APP_CANNOT_CREATE_APP_DIR", appDir));
     }
 
     final File logsDir = new File(appDir, LOGS_SUBDIRECTORY);
     logsDir.mkdirs(); // NOSONAR
     logsDir.setWritable(true); // NOSONAR
     if (!appDir.isDirectory() || !appDir.canWrite()) {
-      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_LOGS_DIR", logsDir));
+      new CommonResources(new GuiInvokeService(), null).fatalError(localMessage("APP_CANNOT_CREATE_LOGS_DIR", logsDir));
     }
 
     final File configFile = new File(appDir, "logback.xml");
@@ -45,7 +45,7 @@ public class LogConfigurator {
       createDefaultLogbackConfig(configFile);
     }
     if (!(configFile.isFile() && configFile.canRead())) {
-      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", configFile));
+      new CommonResources(new GuiInvokeService(), null).fatalError(localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", configFile));
     }
 
     System.setProperty("LOG_FILE_LOCATION", logsDir.getAbsolutePath());
@@ -61,7 +61,7 @@ public class LogConfigurator {
         Files.copy(logbakcConfigStream, file.toPath());
       }
     } catch (final IOException e) {
-      new CommonResources(new GuiInvokeService()).fatalError(localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", e.getLocalizedMessage()));
+      new CommonResources(new GuiInvokeService(), null).fatalError(localMessage("APP_CANNOT_CREATE_LOGGING_CONFIG", e.getLocalizedMessage()));
     }
   }
 }

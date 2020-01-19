@@ -9,7 +9,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
@@ -73,7 +72,6 @@ import net.in.rrrekin.ittoolbox.services.ServiceDefinition;
 import net.in.rrrekin.ittoolbox.services.ServiceDescriptor;
 import net.in.rrrekin.ittoolbox.services.ServiceRegistry;
 import net.in.rrrekin.ittoolbox.services.exceptions.ServiceExecutionException;
-import net.in.rrrekin.ittoolbox.utilities.LocaleUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -139,7 +137,6 @@ public class MainWindowController {
   private final @NotNull NodeConverter nodeConverter;
   private final @NotNull NodeForestConverter nodeForestConverter;
   private final @NotNull ServiceRegistry serviceRegistry;
-  private final @NotNull Injector injector;
 
   @Inject
   public MainWindowController(
@@ -168,7 +165,6 @@ public class MainWindowController {
         Objects.requireNonNull(nodeForestConverter, "nodeForestConverter must not be null");
     this.serviceRegistry =
         Objects.requireNonNull(serviceRegistry, "serviceRegistry must not be null");
-    this.injector = Objects.requireNonNull(injector, "injector must not be null");
 
     genericPreferences = userPreferencesFactory.create(this.getClass());
     preferences = genericPreferences;
@@ -340,12 +336,7 @@ public class MainWindowController {
   }
 
   private void editServer(final @NotNull TreeItem<NetworkNode> item) {
-    final @NotNull FXMLLoader fxmlLoader = new FXMLLoader();
-    fxmlLoader.setControllerFactory(injector::getInstance);
-    final URL location = getClass().getResource("/fxml/server-editor.fxml");
-    fxmlLoader.setLocation(location);
-    fxmlLoader.setResources(LocaleUtil.getMessages());
-
+    final @NotNull FXMLLoader fxmlLoader = commonResources.loadFxml("/fxml/server-editor.fxml");
     try {
       final Parent content = fxmlLoader.load();
       final NodeEditor controller = fxmlLoader.getController();
@@ -790,14 +781,13 @@ public class MainWindowController {
         defaultServices.forEach(
             service -> {
               final ServiceDescriptor defaultDescriptor = service.getDefaultDescriptor();
-              final String serviceName = service.getName(defaultDescriptor);
-              final MenuItem serviceMenuItem = new MenuItem(serviceName);
+              final String serviceName = serviceRegistry.getNameFor(defaultDescriptor);
+              final MenuItem serviceMenuItem =
+                  new MenuItem(serviceName, defaultDescriptor.getType().getIcon());
               serviceMenuItem.setOnAction(
                   event -> {
                     try {
-                      service
-                          .getExecutor(defaultDescriptor)
-                          .execute(stage, configuration, node);
+                      service.getExecutor(defaultDescriptor).execute(stage, configuration, node);
                     } catch (final ServiceExecutionException e) {
                       log.error("Failed to execute service {}: {}", serviceName, e.getMessage(), e);
                       commonResources.errorDialog(
@@ -814,7 +804,7 @@ public class MainWindowController {
             .forEach(
                 serviceDescriptor -> {
                   final String serviceName = serviceRegistry.getNameFor(serviceDescriptor);
-                  final MenuItem serviceMenuItem = new MenuItem(serviceName);
+                  final MenuItem serviceMenuItem = new MenuItem(serviceName, serviceDescriptor.getType().getIcon());
                   serviceMenuItem.setOnAction(
                       event -> {
                         try {
